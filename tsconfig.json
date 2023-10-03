@@ -13,6 +13,7 @@
       "@webgpu/types"
     ],
     "noEmit": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "strictNullChecks": false
   }
 }
