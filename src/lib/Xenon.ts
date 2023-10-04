@@ -1,4 +1,4 @@
-import { degrees_to_radians, mat4 } from "./math"
+import { degrees_to_radians, mat4 } from './math'
 
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
@@ -85,9 +85,6 @@ export default class Xenon {
     if (this.#target) {
       this.#target.height = Math.floor(window.innerHeight)
       this.#target.width  = Math.floor(window.innerWidth)
-
-      // this.#target.style.height = `${this.#target.height}px`
-      // this.#target.style.width  = `${this.#target.width}px`
     }
     else throw new Error('No #target, cannot resize')
   }
@@ -188,30 +185,28 @@ export default class Xenon {
   }
 
   static render(
-    camera: {
-      position: Float32Array,
-      target:   Float32Array,
-    },
+    position: Float32Array,
+    target:   Float32Array,
     vertices: number,
   ) {
-    // const currentHeight = Math.floor(window.innerHeight)
-    // const currentWidth  = Math.floor(window.innerWidth)
+    const currentHeight = Math.floor(window.innerHeight)
+    const currentWidth  = Math.floor(window.innerWidth)
 
-    // if (
-    //   (currentWidth !== this.#target.width || currentHeight !== this.#target.height) &&
-    //   currentWidth &&
-    //   currentHeight
-    // ) {
-    //   if (this.#render_target !== undefined)
-    //     this.#render_target.destroy()
+    if (
+      (currentWidth !== this.#target.width || currentHeight !== this.#target.height) &&
+      currentWidth &&
+      currentHeight
+    ) {
+      if (this.#render_target !== undefined)
+        this.#render_target.destroy()
 
-    //   // Setting the canvas width and height will automatically resize the textures returned
-    //   // when calling getCurrentTexture() on the context.
-    //   this.#target.height = currentHeight
-    //   this.#target.width  = currentWidth
+      // Setting the canvas width and height will automatically resize the textures returned
+      // when calling getCurrentTexture() on the context.
+      this.#target.height = currentHeight
+      this.#target.width  = currentWidth
 
-    //   this.define_depth_stencil()
-    // }
+      this.define_depth_stencil()
+    }
 
     this.#color_attachment[0].view = this.#context.getCurrentTexture().createView()
 
@@ -220,9 +215,9 @@ export default class Xenon {
       0,
       Camera(
         this.#target?.width / this.#target?.height,
-        camera.position,
-        camera.target,
-      ) as ArrayBuffer,
+        position,
+        target,
+      ),
     )
 
     const commandEncoder = this.#device.createCommandEncoder()
@@ -264,7 +259,7 @@ export const Camera = (
   target:      Float32Array,
 ): Float32Array => {
   const projection = mat4.perspective(
-    degrees_to_radians(60), // fieldOfView,
+    degrees_to_radians(80), // fieldOfView,
     aspectRatio,
     1,      // zNear
     2000,   // zFar

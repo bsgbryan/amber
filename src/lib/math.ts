@@ -81,6 +81,15 @@ export const vec3 = {
     dst[2] = foo * Math.cos(theta)
 
     return dst
+  },
+  rotateY(a: Float32Array, rad: number, dst?: Float32Array): Float32Array {
+    dst = dst || new Float32Array(3)
+
+    dst[0] = a[2] * Math.sin(rad) + a[0] * Math.cos(rad)
+    dst[1] = a[1]
+    dst[2] = a[2] * Math.cos(rad) - a[0] * Math.sin(rad)
+
+    return dst
   }
 };
 

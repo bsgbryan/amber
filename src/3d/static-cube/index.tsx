@@ -3,8 +3,6 @@ import {
   createEffect,
 } from 'solid-js'
 
-import { quat } from 'gl-matrix'
-
 import Xenon, { VertexBufferLayout } from '../../lib/Xenon'
 
 import vertex   from './shaders/vertex.wgsl?raw'
@@ -13,102 +11,51 @@ import fragment from './shaders/fragment.wgsl?raw'
 import { positions } from './data'
 import { degrees_to_radians, vec3 } from '../../lib/math'
 
-let _x     = 0
-let _z     = 0
-let origin = 0
-let _rotate_x = 0
-let _rotate_y = 0
+let x_rotate = 0
+let y_rotate = 0
 
 const render = (
-  camera: {
-    position: Float32Array,
-    rotation: quat,
-  },
-  delta: number,
+  position: Float32Array,
+  delta:    number,
 ) => {
   const started = performance.now()
-
-  origin += delta
-
-  const gp       = navigator.getGamepads()[0]
-  let   X        = vec3.zero()
-  let   Y        = vec3.zero()
-  let   rotation = [...camera.rotation] as quat
-  let   diff = {
-    x: 0,
-    y: 0,
-  }
+  const gp      = navigator.getGamepads()[0]
+  
+  let x_translate = 0
+  let z_translate = 0
+  let y_diff      = 0
 
   if (gp) {
-    _z = Math.abs(gp?.axes[1]) > .1 ? gp?.axes[1] * delta : 0
-    _x = Math.abs(gp?.axes[0]) > .1 ? gp?.axes[0] * delta : 0
-
-    const x_move = Math.abs(gp?.axes[3]) > .1 ? gp?.axes[3] * delta * 20 : 0
-    const y_move = Math.abs(gp?.axes[2]) > .1 ? gp?.axes[2] * delta * 20 : 0
-
-    if (x_move) {
-      X[0] = 1
-
-      diff.x = x_move
-
-      _rotate_x = Math.min(_rotate_x + x_move,  90)
-      _rotate_x = Math.max(_rotate_x + x_move, -90)
-    }
-    if (y_move) {
-      Y[1] = 1
-
-      diff.y = y_move
-
-      _rotate_y = Math.min(_rotate_y + y_move,  85)
-      _rotate_y = Math.max(_rotate_y + y_move, -85)
-    }
-  }
-  else {
-    const phase     = origin / (60 * 15)
-    const frequency = 500
-
-    _z = Math.cos(phase * frequency) * delta
-    _x = Math.sin(phase * frequency) * delta
+    x_translate  = Math.abs(gp?.axes[0]) > .1 ? gp?.axes[0] * delta * 5 : 0
+    z_translate  = Math.abs(gp?.axes[1]) > .1 ? gp?.axes[1] * delta * 5 : 0
+    y_diff       = Math.abs(gp?.axes[2]) > .1 ? gp?.axes[2] * delta * 80 : 0
+    x_rotate    += Math.abs(gp?.axes[3]) > .1 ? gp?.axes[3] * delta * 80 : 0
+    y_rotate    += y_diff
   }
 
-    // const QY = quat.create()
-    // quat.setAxisAngle(QY, Y, DegreesToRadians(_rotate_x))
-    // quat.multiply(rotation, rotation, QY)
+  const sphere = vec3.spherical(x_rotate, -y_rotate)
+  const next   = new Float32Array(position)
+  const target = vec3.zero()
 
-  // if (diff.y) {
-  //   const QY = quat.create()
-  //   quat.setAxisAngle(QY, Y, DegreesToRadians(_rotate_y))
-  //   quat.multiply(rotation, rotation, QY)
-  // }
+  // TODO: Change this to use a quaternion
+  const rotated = vec3.rotateY(
+    new Float32Array([1, 0, 1]),
+    degrees_to_radians(y_rotate)
+  )
 
-  // const forward  = [0, 0, 1] as vec3
-  // const sideways = [1, 0, 0] as vec3
+  const x_move = -z_translate * (1 - rotated[0])
+  const z_move = -z_translate * rotated[2]
 
-  // vec3.transformQuat(forward,  forward,  rotation)
-  // vec3.transformQuat(sideways, sideways, rotation)
+  // console.log(`X:${rotated[0]} ${x_move}\nZ:${rotated[2]} ${z_move}`)
 
-  // vec3.normalize(forward,  forward )
-  // vec3.normalize(sideways, sideways)
+  // Move Forward
+  vec3.add(new Float32Array([x_move, 0, z_move]), next, next)
+  vec3.add(sphere, next, target)
 
-  // vec3.multiply(forward,  forward,  [ 0, 0, -_z])
-  // vec3.multiply(sideways, sideways, [_x, 0,  0])
-
-  const position = new Float32Array(camera.position)
-
-  // vec3.add(position, position, forward )
-  // vec3.add(position, position, sideways)
-
-  let target = vec3.zero()
-
-  vec3.add(vec3.spherical(_rotate_x, -_rotate_y, 360), camera.position, target)
-  
-  // console.log(`${_rotate_x}, ${_rotate_y}: ${target[0]}, ${target[1]}, ${target[2]}`)
-
-  Xenon.render({position, target}, positions.length / 3)
+  Xenon.render(next, target, positions.length / 3)
 
   requestAnimationFrame(() => {
-    const camera = {position, rotation}
-    render(camera, (performance.now() - started) * .001)
+    render(next, (performance.now() - started) * .001)
   })
 }
 
@@ -131,12 +78,7 @@ const StaticCube: Component = () => {
     const timestamp =  performance.now()
 
     requestAnimationFrame(() => {
-      const camera = {
-        position: new Float32Array([0, 2, -10]),
-        rotation: quat.create()
-      }
-
-      render(camera, (performance.now() - timestamp) * .001)
+      render(new Float32Array([0, 2, -10]), (performance.now() - timestamp) * .001)
     })
   })
 
