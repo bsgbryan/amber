@@ -19,7 +19,6 @@
   "dependencies": {
     "@solidjs/router": "^0.8.3",
     "@webgpu/types": "^0.1.35",
-    "gl-matrix": "^3.4.3",
     "microseconds": "^0.2.0",
     "solid-js": "^1.7.6"
   }
