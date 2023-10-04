@@ -1,4 +1,4 @@
-import { mat4, vec3 } from 'gl-matrix'
+import { degrees_to_radians, mat4 } from "./math"
 
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
@@ -19,6 +19,8 @@ export default class Xenon {
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
   }
 
+  static #render_target?: GPUTexture
+
   static async init(render_target: string) {
     this.#target = document.getElementById(render_target) as HTMLCanvasElement
 
@@ -32,15 +34,20 @@ export default class Xenon {
       this.#format = navigator.gpu.getPreferredCanvasFormat()
 
       this.#context.configure({
-        device: this.#device,
-        format: this.#format,
+        device:     this.#device,
+        format:     this.#format,
+        alphaMode: 'premultiplied',
       })
 
       this.#device.lost.then(details => console.error('WebGPU device was lost', {details}))
 
       this.refresh_render_target_size_and_scale()
 
-      const bar: Array<GPURenderPassColorAttachment> = []
+      this.#render_target = this.#device.createTexture({
+        size: [this.#target.width, this.#target.height, 1],
+        format: this.#format,
+        usage: GPUTextureUsage.RENDER_ATTACHMENT,
+      })
 
       this.register_color_attachment()
       this.define_depth_stencil()
@@ -51,7 +58,6 @@ export default class Xenon {
         self.refresh_render_target_size_and_scale()
       )
 
-      // @ts-ignore
       resize_observer.observe(document.querySelector('html'))
     }
     else throw new Error('Unable to get WebGPU context')
@@ -80,8 +86,8 @@ export default class Xenon {
       this.#target.height = Math.floor(window.innerHeight)
       this.#target.width  = Math.floor(window.innerWidth)
 
-      this.#target.style.height = `${this.#target.height}px`
-      this.#target.style.width  = `${this.#target.width}px`
+      // this.#target.style.height = `${this.#target.height}px`
+      // this.#target.style.width  = `${this.#target.width}px`
     }
     else throw new Error('No #target, cannot resize')
   }
@@ -115,13 +121,16 @@ export default class Xenon {
     },
     buffers?: {
       vertex?: Array<GPUVertexBufferLayout>,
-    }
+    },
   ) {
     // @ts-ignore
     const descriptor: GPURenderPipelineDescriptor = {
       label: `${name} Render Pipeline`,
       layout: 'auto',
-      primitive: { cullMode: 'back' },
+      primitive: {
+        cullMode: 'back',
+        topology: 'triangle-list',
+      },
       depthStencil: {
         format: 'depth24plus',
         depthWriteEnabled: true,
@@ -134,9 +143,7 @@ export default class Xenon {
         buffers: buffers?.vertex,
         entryPoint: 'main',
         // @ts-ignore
-        module: this.#device.createShaderModule({                    
-          code: shaders.vertex
-        }),
+        module: this.#device.createShaderModule({ code: shaders.vertex }),
       }
     }
 
@@ -144,12 +151,8 @@ export default class Xenon {
       descriptor.fragment = {
         entryPoint: 'main',
         // @ts-ignore
-        module: this.#device.createShaderModule({                    
-          code: shaders.fragment
-        }),
-        targets: [{
-          format: this.#format || navigator.gpu.getPreferredCanvasFormat()
-        }],
+        module: this.#device.createShaderModule({ code: shaders.fragment }),
+        targets: [{ format: this.#format }],
       }
     }
 
@@ -162,7 +165,7 @@ export default class Xenon {
     clear_value: GPUColor = { r: 0.2, g: 0.247, b: 0.314, a: 1.0 }
   ) {
     this.#color_attachment.push({
-      view: this.#context.getCurrentTexture().createView(),
+      view: this.#render_target.createView(),
       clearValue: clear_value,
       loadOp: 'clear',
       storeOp: 'store'
@@ -186,11 +189,30 @@ export default class Xenon {
 
   static render(
     camera: {
-      position: vec3,
-      target:   vec3,
+      position: Float32Array,
+      target:   Float32Array,
     },
     vertices: number,
   ) {
+    // const currentHeight = Math.floor(window.innerHeight)
+    // const currentWidth  = Math.floor(window.innerWidth)
+
+    // if (
+    //   (currentWidth !== this.#target.width || currentHeight !== this.#target.height) &&
+    //   currentWidth &&
+    //   currentHeight
+    // ) {
+    //   if (this.#render_target !== undefined)
+    //     this.#render_target.destroy()
+
+    //   // Setting the canvas width and height will automatically resize the textures returned
+    //   // when calling getCurrentTexture() on the context.
+    //   this.#target.height = currentHeight
+    //   this.#target.width  = currentWidth
+
+    //   this.define_depth_stencil()
+    // }
+
     this.#color_attachment[0].view = this.#context.getCurrentTexture().createView()
 
     this.#device.queue.writeBuffer(
@@ -234,22 +256,23 @@ export const VertexBufferLayout = (
   }]
 })
 
-const up = vec3.fromValues(0, 1, 0)
+const up = new Float32Array([0, 1, 0])
 
 export const Camera = (
   aspectRatio: number,
-  location:    vec3,
-  target:      vec3,
-) => {
-  const direction   = mat4.create()
-  const perspective = mat4.create()
-  const output      = mat4.create()
+  location:    Float32Array,
+  target:      Float32Array,
+): Float32Array => {
+  const projection = mat4.perspective(
+    degrees_to_radians(60), // fieldOfView,
+    aspectRatio,
+    1,      // zNear
+    2000,   // zFar
+  )
 
-  mat4.lookAt(direction,location,target,up)
-  // TODO Support proper FoV setting (2nd arg here needs to not be hard-coded)
-  mat4.perspective(perspective,100,aspectRatio,1,100)
-  mat4.multiply(output,direction,output)
-  mat4.multiply(output,perspective,output)
+  const viewMatrix           = mat4.lookAt(location, target, up)
+  const viewProjectionMatrix = mat4.multiply(projection, viewMatrix)
 
-  return output
+  return viewProjectionMatrix
 }
+
