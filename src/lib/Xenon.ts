@@ -1,4 +1,9 @@
-import { degrees_to_radians, mat4 } from './math'
+import {
+  Vector,
+  degrees_to_radians,
+  mat4,
+  vec3,
+} from './math'
 
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
@@ -251,12 +256,10 @@ export const VertexBufferLayout = (
   }]
 })
 
-const up = new Float32Array([0, 1, 0])
-
 export const Camera = (
   aspectRatio: number,
   location:    Float32Array,
-  target:      Float32Array,
+  sphere:      Float32Array,
 ): Float32Array => {
   const projection = mat4.perspective(
     degrees_to_radians(80), // fieldOfView,
@@ -265,9 +268,9 @@ export const Camera = (
     2000,   // zFar
   )
 
-  const viewMatrix           = mat4.lookAt(location, target, up)
-  const viewProjectionMatrix = mat4.multiply(projection, viewMatrix)
+  const vm  = mat4.lookAt(location, vec3.add(sphere, location), Vector.Up)
+  const vpm = mat4.multiply(projection, vm)
 
-  return viewProjectionMatrix
+  return vpm
 }
 

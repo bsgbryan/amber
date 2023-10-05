@@ -8,8 +8,14 @@ import Xenon, { VertexBufferLayout } from '../../lib/Xenon'
 import vertex   from './shaders/vertex.wgsl?raw'
 import fragment from './shaders/fragment.wgsl?raw'
 
+import {
+  Vector,
+  degrees_to_radians,
+  quat,
+  vec3,
+} from '../../lib/math'
+
 import { positions } from './data'
-import { degrees_to_radians, vec3 } from '../../lib/math'
 
 let x_rotate = 0
 let y_rotate = 0
@@ -23,40 +29,23 @@ const render = (
   
   let x_translate = 0
   let z_translate = 0
-  let y_diff      = 0
 
   if (gp) {
-    x_translate  = Math.abs(gp?.axes[0]) > .1 ? gp?.axes[0] * delta * 5 : 0
-    z_translate  = Math.abs(gp?.axes[1]) > .1 ? gp?.axes[1] * delta * 5 : 0
-    y_diff       = Math.abs(gp?.axes[2]) > .1 ? gp?.axes[2] * delta * 80 : 0
+    x_translate  = Math.abs(gp?.axes[0]) > .1 ? gp?.axes[0] * delta : 0
+    z_translate  = Math.abs(gp?.axes[1]) > .1 ? gp?.axes[1] * delta : 0
+    y_rotate    -= Math.abs(gp?.axes[2]) > .1 ? gp?.axes[2] * delta * 80 : 0
     x_rotate    += Math.abs(gp?.axes[3]) > .1 ? gp?.axes[3] * delta * 80 : 0
-    y_rotate    += y_diff
   }
 
-  const sphere = vec3.spherical(x_rotate, -y_rotate)
-  const next   = new Float32Array(position)
-  const target = vec3.zero()
+  const next    = new Float32Array(position)
+  const q       = quat.from_axis_angle(Vector.Up, degrees_to_radians(y_rotate))
+  const rotated = quat.rotate(new Float32Array([x_translate, 0, z_translate]), q)
 
-  // TODO: Change this to use a quaternion
-  const rotated = vec3.rotateY(
-    new Float32Array([1, 0, 1]),
-    degrees_to_radians(y_rotate)
-  )
+  vec3.add(rotated, next, next)
 
-  const x_move = -z_translate * (1 - rotated[0])
-  const z_move = -z_translate * rotated[2]
+  Xenon.render(next, vec3.spherical(x_rotate, y_rotate), positions.length / 3)
 
-  // console.log(`X:${rotated[0]} ${x_move}\nZ:${rotated[2]} ${z_move}`)
-
-  // Move Forward
-  vec3.add(new Float32Array([x_move, 0, z_move]), next, next)
-  vec3.add(sphere, next, target)
-
-  Xenon.render(next, target, positions.length / 3)
-
-  requestAnimationFrame(() => {
-    render(next, (performance.now() - started) * .001)
-  })
+  requestAnimationFrame(() => render(next, (performance.now() - started) * .001))
 }
 
 const StaticCube: Component = () => {
