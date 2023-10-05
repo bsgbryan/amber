@@ -1,34 +1,37 @@
-## Usage
+# Hi from Amber 😊
 
-Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
+Amber is a thoroughly modern game editor.
 
-This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
+What does that mean?
 
-```bash
-$ npm install # or pnpm install or yarn install
-```
+1. Amber is easy to get along with:<br>
+  _Modern technologies and tools like [SolidJS](https://www.solidjs.com/), [TypeScript](https://www.typescriptlang.org/), [WebAssembly](https://webassembly.org/), and [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) enable Amber to be simple to use & work with while also being incredibly efficient_
+1. Amber is smol:<br>
+  _A long-standing axiom in development is "Smaller things are easier to understand, change, and fix"; Amber follows this axiom by using lots of little pieces, each focused on doing a single thing, to construction nuanced behavior_
+1. Amber has strong opinions:<br>
+  _"Simple" and "flexible" are, often, antithetical; whenever this is the case, Amber simplifies things for you and I by making an opinionated decision - meaning that there absolutely is an "Amber's Way"_
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+# Amber's Parts
 
-## Available Scripts
+Amber is built from a few pieces:
 
-In the project directory, you can run:
+* **Xenon**: The engine at the heart of Amber. It handles rendering things, processing input, and calculating physics.
+* **Strata**: The UI that wraps Xenon. It's all of Amber's buttons, switches, dialogs, and stuff.
 
-### `npm run dev` or `npm start`
+# Xenon
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+[Xenon](./src/lib/Xenon) is Amber's core; an extremely efficient, simple game engine.
 
-The page will reload if you make edits.<br>
+Xenon uses the [ECS](https://en.wikipedia.org/wiki/Entity_component_system) design pattern.
 
-### `npm run build`
+# A tale of two Xenons
 
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
+There are two "versions" of Xenon; one written in TpyeScript, and one written in Rust.
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+The TypeScript implementation of Xenon is what's included in this repo for now. It's what I'm using to prototype - as I'm much more familiar with JavaScript/TypeScript than I am Rust.
 
-## Deployment
+Once functionality is implmented in a way I'm happy with in TypeScript, it will be ported to the Rust version of Xenon.
 
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
+My goal is that, eventually, Amber will use the Rust version of Xenon compiled to WebAssembly.
+
+The Rust version of Xenon is also what HOS will use.
