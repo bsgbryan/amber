@@ -26,11 +26,11 @@ Xenon uses the [ECS](https://en.wikipedia.org/wiki/Entity_component_system) desi
 
 # A tale of two Xenons
 
-There are two "versions" of Xenon; one written in TpyeScript, and one written in Rust.
+There are two "versions" of Xenon; one written in TypeScript, and one written in Rust.
 
 The TypeScript implementation of Xenon is what's included in this repo for now. It's what I'm using to prototype - as I'm much more familiar with JavaScript/TypeScript than I am Rust.
 
-Once functionality is implmented in a way I'm happy with in TypeScript, it will be ported to the Rust version of Xenon.
+Once functionality is implmented in a way I'm happy with in the TypeScript version of Xenon, it will be ported to the Rust version of Xenon.
 
 My goal is that, eventually, Amber will use the Rust version of Xenon compiled to WebAssembly.
 
