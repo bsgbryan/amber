@@ -13,7 +13,7 @@ import {
   degrees_to_radians,
   quat,
   vec3,
-} from '../../lib/math'
+} from '../../lib/Xenon/math'
 
 import { positions } from './data'
 
