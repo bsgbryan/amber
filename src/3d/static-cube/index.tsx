@@ -37,15 +37,17 @@ const render = (
     x_rotate    += Math.abs(gp?.axes[3]) > .1 ? gp?.axes[3] * delta * 80 : 0
   }
 
-  const next    = new Float32Array(position)
+  x_rotate = Math.min(x_rotate,  85)
+  x_rotate = Math.max(x_rotate, -85)
+
   const q       = quat.from_axis_angle(Vector.Up, degrees_to_radians(y_rotate))
   const rotated = quat.rotate(new Float32Array([x_translate, 0, z_translate]), q)
 
-  vec3.add(rotated, next, next)
+  vec3.add(rotated, position, position)
 
-  Xenon.render(next, vec3.spherical(x_rotate, y_rotate), positions.length / 3)
+  Xenon.render(position, vec3.spherical(x_rotate, y_rotate), positions.length / 3)
 
-  requestAnimationFrame(() => render(next, (performance.now() - started) * .001))
+  requestAnimationFrame(() => render(position, (performance.now() - started) * .001))
 }
 
 const StaticCube: Component = () => {
