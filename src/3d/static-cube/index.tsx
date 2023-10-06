@@ -1,76 +1,50 @@
 import {
   type Component,
   createEffect,
-} from 'solid-js'
+} from "solid-js"
 
-import Xenon, { VertexBufferLayout } from '../../lib/Xenon'
-
-import vertex   from './shaders/vertex.wgsl?raw'
-import fragment from './shaders/fragment.wgsl?raw'
-
+import Xenon from "../../lib/Xenon"
 import {
   Vector,
   degrees_to_radians,
   quat,
   vec3,
-} from '../../lib/Xenon/math'
+} from "../../lib/Xenon/math"
 
-import { positions } from './data'
+import Geometry   from "../../lib/Xenon/components/Geometry"
+import MainCamera from "../../lib/Xenon/components/MainCamera"
+import Position   from "../../lib/Xenon/components/Position"
 
-let x_rotate = 0
-let y_rotate = 0
+import RefreshGeometry   from "../../lib/Xenon/systems/RefreshGeometry"
+import MainCameraManager from "../../lib/Xenon/systems/MainCameraManager"
 
-const render = (
-  position: Float32Array,
-  delta:    number,
-) => {
-  const started = performance.now()
-  const gp      = navigator.getGamepads()[0]
-  
-  let x_translate = 0
-  let z_translate = 0
+import SimpleVertexColor from "./materials/SimpleVertexColor"
 
-  if (gp) {
-    x_translate  = Math.abs(gp?.axes[0]) > .1 ? gp?.axes[0] * delta : 0
-    z_translate  = Math.abs(gp?.axes[1]) > .1 ? gp?.axes[1] * delta : 0
-    y_rotate    -= Math.abs(gp?.axes[2]) > .1 ? gp?.axes[2] * delta * 80 : 0
-    x_rotate    += Math.abs(gp?.axes[3]) > .1 ? gp?.axes[3] * delta * 80 : 0
-  }
-
-  x_rotate = Math.min(x_rotate,  85)
-  x_rotate = Math.max(x_rotate, -85)
-
-  const q       = quat.from_axis_angle(Vector.Up, degrees_to_radians(y_rotate))
-  const rotated = quat.rotate(new Float32Array([x_translate, 0, z_translate]), q)
-
-  vec3.add(rotated, position, position)
-
-  Xenon.render(position, vec3.spherical(x_rotate, y_rotate), positions.length / 3)
-
-  requestAnimationFrame(() => render(position, (performance.now() - started) * .001))
-}
+import { positions } from "./data"
 
 const StaticCube: Component = () => {
   createEffect(async () => {
     await Xenon.init('main-render-target')
 
-    Xenon.register_buffer(positions)
+    const cube   = Xenon.new_entity()
+    const camera = Xenon.new_entity()
 
-    const buffer_layouts = [
-      VertexBufferLayout(0, 0), // Position
-    ]
+    const geometry = new Geometry(positions)
+    const position = new Position(0, 2, -10)
+    const material = new SimpleVertexColor()
 
-    Xenon.register_render_pipeline(
-      'Example',
-      { vertex, fragment },
-      { vertex: buffer_layouts }
-    )
+    const register_geometry   = new RefreshGeometry()
+    const main_camera_manager = new MainCameraManager()
 
-    const timestamp =  performance.now()
+    Xenon.add_system(register_geometry)
+    Xenon.add_system(main_camera_manager)
 
-    requestAnimationFrame(() => {
-      render(new Float32Array([0, 2, -10]), (performance.now() - timestamp) * .001)
-    })
+    Xenon.add_component(cube,   geometry)
+    Xenon.add_component(cube,   material)
+    Xenon.add_component(camera, position)
+    Xenon.add_component(camera, new MainCamera())
+
+    Xenon.run()
   })
 
   return <canvas id="main-render-target" />
