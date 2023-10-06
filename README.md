@@ -13,13 +13,6 @@ What does that mean?
 
 # Ambers Parts
 
-Amber is built from a few pieces:
-
-* **Xenon**: The engine at the heart of Amber. It handles rendering things, processing input, and calculating physics.
-* **Strata**: The UI that wraps Xenon. It's all of Amber's buttons, switches, dialogs, and stuff.
-
-# Xenon
-
-[Xenon](./src/lib/Xenon) is Amber's core; an extremely efficient, unique game engine.
-
-Xenon uses the [ECS](https://en.wikipedia.org/wiki/Entity_component_system) design pattern.
+* **Strata**: UI tooling. It's all of Amber's buttons, switches, dialogs, and stuff
+* **[Xenon](./src/lib/Xenon)**:  A rendering engine, input processor, and real time simulation fidelity manager
+* **[Legion](./src/lib/Legion)**: An implementation of the [ECS](https://en.wikipedia.org/wiki/Entity_component_system) design pattern specifically designed to scaling the fidelity of the simulations up and down in real time; Legion handles executing all the simulations you define
