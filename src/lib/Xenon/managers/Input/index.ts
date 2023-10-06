@@ -15,14 +15,14 @@ export default class InputManager {
     if (gp) {
       const x_dead   = Input.GamePad.Movement.X.DeadZone
       const x_input  = gp.axes[0]
-      const x_output = Math.abs(x_input) > Input.GamePad.Movement.X.DeadZone ?
+      const x_output = Math.abs(x_input) > x_dead ?
         (x_input - x_dead) * (1 + x_dead) * delta_seconds * Input.GamePad.Movement.X.Multiplier
          :
          0
 
       const z_dead   = Input.GamePad.Movement.Z.DeadZone
       const z_input  = gp.axes[1]
-      const z_output = Math.abs(z_input) > Input.GamePad.Movement.Z.DeadZone ?
+      const z_output = Math.abs(z_input) > z_dead ?
         (z_input - z_dead) * (1 + z_dead) * delta_seconds * Input.GamePad.Movement.Z.Multiplier
          :
          0
@@ -44,7 +44,7 @@ export default class InputManager {
     if (gp) {
       const x_dead   = Input.GamePad.Rotation.X.DeadZone
       const x_input  = gp.axes[3]
-      const x_output = Math.abs(x_input) > Input.GamePad.Rotation.X.DeadZone ?
+      const x_output = Math.abs(x_input) > x_dead ?
         (x_input - x_dead) * (1 + x_dead) * delta_seconds * Input.GamePad.Rotation.X.Multiplier
          :
          0
@@ -55,7 +55,7 @@ export default class InputManager {
 
       const y_dead   = Input.GamePad.Rotation.Y.DeadZone
       const y_input  = gp.axes[2]
-      const y_output = Math.abs(y_input) > Input.GamePad.Rotation.Y.DeadZone ?
+      const y_output = Math.abs(y_input) > y_dead ?
         (y_input - y_dead) * (1 + y_dead) * delta_seconds * Input.GamePad.Rotation.Y.Multiplier
          :
          0
