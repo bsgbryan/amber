@@ -11,7 +11,7 @@ What does that mean?
 1. Amber has strong opinions:<br>
   _"Simple" and "flexible" are, often, antithetical; whenever this is the case, Amber simplifies things for you and I by making an opinionated decision - meaning that there absolutely is an "Amber's Way"_
 
-# Amber's Parts
+# Ambers Parts
 
 Amber is built from a few pieces:
 
