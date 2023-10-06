@@ -1,8 +1,9 @@
-import Xenon, { System } from ".."
+import { System } from "../../Legion"
+import { Entity } from "../../Legion/types"
+
+import Xenon from ".."
 
 import Geometry from "../components/Geometry"
-
-import { Entity } from "../types"
 
 export default class RefreshGeometry extends System {
   componentsRequired = new Set<Function>([Geometry]);

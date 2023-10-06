@@ -1,8 +1,7 @@
-import Xenon, { System } from ".."
+import { Entity } from "../../Legion/types"
+import { System } from "../../Legion"
 
-import InputManager from "../managers/Input"
-import MainCamera   from "../components/MainCamera"
-import Position     from "../components/Position"
+import Xenon from ".."
 
 import {
   Vector,
@@ -11,7 +10,9 @@ import {
   vec3,
 } from "../math"
 
-import { Entity } from "../types"
+import InputManager from "../managers/Input"
+import MainCamera   from "../components/MainCamera"
+import Position     from "../components/Position"
 
 export default class MainCameraManager extends System {
   componentsRequired = new Set<Function>([Position, MainCamera]);

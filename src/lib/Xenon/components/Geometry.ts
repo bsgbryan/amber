@@ -1,4 +1,4 @@
-import { Component } from ".."
+import { Component } from "../../Legion"
 
 let registered_buffer_count = 0
 

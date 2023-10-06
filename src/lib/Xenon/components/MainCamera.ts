@@ -1,3 +1,3 @@
-import { Component } from ".."
+import { Component } from "../../Legion"
 
 export default class MainCamera extends Component { }

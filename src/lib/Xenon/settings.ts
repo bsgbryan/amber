@@ -4,13 +4,34 @@ export class VPM {
   static FarPlane    = 2000
 }
 
-export class Input {
-  static AxisDeadZone                  =   .1
-  static HorizontalLookSpeedMultiplier = 85
-  static VerticalLookSpeedMultiplier   = 65
-  static XMovementSpeedMultiplier      =  5
-  static YMovementSpeedMultiplier      =  5
-  static ZMovementSpeedMultiplier      =  5
+export const Input = {
+  DeadZone: {
+    X: .1,
+    Y: .1,
+  },
+  AxisDeadZone: .1,
+  Look: {
+    X: {
+      Multiplier: 85
+    },
+    Y: {
+      Multiplier: 85
+    },
+    Z: {
+      Multiplier: 85
+    },
+  },
+  Move: {
+    X: {
+      Multiplier: 5
+    },
+    Y: {
+      Multiplier: 5
+    },
+    Z: {
+      Multiplier: 5
+    },
+  },
 }
 
 export class Camera {
