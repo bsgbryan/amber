@@ -30,3 +30,11 @@
 👽: You got it!
 
 🤓: Radical
+
+# Please Note
+
+_Xenon is still very much a baby_
+
+_Everything described above are goals; they're not implemented yet_
+
+_Xenon'll get there - they just need time_ 😊
