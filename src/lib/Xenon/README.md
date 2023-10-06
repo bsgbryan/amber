@@ -1,4 +1,4 @@
-# 👽: Greetings, fellow developer
+# 👽: Greetings, developer
 
 👽: Nice to meet you!<br>
 👽: I am a modern, performant, procedural real-time simulation engine

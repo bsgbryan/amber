@@ -9,18 +9,18 @@ import { vpm } from "./helpers"
 
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
-  static #device?: GPUDevice = undefined
-  static #format?: GPUTextureFormat = undefined
-  static #target?: HTMLCanvasElement = undefined
+  static #device?:  GPUDevice               = undefined
+  static #format?:  GPUTextureFormat        = undefined
+  static #target?:  HTMLCanvasElement       = undefined
 
-  static #buffers: Array<GPUBuffer> = []
+  static #buffers:          Array<GPUBuffer> = []
   static #color_attachment: Array<GPURenderPassColorAttachment> = []
 
-  static #depth_stencil?: GPURenderPassDepthStencilAttachment = undefined
-  static #render_pipeline?: GPURenderPipeline = undefined
+  static #depth_stencil?:   GPURenderPassDepthStencilAttachment = undefined
+  static #render_pipeline?: GPURenderPipeline                   = undefined
 
-  static #camera_matrix_bind_group?: GPUBindGroup
-  static #camera_matrix_buffer?: GPUBuffer
+  static #camera_matrix_bind_group?:        GPUBindGroup
+  static #camera_matrix_buffer?:            GPUBuffer
   static #camera_matrix_buffer_description: GPUBufferDescriptor = {
     size: 64,
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
@@ -259,6 +259,8 @@ export default class Xenon {
   static tick(last_tick: number): void {
     requestAnimationFrame(() => {
       this.#vertices = 0
+      // TODO Implement environment scaling here (scaling delta_seconds, etc)
+      // TODO Implement input capture here
       this.#ecs.update((performance.now() - last_tick) * .001)
 
       Xenon.render()
