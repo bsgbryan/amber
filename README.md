@@ -20,18 +20,6 @@ Amber is built from a few pieces:
 
 # Xenon
 
-[Xenon](./src/lib/Xenon) is Amber's core; an extremely efficient, simple game engine.
+[Xenon](./src/lib/Xenon) is Amber's core; an extremely efficient, unique game engine.
 
 Xenon uses the [ECS](https://en.wikipedia.org/wiki/Entity_component_system) design pattern.
-
-# A tale of two Xenons
-
-There are two "versions" of Xenon; one written in TypeScript, and one written in Rust.
-
-The TypeScript implementation of Xenon is what's included in this repo for now. It's what I'm using to prototype - as I'm much more familiar with JavaScript/TypeScript than I am Rust.
-
-Once functionality is implmented in a way I'm happy with in the TypeScript version of Xenon, it will be ported to the Rust version of Xenon.
-
-My goal is that, eventually, Amber will use the Rust version of Xenon compiled to WebAssembly.
-
-The Rust version of Xenon is also what HOS will use.
