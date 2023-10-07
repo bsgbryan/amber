@@ -34,15 +34,35 @@ type MovementSettings = {
 
 type GamePadSetting = {
   Rotation: RotationSettings
-  Movement: MovementSettings
+  Movement: MovementSettings & {
+    ActiveThreshhold: number
+  }
 }
 
 type KeyboardSettings = {
   Rotation: RotationSettings
-  Movement: MovementSettings
+  Movement: MovementSettings & {
+    Bindings: {
+      Backward: string
+      Forward:  string
+      Left:     string
+      Right:    string
+    }
+  }
+}
+
+type MouseSettings = {
+  Rotation: {
+    X: HasMultiplier
+    Y: HasMultiplier
+  }
 }
 
 export type InputSettings = {
   GamePad:  GamePadSetting
   Keyboard: KeyboardSettings
+  Mouse:    MouseSettings
 }
+
+export type MovementMode = 'GamePad' | 'Keyboard'
+export type RotationMode = MovementMode | 'Mouse'

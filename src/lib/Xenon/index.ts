@@ -6,6 +6,7 @@ import Legion, {
 import { Entity } from "../Legion/types"
 
 import { vpm } from "./helpers"
+import InputManager from "./managers/Input"
 
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
@@ -40,6 +41,15 @@ export default class Xenon {
   static async init(render_target: string) {
     this.#target = document.getElementById(render_target) as HTMLCanvasElement
 
+    this.#target.addEventListener('click', async () => {
+      if (!document.pointerLockElement) {
+        // @ts-ignore
+        await this.#target.requestPointerLock({
+          unadjustedMovement: true,
+        })
+      }
+    });
+
     const adapter = await navigator.gpu.requestAdapter()
     if (!adapter) throw new Error('No appropriate GPUAdapter found.')
 
@@ -73,6 +83,8 @@ export default class Xenon {
       )
 
       resize_observer.observe(document.querySelector('html'))
+
+      InputManager.init()
     }
     else throw new Error('Unable to get WebGPU context')
   }
