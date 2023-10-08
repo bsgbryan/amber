@@ -5,7 +5,7 @@ import Xenon from ".."
 
 import Geometry from "../components/Geometry"
 
-export default class RefreshGeometry extends System {
+export default class Refresh_Geometry extends System {
   componentsRequired = new Set<Function>([Geometry]);
 
   update(entities: Set<Entity>): void {

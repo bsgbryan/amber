@@ -14,7 +14,7 @@ import Finesse    from "../../Finesse"
 import MainCamera from "../components/MainCamera"
 import Position   from "../components/Position"
 
-export default class MainCameraManager extends System {
+export default class Update_MainCamera_Position_and_LookDirection extends System {
   componentsRequired = new Set<Function>([Position, MainCamera]);
 
   update(entities: Set<Entity>, delta_seconds: number): void {

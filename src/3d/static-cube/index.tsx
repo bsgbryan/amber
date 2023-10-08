@@ -15,8 +15,8 @@ import Geometry   from "../../lib/Xenon/components/Geometry"
 import MainCamera from "../../lib/Xenon/components/MainCamera"
 import Position   from "../../lib/Xenon/components/Position"
 
-import RefreshGeometry   from "../../lib/Xenon/systems/RefreshGeometry"
-import MainCameraManager from "../../lib/Xenon/systems/MainCameraManager"
+import Refresh_Geometry                              from "../../lib/Xenon/systems/Refresh_Geometry"
+import Update_MainCamera_Position_and_LookDirection from "../../lib/Xenon/systems/Update_MainCamera_Position_and_LookDirection"
 
 import SimpleVertexColor from "./materials/SimpleVertexColor"
 
@@ -33,8 +33,8 @@ const StaticCube: Component = () => {
     const position = new Position(0, 2, -10)
     const material = new SimpleVertexColor()
 
-    const register_geometry   = new RefreshGeometry()
-    const main_camera_manager = new MainCameraManager()
+    const register_geometry   = new Refresh_Geometry()
+    const main_camera_manager = new Update_MainCamera_Position_and_LookDirection()
 
     Xenon.add_system(register_geometry)
     Xenon.add_system(main_camera_manager)
