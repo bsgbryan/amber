@@ -1,12 +1,14 @@
+import Finesse   from "../Finesse"
+
+import { Entity } from "../Legion/types"
 import Legion, {
   Component,
   System,
 } from "../Legion"
 
-import { Entity } from "../Legion/types"
+import TimeScale from "./resources/TimeScale"
 
-import { vpm } from "./helpers"
-import Finesse from "../Finesse"
+import { vpm }   from "./helpers"
 
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
@@ -85,6 +87,9 @@ export default class Xenon {
       resize_observer.observe(document.querySelector('html'))
 
       Finesse.init()
+
+      // NOTE Uncomment for debugging
+      // TimeScale.transition_to(.5, 5000)
     }
     else throw new Error('Unable to get WebGPU context')
   }
@@ -268,17 +273,25 @@ export default class Xenon {
     this.tick(performance.now())
   }
 
+  static scale_environment(delta_seconds: number): number {
+    return delta_seconds * TimeScale.value
+  }
+
   static tick(last_tick: number): void {
     requestAnimationFrame(() => {
-      this.#vertices = 0
-      // TODO Implement environment scaling here (scaling delta_seconds, etc)
-      // TODO Implement input capture here
-      this.#ecs.update((performance.now() - last_tick) * .001)
+      const unscaled_delta_seconds = (performance.now() - last_tick) * .001
 
-      try {
-        Xenon.render()
-      }
+      this.#vertices = 0
+
+      const scaled_delta_seconds = Xenon.scale_environment(unscaled_delta_seconds)
+
+      // TODO Implement input capture here
+
+      this.#ecs.update(scaled_delta_seconds)
+
+      try       { Xenon.render() }
       catch (e) { console.error(`Error thrown during render: ${e}`)}
+
       Xenon.tick(performance.now())
     })
   }
