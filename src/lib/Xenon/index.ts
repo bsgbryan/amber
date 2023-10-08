@@ -6,7 +6,7 @@ import Legion, {
 import { Entity } from "../Legion/types"
 
 import { vpm } from "./helpers"
-import InputManager from "./managers/Input"
+import Finesse from "../Finesse"
 
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
@@ -84,7 +84,7 @@ export default class Xenon {
 
       resize_observer.observe(document.querySelector('html'))
 
-      InputManager.init()
+      Finesse.init()
     }
     else throw new Error('Unable to get WebGPU context')
   }
@@ -275,7 +275,10 @@ export default class Xenon {
       // TODO Implement input capture here
       this.#ecs.update((performance.now() - last_tick) * .001)
 
-      Xenon.render()
+      try {
+        Xenon.render()
+      }
+      catch (e) { console.error(`Error thrown during render: ${e}`)}
       Xenon.tick(performance.now())
     })
   }

@@ -10,9 +10,9 @@ import {
   vec3,
 } from "../math"
 
-import InputManager from "../managers/Input"
-import MainCamera   from "../components/MainCamera"
-import Position     from "../components/Position"
+import Finesse    from "../../Finesse"
+import MainCamera from "../components/MainCamera"
+import Position   from "../components/Position"
 
 export default class MainCameraManager extends System {
   componentsRequired = new Set<Function>([Position, MainCamera]);
@@ -22,8 +22,8 @@ export default class MainCameraManager extends System {
     if (entities.size >   1) throw new Error('Cannot have more than 1 main camera')
   
     const position = this.ecs.getComponents(entities.values().next().value).get(Position)
-    const movement = InputManager.movement(delta_seconds)
-    const rotation = InputManager.rotation(delta_seconds)
+    const movement = Finesse.movement(delta_seconds)
+    const rotation = Finesse.rotation(delta_seconds)
 
     const q       = quat.from_axis_angle(Vector.Up, degrees_to_radians(rotation.y))
     const rotated = quat.rotate(new Float32Array([movement.x, 0, movement.z]), q)
