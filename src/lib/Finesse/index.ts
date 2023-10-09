@@ -12,16 +12,27 @@ import KeyboardMovementProcessor from "./input_processors/movement/Keyboard"
 import GamePadRotationProcessor from "./input_processors/rotation/GamePad"
 import MouseRotationProcessor   from "./input_processors/rotation/Mouse"
 
-export default class InputManager {
+export default class Finesse {
   static #moved:   MovementAxes = { x: 0, z: 0 }
   static #rotated: RotationAxes = { x: 0, y: 0 }
 
-  static init() {
+  static init(target = 'main-render-target') {
+    const context = document.getElementById(target)
+
+    context.addEventListener('click', async () => {
+      if (!document.pointerLockElement) {
+        // @ts-ignore
+        await context.requestPointerLock({
+          unadjustedMovement: true,
+        })
+      }
+    })
+
     KeyboardMovementProcessor.init()
     MouseRotationProcessor.init()
   }
 
-  static capture(): void {
+  static update(): void {
     this.#moved   = this.#movement_processor.value
     this.#rotated = this.#rotation_processor.value
   }

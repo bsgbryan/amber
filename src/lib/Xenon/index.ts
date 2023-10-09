@@ -1,10 +1,7 @@
 import Finesse   from "../Finesse"
-import Kali      from "../Kali"
-import Legion    from "../Legion"
 import Yggdrasil from "../Yggdrasil"
 
 import { vpm } from "./helpers"
-
 
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
@@ -34,17 +31,8 @@ export default class Xenon {
 
   static #vertices = 0
 
-  static async init(render_target: string) {
+  static async init(render_target = 'main-render-target') {
     this.#target = document.getElementById(render_target) as HTMLCanvasElement
-
-    this.#target.addEventListener('click', async () => {
-      if (!document.pointerLockElement) {
-        // @ts-ignore
-        await this.#target.requestPointerLock({
-          unadjustedMovement: true,
-        })
-      }
-    });
 
     const adapter = await navigator.gpu.requestAdapter()
     if (!adapter) throw new Error('No appropriate GPUAdapter found.')
@@ -81,9 +69,6 @@ export default class Xenon {
       resize_observer.observe(document.querySelector('html'))
 
       Finesse.init()
-
-      // NOTE Uncomment for debugging
-      // TimeScale.transition_to(.5, 5000)
     }
     else throw new Error('Unable to get WebGPU context')
   }
@@ -224,7 +209,7 @@ export default class Xenon {
   }
 
   static render() {
-    const start = performance.now()
+    Yggdrasil.start_phase('render')
 
     this.#color_attachment[0].view = this.#context.getCurrentTexture().createView()
 
@@ -255,34 +240,9 @@ export default class Xenon {
     renderPass.end()
 
     this.#device.queue.submit([commandEncoder.finish()])
+  
+    this.#vertices = 0
 
-    Yggdrasil.record_phase('render', performance.now() - start)
-  }
-
-  static run(): void {
-    this.tick()
-
-    // setInterval(() => {
-    //   // console.log(`ecs: ${Yggdrasil.phase_fidelity('ecs')}`)
-    //   // console.log(`render: ${Yggdrasil.phase_fidelity('render')}`)
-    //   console.log(`total:${Yggdrasil.fidelity}`)
-    // }, 250)
-  }
-
-  static tick(): void {
-    requestAnimationFrame(() => {
-      Kali.update()
-
-      this.#vertices = 0
-
-      Finesse.capture()
-
-      Legion.update()
-
-      try       { Xenon.render() }
-      catch (e) { console.error(`Error thrown during render: ${e}`)}
-
-      Xenon.tick()
-    })
+    Yggdrasil.complete_phase('render')
   }
 }

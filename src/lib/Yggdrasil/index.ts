@@ -3,15 +3,26 @@ export default class Yggdrasil {
   static #fps_target        = 60
 
   static #sample_size = 15
+
+  static #overall_fidelity              = 0
+  static #phase_fidelity: PhaseFidelity = {
+    ecs:    0,
+    render: 0,
+  }
   
   static #times: TimeDictionary = {
     ecs:    new Float32Array(15),
     render: new Float32Array(15),
   }
   
-  static #index = {
+  static #index: IndexDictionary = {
     ecs:    0,
     render: 0,
+  }
+  
+  static #starts: PhaseDictionary = {
+    ecs:    new Float32Array(15),
+    render: new Float32Array(15),
   }
 
   static set fps(target: number) {
@@ -24,29 +35,43 @@ export default class Yggdrasil {
     this.#times.render = new Float32Array(this.#sample_size)
   }
 
-  static record_phase(name: Phase, time: number): void {
-    this.#times[name][this.#index[name]++ % this.#sample_size] = time
+  static start_phase(name: Phase): void {
+    this.#starts[name][this.#index[name]] = performance.now()
   }
 
-  static get fidelity(): number {
-    let sum   = 0
-    let count = 0
+  static #calculate_fidelity(): void {
+    const phases      = Object.keys(this.#times)
+    let   overall_sum = 0
 
-    for (const p of Object.keys(this.#times))
-      // @ts-ignore
-      for (const t of this.#times[p]) {
-        sum += t
-        count++
-      }
+    for (const p of phases) {
+      let sum = 0
 
-    return this.#frame_time_budget / (sum / count)
+      for (const t of this.#times[p]) sum += t
+
+      this.#phase_fidelity[p] = this.#frame_time_budget / (sum / this.#times[p].length)
+
+      overall_sum += sum
+    }
+
+    this.#overall_fidelity = this.#frame_time_budget / (overall_sum / phases.length)
   }
 
-  static phase_fidelity(phase: Phase): number {
-    let sum = 0
+  static complete_phase(name: Phase): void {
+    const i = this.#index[name] % this.#sample_size
 
-    for (const t of this.#times[phase]) sum += t
+    this.#times[name][i] = performance.now() - this.#starts[name][i]
 
-    return this.#frame_time_budget / (sum / this.#times[phase].length)
+    if (++this.#index[name] === this.#sample_size) {
+      this.#index[name] = 0
+
+      this.#calculate_fidelity()
+    }
+  }
+
+  static get fidelity(): Fidelity {
+    return {
+      overall: this.#overall_fidelity,
+      ...this.#phase_fidelity,
+    }
   }
 }

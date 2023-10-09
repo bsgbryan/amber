@@ -124,7 +124,8 @@ export default class Legion {
    * for removal.
    */
   static update(): void {
-    const start = performance.now()
+    Yggdrasil.start_phase('ecs')
+
     // Update all systems. (Later, we'll add a way to specify the
     // update order.)
     for (let [system, entities] of this.#systems.entries())
@@ -135,7 +136,7 @@ export default class Legion {
     while (this.#entities_to_destroy.length > 0)
       this.#destroy_entity(this.#entities_to_destroy.pop())
 
-    Yggdrasil.record_phase('ecs', performance.now() - start)
+    Yggdrasil.complete_phase('ecs')
   }
 
   static #destroy_entity(entity: Entity): void {

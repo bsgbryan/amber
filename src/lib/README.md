@@ -8,6 +8,8 @@ Hi there! Thanks for checking the project out; and reading this documentation! ð
   _Example exception: Xenon's math helpers have semicolons in a few places because it makes reading the code easier_
 * snake_casing for methods/variable names
 * HaskellCase for class/type names
+* No curly braces for single-line `for`, `if`/`else`, or `while` statements
+* No parentheses for single-parameter arrow functions
 * **absolutely no use of the any/unkown types**<br>
   _Seriously, it is not allowed_
 * Each module is a static class<br>

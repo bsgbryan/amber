@@ -3,8 +3,9 @@ import {
   createEffect,
 } from "solid-js"
 
-import Legion from "../lib/Legion"
-import Xenon  from "../lib/Xenon"
+import Eunomia from "../lib/Eunomia"
+import Legion  from "../lib/Legion"
+import Xenon   from "../lib/Xenon"
 
 import Geometry   from "../lib/Xenon/components/Geometry"
 import MainCamera from "../lib/Xenon/components/MainCamera"
@@ -19,7 +20,7 @@ import { positions } from "./data"
 
 const TestScene: Component = () => {
   createEffect(async () => {
-    await Xenon.init('main-render-target')
+    await Xenon.init()
 
     const cube   = Legion.add_entity()
     const camera = Legion.add_entity()
@@ -39,7 +40,7 @@ const TestScene: Component = () => {
     Legion.add_component(camera, position)
     Legion.add_component(camera, new MainCamera())
 
-    Xenon.run()
+    Eunomia.update()
   })
 
   return <canvas id="main-render-target" />
