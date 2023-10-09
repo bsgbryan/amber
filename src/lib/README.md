@@ -14,9 +14,9 @@ Hi there! Thanks for checking the project out; and reading this documentation! ð
   _This makes using each module easier by minimizing and more clearly defining the api boundaries between them; also, there's no need to pass instances/references all over the place_
 * Follow the [Single Responsilibity Principle](https://en.wikipedia.org/wiki/Single-responsibility_principle):<br>
   * [Finesse](./Finesse) just does input processing
-  * [Kali](./Kali) only does time-related things
-  * [Legion](./Legion) is just ECS stuff
-  * [Xenon](./Xenon) only handles rendering
+  * [Kali](./Kali) only handles time-related things
+  * [Legion](./Legion) solely manages the ECS state
+  * [Xenon](./Xenon) only does rendering
   * [Yggdrasil](./Yggdrasil) just manages simulation fidelity
 
 # A tale of two projects
