@@ -15,6 +15,7 @@ Hi there! Thanks for checking the project out; and reading this documentation! ð
 * Each module is a static class<br>
   _This makes using each module easier by minimizing and more clearly defining the api boundaries between them; also, there's no need to pass instances/references all over the place_
 * Follow the [Single Responsilibity Principle](https://en.wikipedia.org/wiki/Single-responsibility_principle):<br>
+  * [Eunomia](./Eunomia) maintains order; that's it
   * [Finesse](./Finesse) just does input processing
   * [Kali](./Kali) only handles time-related things
   * [Legion](./Legion) solely manages the ECS state
