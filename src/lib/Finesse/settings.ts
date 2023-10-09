@@ -8,6 +8,7 @@ const multiplier = {
 const limit = multiplier.rotation
 
 const rotation = {
+  ActiveThreshhold: dead_zone,
   X: {
     DeadZone:   dead_zone,
     Multiplier: multiplier.rotation,
@@ -24,6 +25,7 @@ const rotation = {
 }
 
 const movement = {
+  ActiveThreshhold: dead_zone,
   X: {
     DeadZone:  dead_zone,
     Multiplier: multiplier.movement,
@@ -47,7 +49,6 @@ const Settings: InputSettings = {
     ...defaults,
     Movement: {
       ...defaults.Movement,
-      ActiveThreshhold: dead_zone,
     }
   },
   Keyboard: {
@@ -69,6 +70,7 @@ const Settings: InputSettings = {
       },
       Y: {
         Multiplier: 5,
+        Limit:      limit,
       }
     }
   }

@@ -12,31 +12,31 @@ type HasMultiplier = {
   Multiplier: number
 }
 
-type HasMultiplierAndHeadZone = HasMultiplier & {
+type HasMultiplierAndDeadZone = HasMultiplier & {
   DeadZone: number
 }
 
-type HasMultiplierAndHeadZoneAndLimit = HasMultiplierAndHeadZone & {
+type HasMultiplierAndHeadZoneAndLimit = HasMultiplierAndDeadZone & {
   Limit: number
 }
 
-type RotationSettings = {
-  X: HasMultiplierAndHeadZone
-  Y: HasMultiplierAndHeadZoneAndLimit
-  Z: HasMultiplierAndHeadZone
+type CoreSettings = {
+  ActiveThreshhold: number
+  X:                HasMultiplierAndDeadZone
+  Z:                HasMultiplierAndDeadZone
 }
 
-type MovementSettings = {
-  X: HasMultiplierAndHeadZone
+type RotationSettings = CoreSettings & {
+  Y: HasMultiplierAndHeadZoneAndLimit
+}
+
+type MovementSettings = CoreSettings &{
   Y: HasMultiplier
-  Z: HasMultiplierAndHeadZone
 }
 
 type GamePadSetting = {
   Rotation: RotationSettings
-  Movement: MovementSettings & {
-    ActiveThreshhold: number
-  }
+  Movement: MovementSettings
 }
 
 type KeyboardSettings = {
@@ -54,7 +54,9 @@ type KeyboardSettings = {
 type MouseSettings = {
   Rotation: {
     X: HasMultiplier
-    Y: HasMultiplier
+    Y: HasMultiplier & {
+      Limit: number
+    }
   }
 }
 

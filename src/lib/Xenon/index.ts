@@ -10,6 +10,8 @@ import TimeScale from "./resources/TimeScale"
 
 import { vpm }   from "./helpers"
 
+import { DeltaTime } from "./types"
+
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
   static #device?:  GPUDevice               = undefined
@@ -39,6 +41,9 @@ export default class Xenon {
   }
 
   static #vertices = 0
+
+  static #scaled_delta_seconds   = 0
+  static #unscaled_delta_seconds = 0
 
   static async init(render_target: string) {
     this.#target = document.getElementById(render_target) as HTMLCanvasElement
@@ -273,26 +278,35 @@ export default class Xenon {
     this.tick(performance.now())
   }
 
-  static scale_environment(delta_seconds: number): number {
-    return delta_seconds * TimeScale.value
+  static scale_environment(last_tick: number) {
+    const unscaled_delta_seconds = (performance.now() - last_tick) * .001
+    const scaled_delta_seconds   = unscaled_delta_seconds * TimeScale.value
+
+    this.#scaled_delta_seconds   = scaled_delta_seconds
+    this.#unscaled_delta_seconds = unscaled_delta_seconds
   }
 
   static tick(last_tick: number): void {
     requestAnimationFrame(() => {
-      const unscaled_delta_seconds = (performance.now() - last_tick) * .001
+      Xenon.scale_environment(last_tick)
 
       this.#vertices = 0
 
-      const scaled_delta_seconds = Xenon.scale_environment(unscaled_delta_seconds)
-
       // TODO Implement input capture here
 
-      this.#ecs.update(scaled_delta_seconds)
+      this.#ecs.update()
 
       try       { Xenon.render() }
       catch (e) { console.error(`Error thrown during render: ${e}`)}
 
       Xenon.tick(performance.now())
     })
+  }
+
+  static get delta_seconds(): DeltaTime {
+    return {
+      scaled:   this.#scaled_delta_seconds,
+      unscaled: this.#unscaled_delta_seconds
+    }
   }
 }

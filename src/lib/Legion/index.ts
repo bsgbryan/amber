@@ -11,7 +11,7 @@ export abstract class Component { }
 
 export abstract class System {
   abstract componentsRequired: Set<Function>
-  abstract update(entities: Set<Entity>, delta_seconds: number): void
+  abstract update(entities: Set<Entity>): void
 
   ecs: Legion
 }
@@ -134,11 +134,11 @@ export default class Legion {
    * updates all Systems, then destroys any Entities that were marked
    * for removal.
    */
-  update(delta_seconds: number): void {
+  update(): void {
     // Update all systems. (Later, we'll add a way to specify the
     // update order.)
     for (let [system, entities] of this.#systems.entries()) {
-      system.update(entities, delta_seconds)
+      system.update(entities)
     }
 
     // Remove any entities that were marked for deletion during the
