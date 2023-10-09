@@ -1,8 +1,8 @@
-import { VertexBufferLayout } from "../../../lib/Xenon/helpers"
+import { VertexBufferLayout } from "../../lib/Xenon/helpers"
 
-import { Component } from "../../../lib/Legion"
+import { Component } from "../../lib/Legion"
 
-import Xenon from "../../../lib/Xenon"
+import Xenon from "../../lib/Xenon"
 
 import vertex   from '../shaders/vertex.wgsl?raw'
 import fragment from '../shaders/fragment.wgsl?raw'

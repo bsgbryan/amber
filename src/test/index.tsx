@@ -3,20 +3,14 @@ import {
   createEffect,
 } from "solid-js"
 
-import Xenon from "../../lib/Xenon"
-import {
-  Vector,
-  degrees_to_radians,
-  quat,
-  vec3,
-} from "../../lib/Xenon/math"
+import Xenon from "../lib/Xenon"
 
-import Geometry   from "../../lib/Xenon/components/Geometry"
-import MainCamera from "../../lib/Xenon/components/MainCamera"
-import Position   from "../../lib/Xenon/components/Position"
+import Geometry   from "../lib/Xenon/components/Geometry"
+import MainCamera from "../lib/Xenon/components/MainCamera"
+import Position   from "../lib/Xenon/components/Position"
 
-import Refresh_Geometry                              from "../../lib/Xenon/systems/Refresh_Geometry"
-import Update_MainCamera_Position_and_LookDirection from "../../lib/Xenon/systems/Update_MainCamera_Position_and_LookDirection"
+import Refresh_Geometry                             from "../lib/Xenon/systems/Refresh_Geometry"
+import Update_MainCamera_Position_and_LookDirection from "../lib/Xenon/systems/Update_MainCamera_Position_and_LookDirection"
 
 import SimpleVertexColor from "./materials/SimpleVertexColor"
 

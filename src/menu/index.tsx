@@ -11,7 +11,7 @@ const Menu: Component = () => {
     </header>
     <main class={styles.main}>
       <A href="/life">Game of Life</A>
-      <A href="/3d/static-cube">3D Static Cube</A>
+      <A href="/test">Test/Debug scene</A>
     </main>
   </>
 }
