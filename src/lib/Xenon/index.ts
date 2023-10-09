@@ -1,11 +1,5 @@
 import Finesse   from "../Finesse"
-
-import { Entity } from "../Legion/types"
-import Legion, {
-  Component,
-  System,
-} from "../Legion"
-
+import Legion    from "../Legion"
 import Yggdrasil from "../Yggdrasil"
 
 import TimeScale from "./resources/TimeScale"
@@ -32,8 +26,6 @@ export default class Xenon {
     size: 64,
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
   }
-
-  static #ecs: Legion = new Legion()
 
   static #render_target?: GPUTexture
 
@@ -272,14 +264,6 @@ export default class Xenon {
     Yggdrasil.record_phase('render', performance.now() - start)
   }
 
-  static new_entity(): Entity { return this.#ecs.addEntity() }
-
-  static remove_entity(id: Entity): void { this.#ecs.removeEntity(id) }
-
-  static add_component(id: Entity, comp: Component): void { this.#ecs.addComponent(id, comp) }
-
-  static add_system(s: System): void { this.#ecs.addSystem(s) }
-
   static run(): void {
     this.tick(performance.now())
 
@@ -306,7 +290,7 @@ export default class Xenon {
 
       Finesse.capture()
 
-      this.#ecs.update()
+      Legion.update()
 
       try       { Xenon.render() }
       catch (e) { console.error(`Error thrown during render: ${e}`)}

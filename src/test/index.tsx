@@ -3,7 +3,8 @@ import {
   createEffect,
 } from "solid-js"
 
-import Xenon from "../lib/Xenon"
+import Legion from "../lib/Legion"
+import Xenon  from "../lib/Xenon"
 
 import Geometry   from "../lib/Xenon/components/Geometry"
 import MainCamera from "../lib/Xenon/components/MainCamera"
@@ -16,12 +17,12 @@ import SimpleVertexColor from "./materials/SimpleVertexColor"
 
 import { positions } from "./data"
 
-const StaticCube: Component = () => {
+const TestScene: Component = () => {
   createEffect(async () => {
     await Xenon.init('main-render-target')
 
-    const cube   = Xenon.new_entity()
-    const camera = Xenon.new_entity()
+    const cube   = Legion.add_entity()
+    const camera = Legion.add_entity()
 
     const geometry = new Geometry(positions)
     const position = new Position(0, 2, -10)
@@ -30,13 +31,13 @@ const StaticCube: Component = () => {
     const register_geometry   = new Refresh_Geometry()
     const main_camera_manager = new Update_MainCamera_Position_and_LookDirection()
 
-    Xenon.add_system(register_geometry)
-    Xenon.add_system(main_camera_manager)
+    Legion.add_system(register_geometry)
+    Legion.add_system(main_camera_manager)
 
-    Xenon.add_component(cube,   geometry)
-    Xenon.add_component(cube,   material)
-    Xenon.add_component(camera, position)
-    Xenon.add_component(camera, new MainCamera())
+    Legion.add_component(cube,   geometry)
+    Legion.add_component(cube,   material)
+    Legion.add_component(camera, position)
+    Legion.add_component(camera, new MainCamera())
 
     Xenon.run()
   })
@@ -44,4 +45,4 @@ const StaticCube: Component = () => {
   return <canvas id="main-render-target" />
 }
 
-export default StaticCube
+export default TestScene

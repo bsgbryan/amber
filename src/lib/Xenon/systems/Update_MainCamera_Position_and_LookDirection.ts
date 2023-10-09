@@ -1,5 +1,5 @@
 import { Entity } from "../../Legion/types"
-import { System } from "../../Legion"
+import Legion, { System } from "../../Legion"
 
 import Xenon from ".."
 
@@ -15,13 +15,13 @@ import MainCamera from "../components/MainCamera"
 import Position   from "../components/Position"
 
 export default class Update_MainCamera_Position_and_LookDirection extends System {
-  componentsRequired = new Set<Function>([Position, MainCamera]);
+  components_required = new Set<Function>([Position, MainCamera]);
 
   update(entities: Set<Entity>): void {
     if (entities.size === 0) throw new Error('Must have a main camera')
     if (entities.size >   1) throw new Error('Cannot have more than 1 main camera')
   
-    const position = this.ecs.getComponents(entities.values().next().value).get(Position)
+    const position = Legion.get_components(entities.values().next().value).get(Position)
     const movement = Finesse.movement
     const rotation = Finesse.rotation
 
