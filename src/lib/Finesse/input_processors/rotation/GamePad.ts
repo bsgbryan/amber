@@ -1,4 +1,4 @@
-import Xenon from "../../../Xenon"
+import Kali from "../../../Kali"
 
 import Input from "../../settings"
 
@@ -30,14 +30,14 @@ export default class GamePad extends RotationInputProcessor {
     super.process_x_rotation(
      'GamePad',
       this.#input.x,
-      Xenon.delta_seconds.unscaled,
+      Kali.delta_seconds.unscaled,
       Input.GamePad.Rotation.X.DeadZone,
     )
 
     super.process_y_rotation(
      'GamePad',
       this.#input.y,
-      Xenon.delta_seconds.unscaled,
+      Kali.delta_seconds.unscaled,
       Input.GamePad.Rotation.Y.DeadZone,
     )
 

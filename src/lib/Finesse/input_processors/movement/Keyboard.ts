@@ -1,4 +1,4 @@
-import Xenon from "../../../Xenon"
+import Kali from "../../../Kali"
 import Input from "../../settings"
 import { MovementAxes } from "../../types"
 
@@ -83,12 +83,12 @@ export default class Keyboard extends MovementInputProcessor {
       x: this.process_x_movement(
         'Keyboard',
         x_input,
-        Xenon.delta_seconds.unscaled
+        Kali.delta_seconds.unscaled
       ),
       z: this.process_z_movement(
         'Keyboard',
         z_input,
-        Xenon.delta_seconds.unscaled
+        Kali.delta_seconds.unscaled
       ),
     }
   }

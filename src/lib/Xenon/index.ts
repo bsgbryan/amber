@@ -1,12 +1,10 @@
 import Finesse   from "../Finesse"
+import Kali      from "../Kali"
 import Legion    from "../Legion"
 import Yggdrasil from "../Yggdrasil"
 
-import TimeScale from "./resources/TimeScale"
-
 import { vpm } from "./helpers"
 
-import { DeltaTime } from "./types"
 
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
@@ -35,9 +33,6 @@ export default class Xenon {
   }
 
   static #vertices = 0
-
-  static #scaled_delta_seconds   = 0
-  static #unscaled_delta_seconds = 0
 
   static async init(render_target: string) {
     this.#target = document.getElementById(render_target) as HTMLCanvasElement
@@ -265,7 +260,7 @@ export default class Xenon {
   }
 
   static run(): void {
-    this.tick(performance.now())
+    this.tick()
 
     // setInterval(() => {
     //   // console.log(`ecs: ${Yggdrasil.phase_fidelity('ecs')}`)
@@ -274,17 +269,9 @@ export default class Xenon {
     // }, 250)
   }
 
-  static scale_environment(last_tick: number) {
-    const unscaled_delta_seconds = (performance.now() - last_tick) * .001
-    const scaled_delta_seconds   = unscaled_delta_seconds * TimeScale.value
-
-    this.#scaled_delta_seconds   = scaled_delta_seconds
-    this.#unscaled_delta_seconds = unscaled_delta_seconds
-  }
-
-  static tick(last_tick: number): void {
+  static tick(): void {
     requestAnimationFrame(() => {
-      Xenon.scale_environment(last_tick)
+      Kali.update()
 
       this.#vertices = 0
 
@@ -295,14 +282,7 @@ export default class Xenon {
       try       { Xenon.render() }
       catch (e) { console.error(`Error thrown during render: ${e}`)}
 
-      Xenon.tick(performance.now())
+      Xenon.tick()
     })
-  }
-
-  static get delta_seconds(): DeltaTime {
-    return {
-      scaled:   this.#scaled_delta_seconds,
-      unscaled: this.#unscaled_delta_seconds
-    }
   }
 }

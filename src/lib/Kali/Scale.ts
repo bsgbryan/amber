@@ -24,7 +24,6 @@ export default class TimeScale {
     value:             number,
     over_milliseconds: number,
   ): void {
-    console.log('hello?')
     this.#initiated = performance.now()
     this.#span      = over_milliseconds
     this.#target    = value

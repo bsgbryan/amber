@@ -1,4 +1,4 @@
-import Xenon from "../../../Xenon"
+import Kali from "../../../Kali"
 
 import Input from "../../settings"
 
@@ -31,13 +31,13 @@ export default class GamePad extends MovementInputProcessor {
       x: super.process_x_movement(
        'GamePad',
         this.#input.x,
-        Xenon.delta_seconds.unscaled,
+        Kali.delta_seconds.unscaled,
         Input.GamePad.Movement.X.DeadZone,
       ),
       z: super.process_z_movement(
        'GamePad',
         this.#input.y,
-        Xenon.delta_seconds.unscaled,
+        Kali.delta_seconds.unscaled,
         Input.GamePad.Movement.Z.DeadZone,
       ),
     }

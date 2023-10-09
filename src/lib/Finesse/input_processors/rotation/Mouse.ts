@@ -1,4 +1,4 @@
-import Xenon from "../../../Xenon"
+import Kali from "../../../Kali"
 
 import { RotationAxes } from "../../types"
 
@@ -44,13 +44,13 @@ export default class Keyboard extends RotationInputProcessor {
     super.process_x_rotation(
      'Mouse',
      -x_input,
-      Xenon.delta_seconds.unscaled,
+      Kali.delta_seconds.unscaled,
     )
 
     super.process_y_rotation(
      'Mouse',
       y_input,
-      Xenon.delta_seconds.unscaled,
+      Kali.delta_seconds.unscaled,
     )
 
     return super.rotation
