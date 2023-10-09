@@ -2,6 +2,8 @@
  * Code originally taken from https://maxwellforbes.com/posts/typescript-ecs-implementation/
  */
 
+import Yggdrasil from "../Yggdrasil"
+
 import {
   ComponentClass,
   Entity,
@@ -135,6 +137,7 @@ export default class Legion {
    * for removal.
    */
   update(): void {
+    const start = performance.now()
     // Update all systems. (Later, we'll add a way to specify the
     // update order.)
     for (let [system, entities] of this.#systems.entries()) {
@@ -146,6 +149,8 @@ export default class Legion {
     while (this.#entitiesToDestroy.length > 0) {
       this.#destroyEntity(this.#entitiesToDestroy.pop())
     }
+
+    Yggdrasil.record_phase('ecs', performance.now() - start)
   }
 
   // #methods for doing internal state checks and mutations.

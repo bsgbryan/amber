@@ -6,9 +6,11 @@ import Legion, {
   System,
 } from "../Legion"
 
+import Yggdrasil from "../Yggdrasil"
+
 import TimeScale from "./resources/TimeScale"
 
-import { vpm }   from "./helpers"
+import { vpm } from "./helpers"
 
 import { DeltaTime } from "./types"
 
@@ -235,6 +237,8 @@ export default class Xenon {
   }
 
   static render() {
+    const start = performance.now()
+
     this.#color_attachment[0].view = this.#context.getCurrentTexture().createView()
 
     this.#device.queue.writeBuffer(
@@ -264,6 +268,8 @@ export default class Xenon {
     renderPass.end()
 
     this.#device.queue.submit([commandEncoder.finish()])
+
+    Yggdrasil.record_phase('render', performance.now() - start)
   }
 
   static new_entity(): Entity { return this.#ecs.addEntity() }
@@ -276,6 +282,12 @@ export default class Xenon {
 
   static run(): void {
     this.tick(performance.now())
+
+    // setInterval(() => {
+    //   // console.log(`ecs: ${Yggdrasil.phase_fidelity('ecs')}`)
+    //   // console.log(`render: ${Yggdrasil.phase_fidelity('render')}`)
+    //   console.log(`total:${Yggdrasil.fidelity}`)
+    // }, 250)
   }
 
   static scale_environment(last_tick: number) {
