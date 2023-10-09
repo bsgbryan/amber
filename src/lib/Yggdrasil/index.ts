@@ -31,8 +31,10 @@ export default class Yggdrasil {
     
     this.#sample_size = Math.floor(this.#fps_target * .25)
 
-    this.#times.ecs    = new Float32Array(this.#sample_size)
-    this.#times.render = new Float32Array(this.#sample_size)
+    this.#times.ecs     = new Float32Array(this.#sample_size)
+    this.#times.render  = new Float32Array(this.#sample_size)
+    this.#starts.ecs    = new Float32Array(this.#sample_size)
+    this.#starts.render = new Float32Array(this.#sample_size)
   }
 
   static start_phase(name: Phase): void {
