@@ -255,7 +255,7 @@ export default class Xenon {
 
     renderPass.setPipeline(this.#render_pipeline)
 
-    // TODO Figure out how to handle registering and updating vertex buffers 🤔
+    // TODO Figure out how to handle registering and updating multiple vertex buffers 🤔
     // for (let i = 0; i < this.#buffers.length; i++)
     renderPass.setVertexBuffer(0, this.#buffers[0])
 
@@ -292,7 +292,7 @@ export default class Xenon {
 
       this.#vertices = 0
 
-      // TODO Implement input capture here
+      Finesse.capture()
 
       this.#ecs.update()
 
