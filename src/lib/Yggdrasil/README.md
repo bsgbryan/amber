@@ -1,3 +1,3 @@
-# Greetings and good itdings from Yggdrasil!
+# Greetings and good tidings from Yggdrasil!
 
 > TODO: Add more stuff
