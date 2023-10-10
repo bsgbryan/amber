@@ -15,7 +15,7 @@ What does that mean?
 
 * **[Athenaeum](./lib/Athenaeum):** A colleciton of super-useful things.
 * **[Eunomia](./lib/Eunomia):** Just a little thing that keeps the engine in good running order.
-* **[Finesse](./lib/Finesse):** Flexible, sensible, shockingly adept input handling.
+* **[Finesse](./lib/Finesse):** Flexible, sensible, shockingly-adept input handling.
 * **[Kali](./lib/Kali):** A tiny tool that makes scaling time in the engine as easy as a single method call.
 * **[Legion](./lib/src/lib/Legion):** An implementation of the [ECS](https://en.wikipedia.org/wiki/Entity_component_system) design pattern.
 * **Strata:** UI tooling. It's all of Amber's buttons, switches, dialogs, and stuff.
