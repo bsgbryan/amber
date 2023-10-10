@@ -20,4 +20,4 @@ What does that mean?
 * **[Legion](./lib/src/lib/Legion):** An implementation of the [ECS](https://en.wikipedia.org/wiki/Entity_component_system) design pattern.
 * **Strata:** UI tooling. It's all of Amber's buttons, switches, dialogs, and stuff.
 * **[Xenon](./lib/src/lib/Xenon):** A blisteringly-fast, elegant rendering engine.
-* **[Yggdrasil](./lib/Yggdrasil):** Manages all the FidelityTrees; ensuring the engine is always as peak perfomance, while hitting the [frame rate](https://www.ign.com/articles/2014/11/05/understanding-frame-rate-and-its-importance) target you specify.
+* **[Yggdrasil](./lib/Yggdrasil):** Manages all the FidelityTrees; ensuring the engine is always running at peak perfomance, while hitting the [frame rate](https://www.ign.com/articles/2014/11/05/understanding-frame-rate-and-its-importance) target you specify.
