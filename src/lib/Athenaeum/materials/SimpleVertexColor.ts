@@ -1,7 +1,7 @@
 import { InstancedVertexBufferLayout } from "../../Xenon/helpers"
 
-import vertex   from '../shaders/vertex.wgsl?raw'
-import fragment from '../shaders/fragment.wgsl?raw'
+import vertex   from '../shaders/vertex/PositionBasedGradient.wgsl?raw'
+import fragment from '../shaders/fragment/SingleColor.wgsl?raw'
 
 import Material from "./Material"
 
