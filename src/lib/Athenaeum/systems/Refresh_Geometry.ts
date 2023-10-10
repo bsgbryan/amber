@@ -3,7 +3,7 @@ import Legion, { System } from "../../Legion"
 
 import Xenon from ".."
 
-import Geometry from "../components/Geometry"
+import Geometry from "../../Athenaeum/components/Geometry"
 
 export default class Refresh_Geometry extends System {
   components_required = new Set<Function>([Geometry]);
@@ -17,6 +17,10 @@ export default class Refresh_Geometry extends System {
         geometry.buffer_index,
       )
 
+      Xenon.refresh_buffer(
+        new Float32Array([50, 50, 50, 50, 50, 50, 50, 50]),
+        1,
+      )
     }
   }
 }

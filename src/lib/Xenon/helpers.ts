@@ -7,14 +7,17 @@ import {
 
 import { VPM } from './settings'
 
-export const VertexBufferLayout = (
+export const InstancedVertexBufferLayout = (
   location: number,
+  stride:   number,
+  format:   GPUVertexFormat,
   offset = 0,
 ): GPUVertexBufferLayout => ({
-  arrayStride: 12,
+  arrayStride: stride,
+  stepMode: 'instance',
   attributes: [{
     shaderLocation: location,
-    format: 'float32x3',
+    format,
     offset,
   }]
 })

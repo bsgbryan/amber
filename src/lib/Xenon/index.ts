@@ -1,7 +1,13 @@
-import Finesse   from "../Finesse"
-import Yggdrasil from "../Yggdrasil"
+import MainCamera from "../Athenaeum/components/MainCamera"
+import Finesse    from "../Finesse"
+import Yggdrasil  from "../Yggdrasil"
 
-import { vpm } from "./helpers"
+import {
+  RenderPass,
+  ShaderBuffers,
+  ShadersSources,
+  ViewPort,
+} from "./types"
 
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
@@ -13,23 +19,41 @@ export default class Xenon {
   static #color_attachment: Array<GPURenderPassColorAttachment> = []
 
   static #depth_stencil?:   GPURenderPassDepthStencilAttachment = undefined
-  static #render_pipeline?: GPURenderPipeline                   = undefined
+  static #render_pipelines: Array<GPURenderPipeline>            = []
+  static #render_passes:    Array<RenderPass>                   = []
 
-  static #camera_matrix_bind_group?:        GPUBindGroup
-  static #camera_matrix_buffer?:            GPUBuffer
-  static #camera_matrix_buffer_description: GPUBufferDescriptor = {
-    size: 64,
-    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-  }
+  static #camera_matrix_bind_group?: GPUBindGroup
 
   static #render_target?: GPUTexture
 
-  static #main_camera = {
-    position: new Float32Array([0, 0, 0]),
-    target:   new Float32Array([0, 0, 1]),
+  static #main_camera: MainCamera
+
+  static #default_bind_group_layout:            GPUBindGroupLayout
+  static #default_bind_group_layout_descriptor: GPUBindGroupLayoutDescriptor
+
+  static #default_render_pipeline_layout: GPUPipelineLayout
+
+  static get viewport(): ViewPort {
+    return {
+      height: this.#target.height,
+      width:  this.#target.width,
+    }
   }
 
-  static #vertices = 0
+  static set main_camera(that: MainCamera) {
+    this.#main_camera = that
+  }
+
+  static create_buffer(descriptor: GPUBufferDescriptor): GPUBuffer {
+    return this.#device.createBuffer(descriptor)
+  }
+
+  static create_bind_group(entries: Array<GPUBindGroupEntry>): GPUBindGroup {
+    return this.#device.createBindGroup({
+      entries,
+      layout: this.#default_bind_group_layout,
+    })
+  }
 
   static async init(render_target = 'main-render-target') {
     this.#target = document.getElementById(render_target) as HTMLCanvasElement
@@ -69,6 +93,22 @@ export default class Xenon {
       resize_observer.observe(document.querySelector('html'))
 
       Finesse.init()
+
+      this.#default_bind_group_layout_descriptor = {
+        entries: [{
+          binding: 0, // camera uniforms
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {},
+        }]
+      }
+
+      this.#default_bind_group_layout = this.#device.createBindGroupLayout(
+        this.#default_bind_group_layout_descriptor
+      )
+
+      this.#default_render_pipeline_layout = this.#device.createPipelineLayout({
+        bindGroupLayouts: [this.#default_bind_group_layout]
+      })
     }
     else throw new Error('Unable to get WebGPU context')
   }
@@ -100,6 +140,9 @@ export default class Xenon {
         this.#render_target.destroy()
       
       this.define_depth_stencil()
+
+      if (this.#main_camera)
+        this.#main_camera.viewport = this.viewport
     }
     else throw new Error('No #target, cannot resize')
   }
@@ -108,7 +151,7 @@ export default class Xenon {
     items: Float32Array,
     index: number,
     offset = 0,
-    usage = GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+    usage  = GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
   ) {
     const buffer = this.#device?.createBuffer({
       size: items.byteLength,
@@ -120,92 +163,101 @@ export default class Xenon {
 
       this.#buffers[index] = buffer
 
-      this.#vertices += items.length
+      return index
     }
     else throw new Error("Couldn't create buffer")
   }
 
   static register_render_pipeline(
-    name: string,
-    shaders: {
-      compute?: string,
-      fragment?: string,
-      vertex?: string,
-    },
-    buffers?: {
-      vertex?: Array<GPUVertexBufferLayout>,
-    },
-  ) {
-    // @ts-ignore
+    name:     string,
+    shaders:  ShadersSources,
+    buffers?: ShaderBuffers,
+  ): GPURenderPipeline {
     const descriptor: GPURenderPipelineDescriptor = {
-      label: `${name} Render Pipeline`,
-      layout: 'auto',
-      primitive: {
-        cullMode: 'back',
-        topology: 'triangle-list',
-      },
       depthStencil: {
         format: 'depth24plus',
         depthWriteEnabled: true,
         depthCompare: 'less'
       },
+      fragment: null,
+      label: `RenderPipeline(${name})`,
+      layout: this.#default_render_pipeline_layout,
+      primitive: {
+        cullMode: 'back',
+        topology: 'triangle-list',
+      },
+      vertex: null,
     }
 
     if (shaders.vertex) {
       descriptor.vertex = {
-        buffers: buffers?.vertex,
+        buffers: buffers?.vertex.layouts,
         entryPoint: 'main',
-        // @ts-ignore
-        module: this.#device.createShaderModule({ code: shaders.vertex }),
+        module: this.#device.createShaderModule({
+          label: `RenderPipeline(${name}).shader(vertex)`,
+          code: shaders.vertex,
+        }),
       }
     }
 
     if (shaders.fragment) {
       descriptor.fragment = {
         entryPoint: 'main',
-        // @ts-ignore
-        module: this.#device.createShaderModule({ code: shaders.fragment }),
+        module: this.#device.createShaderModule({
+          label: `RenderPipeline(${name}).shader(fragment)`,
+          code: shaders.fragment,
+        }),
         targets: [{ format: this.#format }],
       }
     }
 
-    this.#render_pipeline = this.#device?.createRenderPipeline(descriptor)
+    const pipeline = this.#device?.createRenderPipeline(descriptor)
 
-    this.register_camera_matrix()
+    this.#render_pipelines.push(pipeline)
+
+    return pipeline
   }
 
   static register_color_attachment(
     clear_value: GPUColor = { r: 0.2, g: 0.247, b: 0.314, a: 1.0 }
   ) {
     this.#color_attachment.push({
-      view: this.#render_target.createView(),
+      view:       this.#render_target.createView(),
       clearValue: clear_value,
-      loadOp: 'clear',
-      storeOp: 'store'
+      loadOp:    'clear',
+      storeOp:   'store'
     })
   }
 
-  static register_camera_matrix() {
-    this.#camera_matrix_buffer = this.#device.createBuffer(this.#camera_matrix_buffer_description)
-    this.#camera_matrix_bind_group = this.#device.createBindGroup({
-      layout: this.#render_pipeline.getBindGroupLayout(0),
-      entries: [{
-        binding: 0,
-        resource: {
-          buffer: this.#camera_matrix_buffer,
-          offset: 0,
-          size: 64
-        }
-      }]
-    })
+  static register_instanced_render_pass(
+    instances: number,
+    pipeline:  GPURenderPipeline,
+    buffers:   Map<number, number>,
+  ): RenderPass {
+    const pass = {
+      buffers,
+      instances,
+      pipeline,
+      vertices: 0,
+    }
+
+    this.#render_passes.push(pass)
+
+    return pass
   }
 
-  static update_main_camera(
-    position: Float32Array,
-    target:   Float32Array,
-  ): void {
-    this.#main_camera.position = position
-    this.#main_camera.target   = target
+  static execute_instanced_render_pass(
+    pass: GPURenderPassEncoder,
+    data: RenderPass,
+  ) {
+    pass.setPipeline(data.pipeline)
+
+    for (const [v, b] of data.buffers.entries())
+      pass.setVertexBuffer(v, this.#buffers[b])
+
+    pass.setBindGroup(0, this.#main_camera.bind_group)
+    pass.draw(data.instances, data.vertices / 3)
+    pass.end()
   }
 
   static render() {
@@ -213,35 +265,22 @@ export default class Xenon {
 
     this.#color_attachment[0].view = this.#context.getCurrentTexture().createView()
 
-    this.#device.queue.writeBuffer(
-      this.#camera_matrix_buffer,
-      0,
-      vpm(
-        this.#target?.width / this.#target?.height,
-        this.#main_camera.position,
-        this.#main_camera.target,
-      ),
-    )
+    const c = this.#main_camera
+
+    this.#device.queue.writeBuffer(c.buffer, 0, c.view_projection_matrix)
 
     const commandEncoder = this.#device.createCommandEncoder()
-    const renderPass = commandEncoder.beginRenderPass({
-      colorAttachments: this.#color_attachment,
-      depthStencilAttachment: this.#depth_stencil,
-    })
 
-    renderPass.setPipeline(this.#render_pipeline)
+    for (const data of this.#render_passes) {
+      const pass = commandEncoder.beginRenderPass({
+        colorAttachments: this.#color_attachment,
+        depthStencilAttachment: this.#depth_stencil,
+      })
 
-    // TODO Figure out how to handle registering and updating multiple vertex buffers 🤔
-    // for (let i = 0; i < this.#buffers.length; i++)
-    renderPass.setVertexBuffer(0, this.#buffers[0])
-
-    renderPass.setBindGroup(0, this.#camera_matrix_bind_group)
-    renderPass.draw(this.#vertices / 3)
-    renderPass.end()
+      this.execute_instanced_render_pass(pass, data)
+    }
 
     this.#device.queue.submit([commandEncoder.finish()])
-  
-    this.#vertices = 0
 
     Yggdrasil.complete_phase('render')
   }

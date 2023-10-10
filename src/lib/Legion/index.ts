@@ -9,7 +9,12 @@ import {
   Entity,
 } from "./types"
 
-export abstract class Component { }
+export abstract class Component {
+  #is_dirty = false
+
+  get dirty(): boolean   { return this.#is_dirty }
+  set dirty(is: boolean) { this.#is_dirty = is   }
+}
 
 export abstract class System {
   abstract components_required: Set<Function>

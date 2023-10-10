@@ -1,27 +1,29 @@
 import { Entity } from "../../Legion/types"
 import Legion, { System } from "../../Legion"
 
-import Xenon from ".."
-
 import {
   Vector,
   degrees_to_radians,
   quat,
   vec3,
-} from "../math"
+} from "../../Xenon/math"
 
-import Finesse    from "../../Finesse"
+import Finesse from "../../Finesse"
+
 import MainCamera from "../components/MainCamera"
 import Position   from "../components/Position"
 
 export default class Update_MainCamera_Position_and_LookDirection extends System {
-  components_required = new Set<Function>([Position, MainCamera]);
+  components_required = new Set<Function>([Position, MainCamera])
 
   update(entities: Set<Entity>): void {
     if (entities.size === 0) throw new Error('Must have a main camera')
     if (entities.size >   1) throw new Error('Cannot have more than 1 main camera')
   
-    const position = Legion.get_components(entities.values().next().value).get(Position)
+    const e = entities.values().next().value
+
+    const position = Legion.get_components(e).get(Position)
+    const camera   = Legion.get_components(e).get(MainCamera)
     const movement = Finesse.movement
     const rotation = Finesse.rotation
 
@@ -29,10 +31,8 @@ export default class Update_MainCamera_Position_and_LookDirection extends System
     const rotated = quat.rotate(new Float32Array([movement.x, 0, movement.z]), q)
     const updated = vec3.add(rotated, new Float32Array([position.x, position.y, position.z]))
 
-    Xenon.update_main_camera(
-      updated,
-      vec3.spherical(rotation.x, rotation.y)
-    )
+    camera.position = updated
+    camera.target   = vec3.spherical(rotation.x, rotation.y)
 
     position.x = updated[0]
     position.y = updated[1]
