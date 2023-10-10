@@ -3,7 +3,8 @@ import Finesse    from "../Finesse"
 import Yggdrasil  from "../Yggdrasil"
 
 import {
-  RenderPass,
+  InstancedRenderEncoding,
+  RenderEncoding,
   ShaderBuffers,
   ShadersSources,
   ViewPort,
@@ -19,10 +20,7 @@ export default class Xenon {
   static #color_attachment: Array<GPURenderPassColorAttachment> = []
 
   static #depth_stencil?:   GPURenderPassDepthStencilAttachment = undefined
-  static #render_pipelines: Array<GPURenderPipeline>            = []
-  static #render_passes:    Array<RenderPass>                   = []
-
-  static #camera_matrix_bind_group?: GPUBindGroup
+  static #render_encodings: Array<RenderEncoding>               = []
 
   static #render_target?: GPUTexture
 
@@ -152,18 +150,16 @@ export default class Xenon {
     index: number,
     offset = 0,
     usage  = GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-  ) {
-    const buffer = this.#device?.createBuffer({
+  ): void {
+    const buffer = this.#device.createBuffer({
       size: items.byteLength,
       usage,
     })
 
     if (buffer) {
-      this.#device?.queue.writeBuffer(buffer, offset, items)
+      this.#device.queue.writeBuffer(buffer, offset, items)
 
       this.#buffers[index] = buffer
-
-      return index
     }
     else throw new Error("Couldn't create buffer")
   }
@@ -211,11 +207,7 @@ export default class Xenon {
       }
     }
 
-    const pipeline = this.#device?.createRenderPipeline(descriptor)
-
-    this.#render_pipelines.push(pipeline)
-
-    return pipeline
+    return this.#device.createRenderPipeline(descriptor)
   }
 
   static register_color_attachment(
@@ -229,11 +221,11 @@ export default class Xenon {
     })
   }
 
-  static register_instanced_render_pass(
+  static register_instanced_render_encoding(
     instances: number,
     pipeline:  GPURenderPipeline,
     buffers:   Map<number, number>,
-  ): RenderPass {
+  ): InstancedRenderEncoding {
     const pass = {
       buffers,
       instances,
@@ -241,23 +233,39 @@ export default class Xenon {
       vertices: 0,
     }
 
-    this.#render_passes.push(pass)
+    this.#render_encodings.push(pass)
 
     return pass
   }
 
-  static execute_instanced_render_pass(
+  static register_render_encoding(
+    pipeline: GPURenderPipeline,
+    buffers:  Map<number, number>,
+  ): RenderEncoding {
+    const pass = {
+      buffers,
+      pipeline,
+      vertices: 0,
+    }
+
+    this.#render_encodings.push(pass)
+
+    return pass
+  }
+
+  static encode(
     pass: GPURenderPassEncoder,
-    data: RenderPass,
-  ) {
+    data: RenderEncoding | InstancedRenderEncoding,
+  ): void {
     pass.setPipeline(data.pipeline)
 
-    for (const [v, b] of data.buffers.entries())
-      pass.setVertexBuffer(v, this.#buffers[b])
-
+    for (const [v, b] of data.buffers.entries()) pass.setVertexBuffer(v, this.#buffers[b])
+    
     pass.setBindGroup(0, this.#main_camera.bind_group)
-    pass.draw(data.instances, data.vertices / 3)
-    pass.end()
+
+    if (Object.hasOwn(data, 'instances'))
+      pass.draw((data as InstancedRenderEncoding).instances, data.vertices / 3)
+    else pass.draw(data.vertices / 3)
   }
 
   static render() {
@@ -269,18 +277,17 @@ export default class Xenon {
 
     this.#device.queue.writeBuffer(c.buffer, 0, c.view_projection_matrix)
 
-    const commandEncoder = this.#device.createCommandEncoder()
+    const encoder = this.#device.createCommandEncoder()
+    const pass    = encoder.beginRenderPass({
+      colorAttachments:       this.#color_attachment,
+      depthStencilAttachment: this.#depth_stencil,
+    })
 
-    for (const data of this.#render_passes) {
-      const pass = commandEncoder.beginRenderPass({
-        colorAttachments: this.#color_attachment,
-        depthStencilAttachment: this.#depth_stencil,
-      })
+    for (const data of this.#render_encodings) this.encode(pass, data)
 
-      this.execute_instanced_render_pass(pass, data)
-    }
+    pass.end()
 
-    this.#device.queue.submit([commandEncoder.finish()])
+    this.#device.queue.submit([encoder.finish()])
 
     Yggdrasil.complete_phase('render')
   }

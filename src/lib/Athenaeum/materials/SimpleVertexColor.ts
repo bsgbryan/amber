@@ -1,4 +1,4 @@
-import { InstancedVertexBufferLayout } from "../../Xenon/helpers"
+import { VertexBufferLayout } from "../../Xenon/helpers"
 
 import vertex   from '../shaders/vertex/PositionBasedGradient.wgsl?raw'
 import fragment from '../shaders/fragment/SingleColor.wgsl?raw'
@@ -9,11 +9,15 @@ export default class SimpleVertexColor extends Material {
   static #buffer_slot_map = new Map<number, number>()
   static #buffer_layouts  = [] as Array<GPUVertexBufferLayout>
 
+  static #position: number
+
   static {
-    this.#buffer_slot_map.set(0, 0)
+    this.#position = super.next_buffer_index
+
+    this.#buffer_slot_map.set(0, this.#position)
 
     this.#buffer_layouts = [
-      InstancedVertexBufferLayout(0, 12, 'float32x3', 0) // Position
+      VertexBufferLayout(0, 12, 'float32x3', 0) // Position
     ]
   }
 
@@ -26,5 +30,13 @@ export default class SimpleVertexColor extends Material {
         layouts:  SimpleVertexColor.#buffer_layouts,
       }}
     )
+  }
+
+  override reset(vertices: Float32Array): void {
+    super.reset(vertices, SimpleVertexColor.#position)
+  }
+
+  override apply_to(vertices: Float32Array): void {
+    super.apply_to(vertices, SimpleVertexColor.#position)
   }
 }

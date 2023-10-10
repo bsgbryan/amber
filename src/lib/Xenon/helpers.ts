@@ -22,6 +22,20 @@ export const InstancedVertexBufferLayout = (
   }]
 })
 
+export const VertexBufferLayout = (
+  location: number,
+  stride:   number,
+  format:   GPUVertexFormat,
+  offset = 0,
+): GPUVertexBufferLayout => ({
+  arrayStride: stride,
+  attributes: [{
+    shaderLocation: location,
+    format,
+    offset,
+  }]
+})
+
 export const vpm = (
   aspectRatio: number,
   location:    Float32Array,

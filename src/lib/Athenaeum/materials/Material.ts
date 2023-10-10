@@ -1,10 +1,16 @@
-import { Component } from "../../Legion"
-
-import { RenderPass, ShaderBuffers, ShadersSources } from "../../Xenon/types"
+import {
+  RenderEncoding,
+  ShaderBuffers,
+  ShadersSources,
+} from "../../Xenon/types"
 import Xenon from "../../Xenon"
 
-export default class Material extends Component {
-  protected pass:     RenderPass
+let buffer_index = 0
+
+export default class Material {
+  protected static get next_buffer_index(): number { return buffer_index++ }
+
+  protected pass:     RenderEncoding
   protected pipeline: GPURenderPipeline
   protected vertices: Float32Array = new Float32Array([])
 
@@ -12,16 +18,19 @@ export default class Material extends Component {
     name:    string,
     sources: ShadersSources,
     buffers: ShaderBuffers,
+    instances = -1,
   ) {
-    super()
-
     this.pipeline = Xenon.register_render_pipeline(`Material:${name}`, sources, buffers)
-    this.pass     = Xenon.register_instanced_render_pass(6, this.pipeline, buffers.vertex.slot_map)
+
+    if (instances === -1)
+      this.pass = Xenon.register_render_encoding(this.pipeline, buffers.vertex.slot_map)
+    else
+      this.pass = Xenon.register_instanced_render_encoding(instances, this.pipeline, buffers.vertex.slot_map)
   }
 
   protected fill(
     count: number,
-    items: Float32Array
+    items: Float32Array,
   ): Float32Array {
     const output = new Float32Array(count * items.length)
 
@@ -32,23 +41,27 @@ export default class Material extends Component {
     return output
   }
 
-  protected reset(vertices: Float32Array): void {
+  protected reset(
+    vertices:     Float32Array,
+    buffer_index: number,
+  ): void {
     this.vertices = vertices
 
-    this.#refresh_context()
+    this.#refresh_context(buffer_index)
   }
 
-  protected apply_to(vertices: Float32Array): void {
+  protected apply_to(
+    vertices:     Float32Array,
+    buffer_index: number,
+  ): void {
     this.vertices = new Float32Array([...this.vertices, ...vertices])
 
-    this.#refresh_context()
+    this.#refresh_context(buffer_index)
   }
 
-  #refresh_context(): void {
-    Xenon.refresh_buffer(this.vertices, 0)
+  #refresh_context(buffer_index: number): void {
+    Xenon.refresh_buffer(this.vertices, buffer_index)
 
     this.pass.vertices = this.vertices.length
-
-    this.dirty = true
   }
 }

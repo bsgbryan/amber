@@ -32,7 +32,7 @@ fn main(
 
   var out: Output;
 
-  let pos = (quadPos[vertexIndex] - 0.5) * input.size * 2.0 /uniforms.resolution;
+  let pos = (quadPos[vertexIndex] - 0.5) * input.size * 2.0 / uniforms.resolution;
 
   out.Position = uniforms.mvpMatrix * input.position + vec4f(pos, 0, 0);
   out.color    = input.color;

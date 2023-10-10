@@ -1,8 +1,11 @@
-export type RenderPass = {
-  instances: number,
-  vertices:  number,
-  pipeline:  GPURenderPipeline,
-  buffers:   Map<number, number>,
+export type RenderEncoding = {
+  vertices:  number
+  pipeline:  GPURenderPipeline
+  buffers:   Map<number, number>
+}
+
+export type InstancedRenderEncoding = RenderEncoding & {
+  instances: number
 }
 
 export type ShadersSources = {

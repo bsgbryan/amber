@@ -12,10 +12,18 @@ export default class ColoredPoint extends Material {
   static #buffer_slot_map = new Map<number, number>()
   static #buffer_layouts  = [] as Array<GPUVertexBufferLayout>
 
+  static #position: number
+  static #size:     number
+  static #color:    number
+
   static {
-    this.#buffer_slot_map.set(0, 0)
-    this.#buffer_slot_map.set(1, 1)
-    this.#buffer_slot_map.set(2, 2)
+    this.#position = super.next_buffer_index
+    this.#size     = super.next_buffer_index
+    this.#color    = super.next_buffer_index
+
+    this.#buffer_slot_map.set(0, this.#position)
+    this.#buffer_slot_map.set(1, this.#size)
+    this.#buffer_slot_map.set(2, this.#color)
 
     this.#buffer_layouts = [
       InstancedVertexBufferLayout(0, 12, 'float32x3', 0), // Position
@@ -37,12 +45,12 @@ export default class ColoredPoint extends Material {
       { vertex: {
         slot_map: ColoredPoint.#buffer_slot_map,
         layouts:  ColoredPoint.#buffer_layouts,
-      }}
+      }}, 6,
     )
   }
 
   override reset(vertices: Float32Array): void {
-    super.reset(vertices)
+    super.reset(vertices, ColoredPoint.#position)
 
     this.#sizes = super.fill(
       vertices.length / 3,
@@ -58,7 +66,7 @@ export default class ColoredPoint extends Material {
   }
 
   override apply_to(vertices: Float32Array): void {
-    super.apply_to(vertices)
+    super.apply_to(vertices, ColoredPoint.#position)
 
     this.#sizes = new Float32Array([
       ...this.#sizes,
@@ -80,7 +88,7 @@ export default class ColoredPoint extends Material {
   }
 
   #refresh_context(): void {
-    Xenon.refresh_buffer(this.#sizes,  1)
-    Xenon.refresh_buffer(this.#colors, 2)
+    Xenon.refresh_buffer(this.#sizes,  ColoredPoint.#size)
+    Xenon.refresh_buffer(this.#colors, ColoredPoint.#color)
   }
 }
