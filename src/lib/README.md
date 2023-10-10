@@ -19,6 +19,7 @@ Hi there! Thanks for checking the project out; and reading this documentation! ð
 # Modules
 
 The simulation engine is composed of the following pieces:
+* [Athenaeum](./Athenaeum) a library of useful things
 * [Eunomia](./Eunomia) maintains order
 * [Finesse](./Finesse) handles input processing
 * [Kali](./Kali) manages time
