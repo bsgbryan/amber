@@ -4,13 +4,19 @@ import Legion  from "../Legion"
 import Xenon   from "../Xenon"
 
 export default class Eunomia {
-  static update(): void {
+  static async init(render_target = 'main-render-target') {
+    await Xenon.init(render_target)
+
+    Eunomia.#update()
+  }
+
+  static #update(): void {
       requestAnimationFrame(() => {
         Kali.update()
         Finesse.update()
         Legion.update()
         Xenon.render()
-        Eunomia.update()
+        Eunomia.#update()
       })
     }
 }
