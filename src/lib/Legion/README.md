@@ -1,3 +1,3 @@
-# Legion welcomes you!
+# [Legion](https://www.merriam-webster.com/dictionary/legion) welcomes you!
 
-> TODO: Add more stuff
+Legion is an implementation of the ECS design pattern based on the work of [Maxwell Forbes](https://maxwellforbes.com/)
