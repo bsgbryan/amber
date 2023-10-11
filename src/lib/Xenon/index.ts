@@ -93,7 +93,7 @@ export default class Xenon {
   /**
    * Initializes Xenon
    * 
-   * @param render_target The id of the html \<canvac\> element to be used as the main render target
+   * @param render_target The id of the html \<canvas\> element to be used as the main render target
    * 
    * @remarks
    * `init` performs the following tasks:
