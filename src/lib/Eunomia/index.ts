@@ -7,16 +7,21 @@ export default class Eunomia {
   static async init(render_target = 'main-render-target') {
     await Xenon.init(render_target)
 
+    new ResizeObserver(Xenon.refresh_render_target_size_and_scale).
+      observe(document.querySelector('html'))
+
+    Finesse.init()
+
     Eunomia.#update()
   }
 
   static #update(): void {
-      requestAnimationFrame(() => {
-        Kali.update()
-        Finesse.update()
-        Legion.update()
-        Xenon.render()
-        Eunomia.#update()
-      })
-    }
+    requestAnimationFrame(() => {
+      Kali.update()
+      Finesse.update()
+      Legion.update()
+      Xenon.render()
+      Eunomia.#update()
+    })
+  }
 }

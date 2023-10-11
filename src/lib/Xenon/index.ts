@@ -1,5 +1,4 @@
 import MainCamera from "../Athenaeum/components/MainCamera"
-import Finesse    from "../Finesse"
 import Yggdrasil  from "../Yggdrasil"
 
 import {
@@ -10,6 +9,21 @@ import {
   ViewPort,
 } from "./types"
 
+/**
+ * Manages all rendering
+ * 
+ * It requires an html \<canvas\> element and a browser with WebGPU support
+ * 
+ * @remarks
+ * To use Xenon:
+ * 1. Call {@link Xenon.init | `Xenon.init`}
+ * 2. Call {@link Xenon.register_render_pipeline | `Xenon.register_render_pipeline`}
+ * 3. Call either:
+ *     * {@link Xenon.register_render_encoding | `Xenon.register_render_encoding`} for **non-instanced** rendering
+ *     * {@link Xenon.register_instanced_render_encoding | `Xenon.register_instanced_render_encoding`} for **instanced** rendering
+ * 4. Add a material with geometry to render. _`TODO: Add link to one of the materials in Athenaeum`_
+ * 5. Call {@link Xenon.render | `Xenon.render`}
+ */
 export default class Xenon {
   static #context?: GPUCanvasContext | null = undefined
   static #device?:  GPUDevice               = undefined
@@ -31,6 +45,11 @@ export default class Xenon {
 
   static #default_render_pipeline_layout: GPUPipelineLayout
 
+  /**
+   * The height and width of the render target, measured in pixels
+   * 
+   * @readonly
+   */
   static get viewport(): ViewPort {
     return {
       height: this.#target.height,
@@ -38,14 +57,32 @@ export default class Xenon {
     }
   }
 
+  /**
+   * The main camera used to render the scene
+   * 
+   * @remarks
+   * This object's view projection matrix is what's used when rendering
+   * 
+   * @readonly
+   */
   static set main_camera(that: MainCamera) {
     this.#main_camera = that
   }
 
+  /**
+   * Creates and returns a {@link https://webgpu.rocks/reference/interface/gpubuffer/#idl-gpubuffer | GPUBuffer} using a {@link https://webgpu.rocks/reference/dictionary/gpubufferdescriptor/#idl-gpubufferdescriptor | GPUBufferDescriptor}
+   * @param descriptor The {@link https://webgpu.rocks/reference/dictionary/gpubufferdescriptor/#idl-gpubufferdescriptor | GPUBufferDescriptor} used to create the output buffer
+   * @returns A {@link https://webgpu.rocks/reference/interface/gpubuffer/#idl-gpubuffer | GPUBuffer} configured according to the passed GPUBufferDescriptor
+   */
   static create_buffer(descriptor: GPUBufferDescriptor): GPUBuffer {
     return this.#device.createBuffer(descriptor)
   }
 
+  /**
+   * Creates and returns a {@link https://webgpu.rocks/reference/interface/gpubindgroup/#idl-gpubindgroup | GPUBindGroup} using the passed `entries` and Xenon's default bind ground layout
+   * @param entries {@link https://webgpu.rocks/reference/dictionary/gpubindgroupentry/#idl-gpubindgroupentry | GPUBindGroupEntries} to use with the bind group
+   * @returns A {@link https://webgpu.rocks/reference/interface/gpubindgroup/#idl-gpubindgroup | GPUBindGroup} created using the passed `entries` and Xenon's default bind ground layout
+   */
   static create_bind_group(entries: Array<GPUBindGroupEntry>): GPUBindGroup {
     return this.#device.createBindGroup({
       entries,
@@ -53,11 +90,29 @@ export default class Xenon {
     })
   }
 
+  /**
+   * Initializes Xenon
+   * 
+   * @param render_target The id of the html \<canvac\> element to be used as the main render target
+   * 
+   * @remarks
+   * `init` performs the following tasks:
+   * 1. Gets a reference to the html \<canvas\> element to use as the main render target
+   * 2. Attempts to get a reference to a GPU adapter, if possible
+   * 3. Gets a GPU device from the adapter obtained in the previous step
+   * 3. Attempts to get the `'webgpu'` context from the GPU adapter
+   * 4. Configures the WebPU context obtained from the previous step for rendering
+   * 5. Registers a listener to log an error to the console if the GPU device is lost
+   * 6. Configures the default bind group
+   * 
+   * @throws **No appropriate GPUAdapter found** if a GPU adapter cannot be found
+   * @throws **Unable to get WebGPU context** if the browser does not support WebGPU
+   */
   static async init(render_target = 'main-render-target') {
     this.#target = document.getElementById(render_target) as HTMLCanvasElement
 
     const adapter = await navigator.gpu.requestAdapter()
-    if (!adapter) throw new Error('No appropriate GPUAdapter found.')
+    if (!adapter) throw new Error('No appropriate GPUAdapter found')
 
     this.#device = await adapter.requestDevice()
     this.#context = this.#target?.getContext('webgpu')
@@ -79,18 +134,8 @@ export default class Xenon {
         usage: GPUTextureUsage.RENDER_ATTACHMENT,
       })
 
-      this.register_color_attachment()
+      this.#register_color_attachment()
       this.refresh_render_target_size_and_scale()
-
-      const self = this
-
-      const resize_observer = new ResizeObserver(e =>
-        self.refresh_render_target_size_and_scale()
-      )
-
-      resize_observer.observe(document.querySelector('html'))
-
-      Finesse.init()
 
       this.#default_bind_group_layout_descriptor = {
         entries: [{
@@ -111,24 +156,9 @@ export default class Xenon {
     else throw new Error('Unable to get WebGPU context')
   }
 
-  static define_depth_stencil() {
-    if (this.#target && this.#device) {
-      const spec: GPUTextureDescriptor = {
-        size: [this.#target.width, this.#target.height, 1],
-        format: 'depth24plus',
-        usage: GPUTextureUsage.RENDER_ATTACHMENT
-      }
-
-      this.#depth_stencil = {
-        view: this.#device.createTexture(spec).createView(),
-        depthClearValue: 1.0,
-        depthLoadOp: 'clear',
-        depthStoreOp: 'store',
-      }
-    }
-    else throw new Error('No #target or #device, cannot define depth stencil')
-  }
-
+  /**
+   * Reinitializes rendering resources when the available rendering area size changes
+   */
   static refresh_render_target_size_and_scale() {
     if (this.#target) {
       this.#target.height = Math.floor(window.innerHeight)
@@ -137,7 +167,7 @@ export default class Xenon {
       if (this.#render_target !== undefined)
         this.#render_target.destroy()
       
-      this.define_depth_stencil()
+      this.#define_depth_stencil()
 
       if (this.#main_camera)
         this.#main_camera.viewport = this.viewport
@@ -145,6 +175,20 @@ export default class Xenon {
     else throw new Error('No #target, cannot resize')
   }
 
+  /**
+   * Creates, writes, and caches a {@link https://webgpu.rocks/reference/interface/gpubuffer/#idl-gpubuffer | GPUBuffer} using the passed arguments
+   * 
+   * @param items The items to be written to the buffer
+   * @param index The index to Xenon's internal buffer cache; _This should be globally unique across materials and buffer layouts in a material_
+   * @param offset How far into the buffer the actual data starts; _defaults to `0` meaning the data starts at the beginning of the buffer_
+   * @param usage {@link https://webgpu.rocks/reference/typedef/gpubufferusageflags/#idl-gpubufferusageflags | GPUBufferUsageFlags} detailing how the data should be stored/accessed
+   * 
+   * @remarks
+   * Xenon maintains an internal list of buffers created via {@link Xenon.refresh_buffer | `Xenon.refresh_buffer`}.
+   * For this internal list to function as intended, the `index` parameter _must_ be unique for each distinct buffer.
+   * If two materials call `Xenon.refresh_buffer` passing the same value for `index` they would clobber each other's data.
+   * This is especially problematic if/when the _layout_ of the data is identical while the _semantics_ (or meaning) of the data is different.
+   */
   static refresh_buffer(
     items: Float32Array,
     index: number,
@@ -164,6 +208,23 @@ export default class Xenon {
     else throw new Error("Couldn't create buffer")
   }
 
+  /**
+   * Create and return a {@link https://webgpu.rocks/reference/interface/gpurenderpipeline/#idl-gpurenderpipeline | GPURenderPipeline}
+   * 
+   * @param name The string used to identify this render pipeline
+   * @param shaders vertex and/or fragment shader source code
+   * @param buffers vertex buffer layouts used by the vertex shader
+   * 
+   * @returns A {@link https://webgpu.rocks/reference/interface/gpurenderpipeline/#idl-gpurenderpipeline | GPURenderPipeline} configured using the passed arguments
+   * 
+   * @remarks
+   * Xenon's render pipelines have a few non-configurable defaults:
+   * 1. The depth stencil is always enabled, and is set to the `depth24plus` format with depth compare set to `less`
+   * 2. The primitive topology is always `triangle-list` with the cull mode set to `back`
+   * 3. The layout is always Xenon's default render pipeline layout
+   * 4. The entry point for the vertex and fragment shaders is always `main`
+   * 5. The fragment shader only supports a single target; using the value returned by `navigator.gpu.getPreferredCanvasFormat()` as the format
+   */
   static register_render_pipeline(
     name:     string,
     shaders:  ShadersSources,
@@ -210,17 +271,29 @@ export default class Xenon {
     return this.#device.createRenderPipeline(descriptor)
   }
 
-  static register_color_attachment(
-    clear_value: GPUColor = { r: 0.2, g: 0.247, b: 0.314, a: 1.0 }
-  ) {
-    this.#color_attachment.push({
-      view:       this.#render_target.createView(),
-      clearValue: clear_value,
-      loadOp:    'clear',
-      storeOp:   'store'
-    })
-  }
-
+  /**
+   * Creates, caches, and returns an `InstancedRenderEncoding`
+   * 
+   * @param instances The number is instances to pass to the vertex shader
+   * @param pipeline The render pipeline to use
+   * @param buffers A mapping of shader locations to indexes in Xenon's internal buffer list
+   * 
+   * @returns An `InstancedRenderEncoding` configured using the passed arguments
+   * 
+   * @remarks
+   * These objects are iterated over during {@link Xenon.render | `Xenon.render`} to produce output.
+   * 
+   * The `buffers` parameter is of note as it needs to be precisely calibrated to avoid problems that may be extremely difficult to diagnose/fix.
+   * 
+   * Xenon maintains an internal list of buffers created via {@link Xenon.refresh_buffer | `Xenon.refresh_buffer`}.
+   * For this internal list to function as intended, the `index` value passed to that method _must_ be unique for each distinct buffer.
+   * If two materials call `Xenon.refresh_buffer` passing the same value for `index` they would clobber each other's data.
+   * This is especially problematic if/when the _layout_ of the data is identical while the _semantics_ (or meaning) of the data is different.
+   * 
+   * **NOTE** _Only_ vertex buffer layouts creating using **`InstancedVertexBufferLayout`** will work with these encodings
+   * 
+   * **NOTE** The returned encoging object will not has nay vertices specified. Vertices are added using `Xenon.refresh_buffer`
+   */
   static register_instanced_render_encoding(
     instances: number,
     pipeline:  GPURenderPipeline,
@@ -238,6 +311,28 @@ export default class Xenon {
     return pass
   }
 
+  /**
+   * Creates, caches, and returns a `RenderEncoding`
+   * 
+   * @param pipeline The render pipeline to use
+   * @param buffers A mapping of shader locations to indexes in Xenon's internal buffer list
+   * 
+   * @returns A `RenderEncoding` configured using the passed arguments
+   * 
+   * @remarks
+   * These objects are iterated over during {@link Xenon.render | `Xenon.render`} to produce output.
+   * 
+   * The `buffers` parameter is of note as it needs to be precisely calibrated to avoid problems that may be extremely difficult to diagnose/fix.
+   * 
+   * Xenon maintains an internal list of buffers created via {@link Xenon.refresh_buffer | `Xenon.refresh_buffer`}.
+   * For this internal list to function as intended, the `index` value passed to that method _must_ be unique for each distinct buffer.
+   * If two materials call `Xenon.refresh_buffer` passing the same value for `index` they would clobber each other's data.
+   * This is especially problematic if/when the _layout_ of the data is identical while the _semantics_ (or meaning) of the data is different.
+   * 
+   * **NOTE** _Only_ vertex buffer layouts creating using **`VertexBufferLayout`** will work with these encodings
+   * 
+   * **NOTE** The returned encoging object will not has nay vertices specified. Vertices are added using `Xenon.refresh_buffer`
+   */
   static register_render_encoding(
     pipeline: GPURenderPipeline,
     buffers:  Map<number, number>,
@@ -253,21 +348,9 @@ export default class Xenon {
     return pass
   }
 
-  static encode(
-    pass: GPURenderPassEncoder,
-    data: RenderEncoding | InstancedRenderEncoding,
-  ): void {
-    pass.setPipeline(data.pipeline)
-
-    for (const [v, b] of data.buffers.entries()) pass.setVertexBuffer(v, this.#buffers[b])
-    
-    pass.setBindGroup(0, this.#main_camera.bind_group)
-
-    if (Object.hasOwn(data, 'instances'))
-      pass.draw((data as InstancedRenderEncoding).instances, data.vertices / 3)
-    else pass.draw(data.vertices / 3)
-  }
-
+  /**
+   * Iterate over all cached render encodings, rendering their contents using the main camera's view projection matrix
+   */
   static render() {
     Yggdrasil.start_phase('render')
 
@@ -283,12 +366,56 @@ export default class Xenon {
       depthStencilAttachment: this.#depth_stencil,
     })
 
-    for (const data of this.#render_encodings) this.encode(pass, data)
+    for (const data of this.#render_encodings) this.#encode(pass, data)
 
     pass.end()
 
     this.#device.queue.submit([encoder.finish()])
 
     Yggdrasil.complete_phase('render')
+  }
+
+  static #encode(
+    pass: GPURenderPassEncoder,
+    data: RenderEncoding | InstancedRenderEncoding,
+  ): void {
+    pass.setPipeline(data.pipeline)
+
+    for (const [v, b] of data.buffers.entries()) pass.setVertexBuffer(v, this.#buffers[b])
+    
+    pass.setBindGroup(0, this.#main_camera.bind_group)
+
+    if (Object.hasOwn(data, 'instances'))
+      pass.draw((data as InstancedRenderEncoding).instances, data.vertices / 3)
+    else pass.draw(data.vertices / 3)
+  }
+
+  static #register_color_attachment(
+    clear_value: GPUColor = { r: 0.2, g: 0.247, b: 0.314, a: 1.0 }
+  ) {
+    this.#color_attachment.push({
+      view:       this.#render_target.createView(),
+      clearValue: clear_value,
+      loadOp:    'clear',
+      storeOp:   'store'
+    })
+  }
+
+  static #define_depth_stencil() {
+    if (this.#target && this.#device) {
+      const spec: GPUTextureDescriptor = {
+        size: [this.#target.width, this.#target.height, 1],
+        format: 'depth24plus',
+        usage: GPUTextureUsage.RENDER_ATTACHMENT
+      }
+
+      this.#depth_stencil = {
+        view: this.#device.createTexture(spec).createView(),
+        depthClearValue: 1.0,
+        depthLoadOp: 'clear',
+        depthStoreOp: 'store',
+      }
+    }
+    else throw new Error('No #target or #device, cannot define depth stencil')
   }
 }
