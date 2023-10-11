@@ -18,14 +18,18 @@ export default class Material {
     name:    string,
     sources: ShadersSources,
     buffers: ShaderBuffers,
-    instances = -1,
   ) {
     this.pipeline = Xenon.register_render_pipeline(`Material:${name}`, sources, buffers)
+  }
 
+  protected register_render_encoding(
+    slot_map: Map<number, number>,
+    instances = -1,
+  ): void {
     if (instances === -1)
-      this.pass = Xenon.register_render_encoding(this.pipeline, buffers.vertex.slot_map)
+      this.pass = Xenon.register_render_encoding(this.pipeline, slot_map)
     else
-      this.pass = Xenon.register_instanced_render_encoding(instances, this.pipeline, buffers.vertex.slot_map)
+      this.pass = Xenon.register_instanced_render_encoding(instances, this.pipeline, slot_map)
   }
 
   protected fill(

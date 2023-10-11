@@ -16,8 +16,7 @@ export type ShadersSources = {
 
 export type ShaderBuffers = {
   vertex?: {
-    slot_map: Map<number, number>
-    layouts:  Array<GPUVertexBufferLayout>
+    layouts: Array<GPUVertexBufferLayout>
   }
 }
 
