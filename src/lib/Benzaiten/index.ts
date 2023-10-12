@@ -61,15 +61,13 @@ export default class Benzaiten {
 
       add(debug, new Float32Array([left, top, front]))
 
-      if (x_offset === 0) {
-                            add(debug, new Float32Array([extra_x, top,     front]))
+      if (x_offset === 0) { add(debug, new Float32Array([extra_x, top,     front]))
         if (y_offset === 0) add(debug, new Float32Array([extra_x, extra_y, front]))
       }
 
       if (y_offset === 0) add(debug, new Float32Array([left, extra_y, front]))
 
-      if (z_offset === 0) {
-                            add(debug, new Float32Array([left,    top,     extra_z]))
+      if (z_offset === 0) { add(debug, new Float32Array([left,    top,     extra_z]))
         if (x_offset === 0) add(debug, new Float32Array([extra_x, top,     extra_z]))
         if (y_offset === 0) add(debug, new Float32Array([left,    extra_y, extra_z]))
       }
