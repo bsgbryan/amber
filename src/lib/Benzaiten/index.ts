@@ -11,6 +11,7 @@ import {
   surface_x_vertex,
   surface_y_vertex,
   surface_z_vertex,
+  merge,
 } from "./helpers"
 
 import { Sides } from "./types"
@@ -81,20 +82,15 @@ export default class Benzaiten {
         output = [...output, ...recursion_output]
       }
       
-      if (recursions === divisions) {
-        const point_x = x_cross_edge === 3 && surface_x_vertex(shape, sides),
-              point_y = y_cross_edge === 3 && surface_y_vertex(shape, sides),
-              point_z = z_cross_edge === 3 && surface_z_vertex(shape, sides)
-
-        // TODO: Merge multiple points
-
+      if (recursions === divisions)
         output = [
           ...output,
-          ...(point_x || []),
-          ...(point_y || []),
-          ...(point_z || []),
+          ...merge(
+            x_cross_edge === 3 && surface_x_vertex(shape, sides),
+            y_cross_edge === 3 && surface_y_vertex(shape, sides),
+            z_cross_edge === 3 && surface_z_vertex(shape, sides),
+          ),
         ]
-      }
     }
 
     return new Float32Array(output)

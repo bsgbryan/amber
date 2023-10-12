@@ -37,12 +37,32 @@ export const vec3 = {
 
     return dst
   },
+  subtract(a: Float32Array, b: Float32Array, dst?: Float32Array): Float32Array {
+    dst = dst || new Float32Array(3)
+
+    dst[0] = a[0] - b[0]
+    dst[1] = a[1] - b[1]
+    dst[2] = a[2] - b[2]
+
+    return dst
+  },
   multiply(a: Float32Array, b: Float32Array, dst?: Float32Array): Float32Array {
     dst = dst || new Float32Array(3)
 
     dst[0] = a[0] * b[0]
     dst[1] = a[1] * b[1]
     dst[2] = a[2] * b[2]
+
+    return dst
+  },
+  divide_by_scalar(a: Float32Array, s: number, dst?: Float32Array): Float32Array {
+    dst = dst || new Float32Array(3)
+
+    const d = 1 / s
+
+    dst[0] = a[0] * d
+    dst[1] = a[1] * d
+    dst[2] = a[2] * d
 
     return dst
   },
@@ -56,15 +76,6 @@ export const vec3 = {
     dst[0] = t0
     dst[1] = t1
     dst[2] = t2
-
-    return dst
-  },
-  subtract(a: Float32Array, b: Float32Array, dst?: Float32Array): Float32Array {
-    dst = dst || new Float32Array(3)
-
-    dst[0] = a[0] - b[0]
-    dst[1] = a[1] - b[1]
-    dst[2] = a[2] - b[2]
 
     return dst
   },

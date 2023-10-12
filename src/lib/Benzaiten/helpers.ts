@@ -166,3 +166,28 @@ export const surface_z_vertex = (
 
   return surface_vertex(X, Y, B + Math.abs(distance(X, Y, B)))
 }
+
+export const merge = (
+  x?: Vector3,
+  y?: Vector3,
+  z?: Vector3, 
+): Vector3 => {
+  const vectors: Array<Vector3> = []
+
+  if (x) vectors.push(x)
+  if (y) vectors.push(y)
+  if (z) vectors.push(z)
+
+  if (vectors.length === 0) return new Float32Array()
+
+  if (vectors.length === 1) return vectors[0]
+
+  if (vectors.length === 2)
+    return vec3.divide_by_scalar(vec3.add(vectors[0], vectors[1]), 2)
+
+  if (vectors.length === 3) {
+    const m = vec3.divide_by_scalar(vec3.add(vectors[0], vectors[1]), 2)
+
+    return vec3.divide_by_scalar(vec3.add(vectors[2], m), 2)
+  }
+}
