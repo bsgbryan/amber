@@ -41,8 +41,7 @@ export default class Benzaiten {
           start_y = origin[y] + (space[y] * half),
           start_z = origin[z] - (space[z] * half)
 
-    const level      = segments[x] * segments[y],
-          iterations = level       * segments[z]
+    const iterations = segments[x] * segments[y] * segments[z]
 
     for (let i = 0; i < iterations; i++) {
       const current_x =             i %  segments[x],
