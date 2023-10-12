@@ -65,21 +65,20 @@ export default class Benzaiten {
       needs_recursion ||= test_y(shape, extent.y, sides, output, recursions, divisions) 
       needs_recursion ||= test_z(shape, extent.z, sides, output, recursions, divisions)
 
-      if (x_offset === 0) { add(output.debug, new Float32Array([sides.right, sides.top,    sides.back]))
-        if (y_offset === 0) add(output.debug, new Float32Array([sides.right, sides.bottom, sides.back]))
-      }
-
-      if (y_offset === 0) add(output.debug, new Float32Array([sides.left, sides.bottom, sides.back]))
-
-      if (z_offset === 0) { add(output.debug, new Float32Array([sides.left,  sides.top,    sides.front]))
-        if (x_offset === 0) add(output.debug, new Float32Array([sides.right, sides.top,    sides.front]))
-        if (y_offset === 0) add(output.debug, new Float32Array([sides.left,  sides.bottom, sides.front]))
-      }
-
       if (needs_recursion && recursions + 1 <= divisions) {
-        const divided_origin   = new Float32Array([sides.left + (extent.x * .5), sides.top - (extent.y * .5), sides.back + (extent.z * .5)]),
+        const origin_x = sides.left + (extent.x * .5),
+              origin_y = sides.top  - (extent.y * .5),
+              origin_z = sides.back + (extent.z * .5)
+
+        const divided_origin   = new Float32Array([origin_x, origin_y, origin_z]),
               divided_space    = new Float32Array([extent.x, extent.y, extent.z]),
-              recursion_output = Benzaiten.partition(shape, divisions, divided_space, divided_origin, recursions + 1)
+              recursion_output = Benzaiten.partition(
+                shape,
+                divisions,
+                divided_space,
+                divided_origin,
+                recursions + 1
+              )
 
         output.debug   = [...output.debug,   ...recursion_output.debug  ]
         output.x_cross = [...output.x_cross, ...recursion_output.x_cross]
@@ -87,8 +86,6 @@ export default class Benzaiten {
         output.z_cross = [...output.z_cross, ...recursion_output.z_cross]
       }
     }
-
-    add(output.debug, new Float32Array([extent.x, extent.y, extent.z]))
 
     return {
       debug:   new Float32Array(output.debug  ),
