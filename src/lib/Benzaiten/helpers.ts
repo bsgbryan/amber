@@ -1,233 +1,86 @@
-import { Vector3 } from "../Sunya/types"
-
 import { Shape } from "./shapes/types"
 
-import { Output, Sides } from "./types"
+import {
+  Sides,
+  TestResult,
+} from "./types"
 
-export const add = (
-  context: Array<number>,
-  vec:     Vector3,
-) => {
-  context.push(vec[0])
-  context.push(vec[1])
-  context.push(vec[2])
+const x = ['left', 'right' ],
+      y = ['top',  'bottom'],
+      z = ['back', 'front' ]
+
+const crosses = (
+  a: number,
+  b: number,
+): boolean => {
+  return (a > 0 && b < 0) ||
+         (a < 0 && b > 0) ||
+          a === 0         ||
+          b === 0
 }
 
 export const test_x = (
   shape:      Shape,
-  extent:     number,
   sides:      Sides,
-  output:     Output,
   recursions: number,
   divisions:  number,
-): boolean => {
-  let needs_recursion = false
+): TestResult => {
+  for (let i = 0; i < 4; i++) {
+    const I = i % 2,
+          Y = sides[y[I]],
+          Z = sides[z[I]],
+          L = sides[x[0]],
+          R = sides[x[1]],
+          a = shape(new Float32Array([L, Y, Z]))
 
-  {
-    const result_x_one = shape(new Float32Array([sides.left,  sides.top, sides.back])),
-          result_x_two = shape(new Float32Array([sides.right, sides.top, sides.back])),
-          x_point      = new Float32Array([sides.left + (extent * .5), sides.top, sides.back])
-
-    if ((result_x_one > 0 && result_x_two < 0) ||
-        (result_x_one < 0 && result_x_two > 0) ||
-         result_x_one === 0                    ||
-         result_x_two === 0
-    ) {
-      if (recursions === divisions) add(output.x_cross, x_point)
-      else needs_recursion = true
-    }
+    if (crosses(a, shape(new Float32Array([R, Y, Z]))))
+      return recursions === divisions ?
+        new Float32Array([L + (a < 0 ? -a : a), Y, Z])
+        :
+        null
   }
-
-  {
-    const result_x_one = shape(new Float32Array([sides.left,  sides.bottom, sides.back])),
-          result_x_two = shape(new Float32Array([sides.right, sides.bottom, sides.back])),
-          x_point      = new Float32Array([sides.left + (extent * .5), sides.bottom, sides.back])
-
-    if ((result_x_one > 0 && result_x_two < 0) ||
-        (result_x_one < 0 && result_x_two > 0) ||
-         result_x_one === 0                    ||
-         result_x_two === 0
-    ) {
-      if (recursions === divisions) add(output.x_cross, x_point)
-      else needs_recursion = true
-    }
-  }
-
-  {
-    const result_x_one = shape(new Float32Array([sides.left,  sides.top, sides.front])),
-          result_x_two = shape(new Float32Array([sides.right, sides.top, sides.front])),
-          x_point      = new Float32Array([sides.left + (extent * .5), sides.top, sides.front])
-
-    if ((result_x_one > 0 && result_x_two < 0) ||
-        (result_x_one < 0 && result_x_two > 0) ||
-         result_x_one === 0                    ||
-         result_x_two === 0
-    ) {
-      if (recursions === divisions) add(output.x_cross, x_point)
-      else needs_recursion = true
-    }
-  }
-
-  {
-    const result_x_one = shape(new Float32Array([sides.left,  sides.bottom, sides.front])),
-          result_x_two = shape(new Float32Array([sides.right, sides.bottom, sides.front])),
-          x_point      = new Float32Array([sides.left + (extent * .5), sides.bottom, sides.front])
-
-    if ((result_x_one > 0 && result_x_two < 0) ||
-        (result_x_one < 0 && result_x_two > 0) ||
-         result_x_one === 0                    ||
-         result_x_two === 0
-    ) {
-      if (recursions === divisions) add(output.x_cross, x_point)
-      else needs_recursion = true
-    }
-  }
-
-  return needs_recursion
 }
 
 export const test_y = (
   shape:      Shape,
-  extent:     number,
   sides:      Sides,
-  output:     Output,
   recursions: number,
   divisions:  number,
-): boolean => {
-  let needs_recursion = false
-  
-  {
-    const result_y_one = shape(new Float32Array([sides.left, sides.top,    sides.back])),
-          result_y_two = shape(new Float32Array([sides.left, sides.bottom, sides.back])),
-          y_point      = new Float32Array([sides.left, sides.top - (extent * .5), sides.back])
+): TestResult => {
+  for (let i = 0; i < 4; i++) {
+    const I = i % 2,
+          X = sides[x[I]],
+          Z = sides[z[I]],
+          T = sides[y[0]],
+          B = sides[y[1]],
+          a = shape(new Float32Array([X, T, Z]))
 
-    if ((result_y_one > 0 && result_y_two < 0) ||
-        (result_y_one < 0 && result_y_two > 0) ||
-        result_y_one === 0                    ||
-        result_y_two === 0
-    ) {
-      if (recursions === divisions) add(output.y_cross, y_point)
-      else needs_recursion = true
-    }
+    if (crosses(a, shape(new Float32Array([X, B, Z]))))
+      return recursions === divisions ?
+        new Float32Array([X, T - (a < 0 ? -a : a), Z])
+        :
+        null
   }
-
-  {
-    const result_y_one = shape(new Float32Array([sides.right, sides.top,    sides.back])),
-          result_y_two = shape(new Float32Array([sides.right, sides.bottom, sides.back])),
-          y_point      = new Float32Array([sides.right, sides.top - (extent * .5), sides.back])
-
-    if ((result_y_one > 0 && result_y_two < 0) ||
-        (result_y_one < 0 && result_y_two > 0) ||
-         result_y_one === 0                    ||
-         result_y_two === 0
-    ) {
-      if (recursions === divisions) add(output.y_cross, y_point)
-      else needs_recursion = true
-    }
-  }
-
-  {
-    const result_y_one = shape(new Float32Array([sides.left, sides.top,    sides.front])),
-          result_y_two = shape(new Float32Array([sides.left, sides.bottom, sides.front])),
-          y_point      = new Float32Array([sides.left, sides.top - (extent * .5), sides.front])
-
-    if ((result_y_one > 0 && result_y_two < 0) ||
-        (result_y_one < 0 && result_y_two > 0) ||
-        result_y_one === 0                    ||
-        result_y_two === 0
-    ) {
-      if (recursions === divisions) add(output.y_cross, y_point)
-      else needs_recursion = true
-    }
-  }
-
-  {
-    const result_y_one = shape(new Float32Array([sides.right, sides.top,    sides.front])),
-          result_y_two = shape(new Float32Array([sides.right, sides.bottom, sides.front])),
-          y_point      = new Float32Array([sides.right, sides.top - (extent * .5), sides.front])
-
-    if ((result_y_one > 0 && result_y_two < 0) ||
-        (result_y_one < 0 && result_y_two > 0) ||
-         result_y_one === 0                    ||
-         result_y_two === 0
-    ) {
-      if (recursions === divisions) add(output.y_cross, y_point)
-      else needs_recursion = true
-    }
-  }
-
-  return needs_recursion
 }
 
 export const test_z = (
   shape:      Shape,
-  extent:     number,
   sides:      Sides,
-  output:     Output,
   recursions: number,
   divisions:  number,
-): boolean => {
-  let needs_recursion = false
+): TestResult => {
+  for (let i = 0; i < 4; i++) {
+    const I = i % 2,
+          X = sides[x[I]],
+          Y = sides[y[I]],
+          B = sides[z[0]],
+          F = sides[z[1]],
+          a = shape(new Float32Array([X, Y, B]))
 
-  {
-    const result_z_one = shape(new Float32Array([sides.left, sides.top, sides.back ])),
-          result_z_two = shape(new Float32Array([sides.left, sides.top, sides.front])),
-          z_point      = new Float32Array([sides.left, sides.top, sides.back + (extent * .5)])
-
-    if ((result_z_one > 0 && result_z_two < 0) ||
-        (result_z_one < 0 && result_z_two > 0) ||
-         result_z_one === 0                    ||
-         result_z_two === 0
-    ) {
-      if (recursions === divisions) add(output.z_cross, z_point)
-      else needs_recursion = true
-    }
+    if (crosses(a, shape(new Float32Array([X, Y, F]))))
+      return recursions === divisions ?
+        new Float32Array([X, Y, B + (a < 0 ? -a : a)])
+        :
+        null
   }
-
-  {
-    const result_z_one = shape(new Float32Array([sides.right, sides.top, sides.back ])),
-          result_z_two = shape(new Float32Array([sides.right, sides.top, sides.front])),
-          z_point      = new Float32Array([sides.right, sides.top, sides.back + (extent * .5)])
-
-    if ((result_z_one > 0 && result_z_two < 0) ||
-        (result_z_one < 0 && result_z_two > 0) ||
-         result_z_one === 0                    ||
-         result_z_two === 0
-    ) {
-      if (recursions === divisions) add(output.z_cross, z_point)
-      else needs_recursion = true
-    }
-  }
-
-  {
-    const result_z_one = shape(new Float32Array([sides.left, sides.bottom, sides.back ])),
-          result_z_two = shape(new Float32Array([sides.left, sides.bottom, sides.front])),
-          z_point      = new Float32Array([sides.left, sides.bottom, sides.back + (extent * .5)])
-
-    if ((result_z_one > 0 && result_z_two < 0) ||
-        (result_z_one < 0 && result_z_two > 0) ||
-         result_z_one === 0                    ||
-         result_z_two === 0
-    ) {
-      if (recursions === divisions) add(output.z_cross, z_point)
-      else needs_recursion = true
-    }
-  }
-
-  {
-    const result_z_one = shape(new Float32Array([sides.right, sides.bottom, sides.back ])),
-          result_z_two = shape(new Float32Array([sides.right, sides.bottom, sides.front])),
-          z_point      = new Float32Array([sides.right, sides.bottom, sides.back + (extent * .5)])
-
-    if ((result_z_one > 0 && result_z_two < 0) ||
-        (result_z_one < 0 && result_z_two > 0) ||
-         result_z_one === 0                    ||
-         result_z_two === 0
-    ) {
-      if (recursions === divisions) add(output.z_cross, z_point)
-      else needs_recursion = true
-    }
-  }
-
-  return needs_recursion
 }

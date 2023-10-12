@@ -1,9 +1,6 @@
-export type TestResults = {
-  debug:   Float32Array
-  x_cross: Float32Array
-  y_cross: Float32Array
-  z_cross: Float32Array
-}
+import { Vector3 } from "../Sunya/types"
+
+export type TestResult = Vector3 | null | undefined
 
 export type Output = {
   debug:   Array<number>
@@ -12,11 +9,14 @@ export type Output = {
   z_cross: Array<number>
 }
 
+type Side =
+  'back'   |
+  'bottom' |
+  'front'  |
+  'left'   |
+  'right'  |
+  'top'
+
 export type Sides = {
-  left:   number
-  top:    number
-  back:   number
-  right:  number
-  bottom: number
-  front:  number
+  [SIDE in Side as string]: number
 }

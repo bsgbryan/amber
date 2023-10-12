@@ -3,13 +3,12 @@ import { Vector3 } from "../Sunya/types"
 import { Shape } from "./shapes/types"
 
 import {
-  add,
   test_x,
   test_y,
   test_z,
 } from "./helpers"
 
-import { Output, Sides, TestResults } from "./types"
+import { Sides } from "./types"
 
 const x = 0,
       y = 1,
@@ -25,13 +24,8 @@ export default class Benzaiten {
     space:      Vector3 = new Float32Array([1, 1, 1]),
     origin:     Vector3 = new Float32Array([0, 0, 0]),
     recursions: number = 1,
-  ): TestResults {
-    const output: Output = {
-      debug:   [] as Array<number>,
-      x_cross: [] as Array<number>,
-      y_cross: [] as Array<number>,
-      z_cross: [] as Array<number>,
-    }
+  ): Float32Array {
+    let output: Float32Array = new Float32Array()
 
     const extent_x = space[x] / segments[x],
           extent_y = space[y] / segments[y],
@@ -57,13 +51,17 @@ export default class Benzaiten {
         front:  start_z + ((current_z + 1) * extent_z),
       }
 
-      add(output.debug, new Float32Array([sides.left, sides.top, sides.back]))
+      const x_result = test_x(shape, sides, recursions, divisions),
+            y_result = test_y(shape, sides, recursions, divisions),
+            z_result = test_z(shape, sides, recursions, divisions)
 
-      let needs_recursion = false
+      let temp: Array<number> = []
 
-      needs_recursion ||= test_x(shape, extent_x, sides, output, recursions, divisions)
-      needs_recursion ||= test_y(shape, extent_y, sides, output, recursions, divisions)
-      needs_recursion ||= test_z(shape, extent_z, sides, output, recursions, divisions)
+      if (x_result instanceof Float32Array) temp = [...temp, ...x_result]
+      if (y_result instanceof Float32Array) temp = [...temp, ...y_result]
+      if (z_result instanceof Float32Array) temp = [...temp, ...z_result]
+
+      const needs_recursion = x_result === null || y_result === null || z_result === null
 
       if (needs_recursion && recursions + 1 <= divisions) {
         const origin_x = sides.left + (extent_x * half),
@@ -79,18 +77,11 @@ export default class Benzaiten {
           recursions + 1,
         )
 
-        output.debug   = [...output.debug,   ...recursion_output.debug  ]
-        output.x_cross = [...output.x_cross, ...recursion_output.x_cross]
-        output.y_cross = [...output.y_cross, ...recursion_output.y_cross]
-        output.z_cross = [...output.z_cross, ...recursion_output.z_cross]
+        output = new Float32Array([...output, ...recursion_output])
       }
+      else output = new Float32Array([...output, ...temp])
     }
 
-    return {
-      debug:   new Float32Array(output.debug  ),
-      x_cross: new Float32Array(output.x_cross),
-      y_cross: new Float32Array(output.y_cross),
-      z_cross: new Float32Array(output.z_cross),
-    }
+    return new Float32Array(output)
   }
 }
