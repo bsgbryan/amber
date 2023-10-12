@@ -30,7 +30,7 @@ export default class ColoredPoint extends Material {
 
   constructor(
     public color: Color,
-    public size = 50,
+    public size = 1,
   ) {
     super(
       'ColoredPoint',
@@ -58,7 +58,7 @@ export default class ColoredPoint extends Material {
       ...this.#sizes,
       ...super.fill(
         vertices.length / 3,
-        new Float32Array([this.size]),
+        new Float32Array([this.size * 25]),
       )
     ])
 
