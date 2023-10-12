@@ -15,12 +15,15 @@ const x = 0,
       y = 1,
       z = 2
 
+const half = .5
+
 export default class Benzaiten {
   static partition(
     shape: Shape,
-    divisions: number  = 4,
-    space:     Vector3 = new Float32Array([1, 1, 1]),
-    origin:    Vector3 = new Float32Array([0, 0, 0]),
+    divisions:  number  = 2,
+    segments:   Vector3 = new Float32Array([2, 2, 2]),
+    space:      Vector3 = new Float32Array([1, 1, 1]),
+    origin:     Vector3 = new Float32Array([0, 0, 0]),
     recursions: number = 1,
   ): TestResults {
     const output: Output = {
@@ -30,55 +33,52 @@ export default class Benzaiten {
       z_cross: [] as Array<number>,
     }
 
-    const extent = {
-      x: space[x] / 2,
-      y: space[y] / 2,
-      z: space[z] / 2,
-    }
+    const extent_x = space[x] / segments[x],
+          extent_y = space[y] / segments[y],
+          extent_z = space[z] / segments[z]
 
-    const level      = 4,
-          iterations = 8
+    const start_x = origin[x] - (space[x] * half),
+          start_y = origin[y] + (space[y] * half),
+          start_z = origin[z] - (space[z] * half)
 
-    let needs_recursion = false
-
-    const offset_x = space[x] - extent.x,
-          offset_y = space[y] - extent.y,
-          offset_z = space[z] - extent.z
+    const level      = segments[x] * segments[y],
+          iterations = level       * segments[z]
 
     for (let i = 0; i < iterations; i++) {
-      const x_offset = i % 2,
-            y_offset = Math.floor(i / level),
-            z_offset = Math.floor(i / iterations * level % 2)
+      const current_x =             i %  segments[x],
+            current_y = Math.floor((i /  segments[x]) % segments[y]),
+            current_z = Math.floor( i / (segments[x]  * segments[y]) % segments[z])
 
       const sides: Sides = {
-        left:   origin[x] - offset_x + ( x_offset      * extent.x),
-        top:    origin[y] + offset_y - ( y_offset      * extent.y),
-        back:   origin[z] - offset_z + ( z_offset      * extent.z),
-        right:  origin[x] - offset_x + ((x_offset + 1) * extent.x),
-        bottom: origin[y] + offset_y - ((y_offset + 1) * extent.y),
-        front:  origin[z] - offset_z + ((z_offset + 1) * extent.z)
+        left:   start_x + ( current_x      * extent_x),
+        top:    start_y - ( current_y      * extent_y),
+        back:   start_z + ( current_z      * extent_z),
+        right:  start_x + ((current_x + 1) * extent_x),
+        bottom: start_y - ((current_y + 1) * extent_y),
+        front:  start_z + ((current_z + 1) * extent_z),
       }
 
       add(output.debug, new Float32Array([sides.left, sides.top, sides.back]))
 
-      needs_recursion ||= test_x(shape, extent.x, sides, output, recursions, divisions)
-      needs_recursion ||= test_y(shape, extent.y, sides, output, recursions, divisions) 
-      needs_recursion ||= test_z(shape, extent.z, sides, output, recursions, divisions)
+      let needs_recursion = false
+
+      needs_recursion ||= test_x(shape, extent_x, sides, output, recursions, divisions)
+      needs_recursion ||= test_y(shape, extent_y, sides, output, recursions, divisions)
+      needs_recursion ||= test_z(shape, extent_z, sides, output, recursions, divisions)
 
       if (needs_recursion && recursions + 1 <= divisions) {
-        const origin_x = sides.left + (extent.x * .5),
-              origin_y = sides.top  - (extent.y * .5),
-              origin_z = sides.back + (extent.z * .5)
+        const origin_x = sides.left + (extent_x * half),
+              origin_y = sides.top  - (extent_y * half),
+              origin_z = sides.back + (extent_z * half)
 
-        const divided_origin   = new Float32Array([origin_x, origin_y, origin_z]),
-              divided_space    = new Float32Array([extent.x, extent.y, extent.z]),
-              recursion_output = Benzaiten.partition(
-                shape,
-                divisions,
-                divided_space,
-                divided_origin,
-                recursions + 1,
-              )
+        const recursion_output = Benzaiten.partition(
+          shape,
+          divisions,
+          undefined,
+          new Float32Array([extent_x, extent_y, extent_z]),
+          new Float32Array([origin_x, origin_y, origin_z]),
+          recursions + 1,
+        )
 
         output.debug   = [...output.debug,   ...recursion_output.debug  ]
         output.x_cross = [...output.x_cross, ...recursion_output.x_cross]
