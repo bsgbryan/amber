@@ -1,0 +1,1 @@
+export type Shape = (point: Float32Array) => number

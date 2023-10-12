@@ -1,11 +1,27 @@
-type Vector3 = Float32Array
+import { Vector3 } from "../Sunya/types"
+
+import { Shape } from "./shapes/types"
+
+type TestResults = {
+  inside:  Float32Array
+  outside: Float32Array
+}
+
+const add = (
+  context: Array<number>,
+  vec:     Vector3,
+) => {
+  context.push(vec[0])
+  context.push(vec[1])
+  context.push(vec[2])
+}
 
 export default class Benzaiten {
   static partition(
-    space: Vector3,
-    divisions = 2,
-    origin    = new Float32Array([0, 0, 0])
-  ): Float32Array {
+    shape: Shape,
+    divisions: number  = 2,
+    space:     Vector3 = new Float32Array([1, 1, 1]),
+  ): TestResults {
     if (divisions % 2 !== 0) throw new Error('divisions must be a power of 2')
 
     const x = 0,
@@ -18,32 +34,28 @@ export default class Benzaiten {
       z: space[z] * .5,
     }
 
-    const chunk = {
-      x: 1 / divisions,
-      y: 1 / divisions,
-      z: 1 / divisions,
-    }
-
-    const per_row    = divisions * divisions
-    const iterations = divisions * divisions * divisions,
-          output     = new Float32Array(iterations * 3)
+    const chunk      = 1 / divisions,
+          level      = divisions * divisions,
+          iterations = level * divisions,
+          outside    = [] as Array<number>,
+          inside     = [] as Array<number>
 
     for (let i = 0, v = 0; i < iterations; i++) {
       const x_offset = i % divisions,
-            y_offset = Math.floor(i / per_row),
-            z_offset = Math.floor((i % per_row) / divisions)
+            y_offset = Math.floor(i / level),
+            z_offset = Math.floor((i % level) / divisions)
 
-      const top   =  (space[y] - extent.y) - (y_offset * (space[y] * chunk.y)),
-            left  = -(space[x] - extent.x) + (x_offset * (space[x] * chunk.x)),
-            front = -(space[z] - extent.z) + (z_offset * (space[z] * chunk.z))
+      const left  = -(space[x] - extent.x) + (x_offset * (space[x] * chunk)),
+            top   =  (space[y] - extent.y) - (y_offset * (space[y] * chunk)),
+            front = -(space[z] - extent.z) + (z_offset * (space[z] * chunk)),
+            test  = new Float32Array([left, top, front])
 
-      console.log({ top, left, front })
-
-      output[v++] = left
-      output[v++] = top
-      output[v++] = front
+      shape(test) > 0 ? add(outside, test) : add(inside, test)
     }
 
-    return output
+    return {
+      inside:  new Float32Array(inside),
+      outside: new Float32Array(outside),
+    }
   }
 }
