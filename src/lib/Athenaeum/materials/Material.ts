@@ -45,15 +45,6 @@ export default class Material {
     return output
   }
 
-  protected reset(
-    vertices:     Float32Array,
-    buffer_index: number,
-  ): void {
-    this.vertices = vertices
-
-    this.#refresh_context(buffer_index)
-  }
-
   protected apply_to(
     vertices:     Float32Array,
     buffer_index: number,

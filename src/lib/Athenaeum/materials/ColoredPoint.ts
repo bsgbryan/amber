@@ -51,22 +51,6 @@ export default class ColoredPoint extends Material {
     super.register_render_encoding(this.#buffer_slot_map, 6)
   }
 
-  override reset(vertices: Float32Array): void {
-    super.reset(vertices, this.#position_index)
-
-    this.#sizes = super.fill(
-      vertices.length / 3,
-      new Float32Array([this.size]),
-    )
-
-    this.#colors = super.fill(
-      vertices.length / 3,
-      this.color.as_f32_array,
-    )
-
-    this.#refresh_context()
-  }
-
   override apply_to(vertices: Float32Array): void {
     super.apply_to(vertices, this.#position_index)
 

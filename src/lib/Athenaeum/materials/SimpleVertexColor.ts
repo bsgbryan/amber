@@ -34,10 +34,6 @@ export default class SimpleVertexColor extends Material {
     super.register_render_encoding(this.#buffer_slot_map)
   }
 
-  override reset(vertices: Float32Array): void {
-    super.reset(vertices, this.#position)
-  }
-
   override apply_to(vertices: Float32Array): void {
     super.apply_to(vertices, this.#position)
   }
