@@ -61,7 +61,7 @@ export default class Benzaiten {
 
       add(output.debug, new Float32Array([sides.left, sides.top, sides.back]))
 
-      needs_recursion   = test_x(shape, extent.x, sides, output, recursions, divisions)
+      needs_recursion ||= test_x(shape, extent.x, sides, output, recursions, divisions)
       needs_recursion ||= test_y(shape, extent.y, sides, output, recursions, divisions) 
       needs_recursion ||= test_z(shape, extent.z, sides, output, recursions, divisions)
 
