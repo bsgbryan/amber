@@ -4,8 +4,9 @@ import { Shape } from "./shapes/types"
 
 type TestResults = {
   debug:   Float32Array
-  inside:  Float32Array
-  outside: Float32Array
+  x_cross: Float32Array
+  y_cross: Float32Array
+  z_cross: Float32Array
 }
 
 const add = (
@@ -17,68 +18,267 @@ const add = (
   context.push(vec[2])
 }
 
+const x = 0,
+      y = 1,
+      z = 2
+
 export default class Benzaiten {
   static partition(
     shape: Shape,
-    divisions: number  = 2,
+    divisions: number  = 4,
     space:     Vector3 = new Float32Array([1, 1, 1]),
+    origin:    Vector3 = new Float32Array([0, 0, 0]),
+    recursions: number = 1,
   ): TestResults {
-    const x = 0,
-          y = 1,
-          z = 2
-
-    const radius = {
-      x: space[x] * .5,
-      y: space[y] * .5,
-      z: space[z] * .5,
+    const output = {
+      debug:   [] as Array<number>,
+      x_cross: [] as Array<number>,
+      y_cross: [] as Array<number>,
+      z_cross: [] as Array<number>,
     }
 
-    const chunk      = 1 / divisions,
-          level      = divisions * divisions,
-          iterations = level * divisions
-          
-    const outside = [] as Array<number>,
-          inside  = [] as Array<number>,
-          debug   = [] as Array<number>
+    const extent = {
+      x: space[x] / 2,
+      y: space[y] / 2,
+      z: space[z] / 2,
+    }
 
-    const extra_x =   divisions * chunk  * .5,
-          extra_y = -(divisions * chunk) * .5,
-          extra_z =   divisions * chunk  * .5
+    const level      = 4,
+          iterations = 8
 
-    for (let i = 0, v = 0; i < iterations; i++) {
-      const x_offset = i % divisions,
+    let needs_recursion = false
+
+    const offset_x = space[x] - extent.x,
+          offset_y = space[y] - extent.y,
+          offset_z = space[z] - extent.z
+
+    for (let i = 0; i < iterations; i++) {
+      const x_offset = i % 2,
             y_offset = Math.floor(i / level),
-            z_offset = Math.floor((i % level) / divisions)
+            z_offset = Math.floor(i / iterations * level % 2)
 
-      const left  = -(space[x] - radius.x) + (x_offset * (space[x] * chunk)),
-            top   =  (space[y] - radius.y) - (y_offset * (space[y] * chunk)),
-            front = -(space[z] - radius.z) + (z_offset * (space[z] * chunk))
-            
-      const offset = chunk * .5,
-            test   = new Float32Array([left + offset, top - offset, front + offset])
+      const left   = origin[x] - offset_x + ( x_offset      * extent.x),
+            top    = origin[y] + offset_y - ( y_offset      * extent.y),
+            back   = origin[z] - offset_z + ( z_offset      * extent.z),
+            right  = origin[x] - offset_x + ((x_offset + 1) * extent.x),
+            bottom = origin[y] + offset_y - ((y_offset + 1) * extent.y),
+            front  = origin[z] - offset_z + ((z_offset + 1) * extent.z)
 
-      shape(test) > 0 ? add(outside, test) : add(inside, test)
+      add(output.debug, new Float32Array([left, top, back]))
 
-      add(debug, new Float32Array([left, top, front]))
-
-      if (x_offset === 0) { add(debug, new Float32Array([extra_x, top,     front]))
-        if (y_offset === 0) add(debug, new Float32Array([extra_x, extra_y, front]))
+      // Testing along X axis
+      {
+        const result_x_one = shape(new Float32Array([left,  top, back])),
+              result_x_two = shape(new Float32Array([right, top, back])),
+              x_point      = new Float32Array([left + (extent.x * .5), top, back])
+  
+        if ((result_x_one > 0 && result_x_two < 0) ||
+            (result_x_one < 0 && result_x_two > 0) ||
+             result_x_one === 0                    ||
+             result_x_two === 0
+        ) {
+          if (recursions === divisions) add(output.x_cross, x_point)
+          else needs_recursion = true
+        }
       }
 
-      if (y_offset === 0) add(debug, new Float32Array([left, extra_y, front]))
+      {
+        const result_x_one = shape(new Float32Array([left,  bottom, back])),
+              result_x_two = shape(new Float32Array([right, bottom, back])),
+              x_point      = new Float32Array([left + (extent.x * .5), bottom, back])
+  
+        if ((result_x_one > 0 && result_x_two < 0) ||
+            (result_x_one < 0 && result_x_two > 0) ||
+             result_x_one === 0                    ||
+             result_x_two === 0
+        ) {
+          if (recursions === divisions) add(output.x_cross, x_point)
+          else needs_recursion = true
+        }
+      }
 
-      if (z_offset === 0) { add(debug, new Float32Array([left,    top,     extra_z]))
-        if (x_offset === 0) add(debug, new Float32Array([extra_x, top,     extra_z]))
-        if (y_offset === 0) add(debug, new Float32Array([left,    extra_y, extra_z]))
+      {
+        const result_x_one = shape(new Float32Array([left,  top, front])),
+              result_x_two = shape(new Float32Array([right, top, front])),
+              x_point      = new Float32Array([left + (extent.x * .5), top, front])
+  
+        if ((result_x_one > 0 && result_x_two < 0) ||
+            (result_x_one < 0 && result_x_two > 0) ||
+             result_x_one === 0                    ||
+             result_x_two === 0
+        ) {
+          if (recursions === divisions) add(output.x_cross, x_point)
+          else needs_recursion = true
+        }
+      }
+
+      {
+        const result_x_one = shape(new Float32Array([left,  bottom, front])),
+              result_x_two = shape(new Float32Array([right, bottom, front])),
+              x_point      = new Float32Array([left + (extent.x * .5), bottom, front])
+  
+        if ((result_x_one > 0 && result_x_two < 0) ||
+            (result_x_one < 0 && result_x_two > 0) ||
+             result_x_one === 0                    ||
+             result_x_two === 0
+        ) {
+          if (recursions === divisions) add(output.x_cross, x_point)
+          else needs_recursion = true
+        }
+      }
+
+      // Testing along Y axis
+      {
+        const result_y_one = shape(new Float32Array([left, top,    back])),
+              result_y_two = shape(new Float32Array([left, bottom, back])),
+              y_point      = new Float32Array([left, top - (extent.y * .5), back])
+
+        if ((result_y_one > 0 && result_y_two < 0) ||
+            (result_y_one < 0 && result_y_two > 0) ||
+            result_y_one === 0                    ||
+            result_y_two === 0
+        ) {
+          if (recursions === divisions) add(output.y_cross, y_point)
+          else needs_recursion = true
+        }
+      }
+
+      {
+        const result_y_one = shape(new Float32Array([right, top,    back])),
+              result_y_two = shape(new Float32Array([right, bottom, back])),
+              y_point      = new Float32Array([right, top - (extent.y * .5), back])
+  
+        if ((result_y_one > 0 && result_y_two < 0) ||
+            (result_y_one < 0 && result_y_two > 0) ||
+             result_y_one === 0                    ||
+             result_y_two === 0
+        ) {
+          if (recursions === divisions) add(output.y_cross, y_point)
+          else needs_recursion = true
+        }
+      }
+
+      {
+        const result_y_one = shape(new Float32Array([left, top,    front])),
+              result_y_two = shape(new Float32Array([left, bottom, front])),
+              y_point      = new Float32Array([left, top - (extent.y * .5), front])
+
+        if ((result_y_one > 0 && result_y_two < 0) ||
+            (result_y_one < 0 && result_y_two > 0) ||
+            result_y_one === 0                    ||
+            result_y_two === 0
+        ) {
+          if (recursions === divisions) add(output.y_cross, y_point)
+          else needs_recursion = true
+        }
+      }
+
+      {
+        const result_y_one = shape(new Float32Array([right, top,    front])),
+              result_y_two = shape(new Float32Array([right, bottom, front])),
+              y_point      = new Float32Array([right, top - (extent.y * .5), front])
+  
+        if ((result_y_one > 0 && result_y_two < 0) ||
+            (result_y_one < 0 && result_y_two > 0) ||
+             result_y_one === 0                    ||
+             result_y_two === 0
+        ) {
+          if (recursions === divisions) add(output.y_cross, y_point)
+          else needs_recursion = true
+        }
+      }
+
+      // Testing along Z axis
+      {
+        const result_z_one = shape(new Float32Array([left, top, back ])),
+              result_z_two = shape(new Float32Array([left, top, front])),
+              z_point      = new Float32Array([left, top, back + (extent.z * .5)])
+  
+        if ((result_z_one > 0 && result_z_two < 0) ||
+            (result_z_one < 0 && result_z_two > 0) ||
+             result_z_one === 0                    ||
+             result_z_two === 0
+        ) {
+          if (recursions === divisions) add(output.z_cross, z_point)
+          else needs_recursion = true
+        }
+      }
+
+      {
+        const result_z_one = shape(new Float32Array([right, top, back ])),
+              result_z_two = shape(new Float32Array([right, top, front])),
+              z_point      = new Float32Array([right, top, back + (extent.z * .5)])
+  
+        if ((result_z_one > 0 && result_z_two < 0) ||
+            (result_z_one < 0 && result_z_two > 0) ||
+             result_z_one === 0                    ||
+             result_z_two === 0
+        ) {
+          if (recursions === divisions) add(output.z_cross, z_point)
+          else needs_recursion = true
+        }
+      }
+
+      {
+        const result_z_one = shape(new Float32Array([left, bottom, back ])),
+              result_z_two = shape(new Float32Array([left, bottom, front])),
+              z_point      = new Float32Array([left, bottom, back + (extent.z * .5)])
+  
+        if ((result_z_one > 0 && result_z_two < 0) ||
+            (result_z_one < 0 && result_z_two > 0) ||
+             result_z_one === 0                    ||
+             result_z_two === 0
+        ) {
+          if (recursions === divisions) add(output.z_cross, z_point)
+          else needs_recursion = true
+        }
+      }
+
+      {
+        const result_z_one = shape(new Float32Array([right, bottom, back ])),
+              result_z_two = shape(new Float32Array([right, bottom, front])),
+              z_point      = new Float32Array([right, bottom, back + (extent.z * .5)])
+  
+        if ((result_z_one > 0 && result_z_two < 0) ||
+            (result_z_one < 0 && result_z_two > 0) ||
+             result_z_one === 0                    ||
+             result_z_two === 0
+        ) {
+          if (recursions === divisions) add(output.z_cross, z_point)
+          else needs_recursion = true
+        }
+      }
+
+      if (x_offset === 0) { add(output.debug, new Float32Array([right, top,    back]))
+        if (y_offset === 0) add(output.debug, new Float32Array([right, bottom, back]))
+      }
+
+      if (y_offset === 0) add(output.debug, new Float32Array([left, bottom, back]))
+
+      if (z_offset === 0) { add(output.debug, new Float32Array([left,  top,    front]))
+        if (x_offset === 0) add(output.debug, new Float32Array([right, top,    front]))
+        if (y_offset === 0) add(output.debug, new Float32Array([left,  bottom, front]))
+      }
+
+      if (needs_recursion && recursions + 1 <= divisions) {
+        const divided_origin   = new Float32Array([left + (extent.x * .5), top - (extent.y * .5), back + (extent.z * .5)]),
+              divided_space    = new Float32Array([extent.x, extent.y, extent.z]),
+              recursion_output = Benzaiten.partition(shape, divisions, divided_space, divided_origin, recursions + 1)
+
+        output.debug   = [...output.debug,   ...recursion_output.debug  ]
+        output.x_cross = [...output.x_cross, ...recursion_output.x_cross]
+        output.y_cross = [...output.y_cross, ...recursion_output.y_cross]
+        output.z_cross = [...output.z_cross, ...recursion_output.z_cross]
       }
     }
 
-    add(debug, new Float32Array([extra_x, extra_y, extra_z]))
+    add(output.debug, new Float32Array([extent.x, extent.y, extent.z]))
 
     return {
-      debug:   new Float32Array(debug),
-      inside:  new Float32Array(inside),
-      outside: new Float32Array(outside),
+      debug:   new Float32Array(output.debug  ),
+      x_cross: new Float32Array(output.x_cross),
+      y_cross: new Float32Array(output.y_cross),
+      z_cross: new Float32Array(output.z_cross),
     }
   }
 }
