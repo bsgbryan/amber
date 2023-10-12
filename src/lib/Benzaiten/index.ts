@@ -8,66 +8,41 @@ export default class Benzaiten {
   ): Float32Array {
     if (divisions % 2 !== 0) throw new Error('divisions must be a power of 2')
 
-    /**
-     * 8 * 8 * 3 because the space will be divided in "half" moving away from each corner,
-     * so there will be 8 chunks originating at the:
-     * 1. top front left
-     * 2. top front right
-     * 3. top back right
-     * 4. top back left
-     * 5. bottom front left
-     * 6. bottom front right
-     * 7. bottom back right
-     * 8. bottom back left
-     * 
-     * Each chuck will have 8 vertices; each vertex having 3 floats for x, y, and z
-     */
-    const output = new Float32Array(8 * 8 * 3)
-
     const x = 0,
           y = 1,
           z = 2
 
-    const extent = 1 / divisions
+    const extent = {
+      x: space[x] * .5,
+      y: space[y] * .5,
+      z: space[z] * .5,
+    }
 
-    const top    =  space[y] * extent,
-          bottom = -top,
-          left   = -space[x] * extent,
-          right  = -left,
-          front  =  space[z] * extent, // Facing away from us; far edge of space
-          back   = -front              // Facing toward us;    near edge of space
+    const chunk = {
+      x: 1 / divisions,
+      y: 1 / divisions,
+      z: 1 / divisions,
+    }
 
-    output[x] = left
-    output[y] = top
-    output[z] = back
-    
-    output[3 + x] = right
-    output[3 + y] = top
-    output[3 + z] = back
+    const per_row    = divisions * divisions
+    const iterations = divisions * divisions * divisions,
+          output     = new Float32Array(iterations * 3)
 
-    output[6 + x] = right
-    output[6 + y] = bottom
-    output[6 + z] = back
+    for (let i = 0, v = 0; i < iterations; i++) {
+      const x_offset = i % divisions,
+            y_offset = Math.floor(i / per_row),
+            z_offset = Math.floor((i % per_row) / divisions)
 
-    output[9 + x] = left
-    output[9 + y] = bottom
-    output[9 + z] = back
+      const top   =  (space[y] - extent.y) - (y_offset * (space[y] * chunk.y)),
+            left  = -(space[x] - extent.x) + (x_offset * (space[x] * chunk.x)),
+            front = -(space[z] - extent.z) + (z_offset * (space[z] * chunk.z))
 
-    output[12 + x] = left
-    output[12 + y] = top
-    output[12 + z] = front
+      console.log({ top, left, front })
 
-    output[15 + x] = right
-    output[15 + y] = top
-    output[15 + z] = front
-
-    output[18 + x] = right
-    output[18 + y] = bottom
-    output[18 + z] = front
-
-    output[21 + x] = left
-    output[21 + y] = bottom
-    output[21 + z] = front
+      output[v++] = left
+      output[v++] = top
+      output[v++] = front
+    }
 
     return output
   }
