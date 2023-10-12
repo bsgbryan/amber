@@ -5,12 +5,12 @@ import { Shape } from "./shapes/types"
 import { vec3 } from "../Sunya"
 
 import {
-  needs_x_recursion,
-  needs_y_recursion,
-  needs_z_recursion,
-  surface_x_point,
-  surface_y_point,
-  surface_z_point,
+  x_recursion_edge,
+  y_recursion_edge,
+  z_recursion_edge,
+  surface_x_vertex,
+  surface_y_vertex,
+  surface_z_vertex,
 } from "./helpers"
 
 import { Sides } from "./types"
@@ -58,11 +58,13 @@ export default class Benzaiten {
         front:  start_z + ((current_z + 1) * extent_z),
       }
 
-      const recurse_x = needs_x_recursion(shape, sides),
-            recurse_y = needs_y_recursion(shape, sides),
-            recurse_z = needs_z_recursion(shape, sides)
+      const x_cross_edge = x_recursion_edge(shape, sides),
+            y_cross_edge = y_recursion_edge(shape, sides),
+            z_cross_edge = z_recursion_edge(shape, sides)
 
-      if ((recurse_x || recurse_y || recurse_z) && recursions + 1 <= divisions) {
+      const recurse = x_cross_edge > -1 || y_cross_edge > -1 || z_cross_edge > -1
+
+      if (recurse && recursions + 1 <= divisions) {
         const origin_x = sides.left + (extent_x * half),
               origin_y = sides.top  - (extent_y * half),
               origin_z = sides.back + (extent_z * half)
@@ -79,13 +81,20 @@ export default class Benzaiten {
         output = [...output, ...recursion_output]
       }
       
-      if (recursions === divisions)
+      if (recursions === divisions) {
+        const point_x = x_cross_edge === 3 && surface_x_vertex(shape, sides),
+              point_y = y_cross_edge === 3 && surface_y_vertex(shape, sides),
+              point_z = z_cross_edge === 3 && surface_z_vertex(shape, sides)
+
+        // TODO: Merge multiple points
+
         output = [
-          ...output,  
-          ...(surface_x_point(shape, sides) || []),
-          ...(surface_y_point(shape, sides) || []),
-          ...(surface_z_point(shape, sides) || []),
+          ...output,
+          ...(point_x || []),
+          ...(point_y || []),
+          ...(point_z || []),
         ]
+      }
     }
 
     return new Float32Array(output)
