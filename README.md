@@ -18,6 +18,7 @@ What does that mean?
 * **[Finesse](./src/lib/Finesse):** Flexible, sensible, shockingly-adept input handling.
 * **[Kali](./src/lib/Kali):** A tiny tool that makes scaling time in the engine as easy as a single method call.
 * **[Legion](./src/lib/Legion):** An implementation of the [ECS](https://en.wikipedia.org/wiki/Entity_component_system) design pattern.
+* **[Sunya](./Sunya)** A library of helpful mathmatical functions for 3D data structures.
 * **Strata:** UI tooling. It's all of Amber's buttons, switches, dialogs, and stuff.
 * **[Xenon](./src/lib/Xenon):** A blisteringly-fast, elegant rendering engine.
 * **[Yggdrasil](./src/lib/Yggdrasil):** Manages all the FidelityTrees; ensuring the engine is always running at peak perfomance, while hitting the [frame rate](https://www.ign.com/articles/2014/11/05/understanding-frame-rate-and-its-importance) target you specify.

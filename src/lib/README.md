@@ -24,5 +24,6 @@ The simulation engine is composed of the following pieces:
 * [Finesse](./Finesse) handles input processing
 * [Kali](./Kali) manages time
 * [Legion](./Legion) maintains ECS state
+* [Sunya](./Sunya) handles maths
 * [Xenon](./Xenon) renders things
 * [Yggdrasil](./Yggdrasil) manages simulation fidelity
