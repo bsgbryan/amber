@@ -21,12 +21,7 @@ const TestScene: Component = () => {
   createEffect(async () => {
     await Eunomia.init()
 
-    const results = Benzaiten.partition(
-      Sphere(),
-      3,
-      new Float32Array([4, 2, 2]),
-      new Float32Array([2, 1, 1]),
-    )
+    const results = Benzaiten.partition(Sphere(), 4)
 
     new ColoredPoint(Color.from_html_rgb(255, 128, 191), .125).apply_to(results)
 

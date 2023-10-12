@@ -1,3 +1,7 @@
+import { Vector3 } from "../Sunya/types"
+
+import { vec3 } from "../Sunya"
+
 import { Shape } from "./shapes/types"
 
 import {
@@ -19,68 +23,71 @@ const crosses = (
           b === 0
 }
 
-export const test_x = (
-  shape:      Shape,
-  sides:      Sides,
-  recursions: number,
-  divisions:  number,
+const zero = vec3.zero()
+const v3   = vec3.create
+
+const surface = (
+  x: number,
+  y: number,
+  z: number,
+): Vector3 =>
+  vec3.multiply(
+    v3(.475, .475, .475),
+    vec3.add(
+      zero,
+      vec3.normalize(
+        vec3.subtract(
+          v3(x, y, z),
+          zero,
+        )
+      )
+    )
+  )
+
+export const surface_x_point = (
+  distance: Shape,
+  sides:    Sides,
 ): TestResult => {
   for (let i = 0; i < 4; i++) {
-    const I = i % 2,
-          Y = sides[y[I]],
-          Z = sides[z[I]],
+    const Y = sides[y[i % 2]],
+          Z = sides[z[Math.floor(i / 2)]],
           L = sides[x[0]],
           R = sides[x[1]],
-          a = shape(new Float32Array([L, Y, Z]))
+          a = distance(L, Y, Z)
 
-    if (crosses(a, shape(new Float32Array([R, Y, Z]))))
-      return recursions === divisions ?
-        new Float32Array([L + (a < 0 ? -a : a), Y, Z])
-        :
-        null
+    if (crosses(a, distance(R, Y, Z)))
+      return surface(L + Math.abs(a), Y, Z)
   }
 }
 
-export const test_y = (
-  shape:      Shape,
-  sides:      Sides,
-  recursions: number,
-  divisions:  number,
+export const surface_y_point = (
+  distance: Shape,
+  sides:    Sides,
 ): TestResult => {
   for (let i = 0; i < 4; i++) {
-    const I = i % 2,
-          X = sides[x[I]],
-          Z = sides[z[I]],
+    const X = sides[x[i % 2]],
+          Z = sides[z[Math.floor(i / 2)]],
           T = sides[y[0]],
           B = sides[y[1]],
-          a = shape(new Float32Array([X, T, Z]))
+          a = distance(X, T, Z)
 
-    if (crosses(a, shape(new Float32Array([X, B, Z]))))
-      return recursions === divisions ?
-        new Float32Array([X, T - (a < 0 ? -a : a), Z])
-        :
-        null
+    if (crosses(a, distance(X, B, Z)))
+      return surface(X, T - Math.abs(a), Z)
   }
 }
 
-export const test_z = (
-  shape:      Shape,
-  sides:      Sides,
-  recursions: number,
-  divisions:  number,
+export const surface_z_point = (
+  distance: Shape,
+  sides:    Sides,
 ): TestResult => {
   for (let i = 0; i < 4; i++) {
-    const I = i % 2,
-          X = sides[x[I]],
-          Y = sides[y[I]],
+    const X = sides[x[i % 2]],
+          Y = sides[y[Math.floor(i / 2)]],
           B = sides[z[0]],
           F = sides[z[1]],
-          a = shape(new Float32Array([X, Y, B]))
+          a = distance(X, Y, B)
 
-    if (crosses(a, shape(new Float32Array([X, Y, F]))))
-      return recursions === divisions ?
-        new Float32Array([X, Y, B + (a < 0 ? -a : a)])
-        :
-        null
+    if (crosses(a, distance(X, Y, F)))
+      return surface(X, Y, B + Math.abs(a))
   }
 }

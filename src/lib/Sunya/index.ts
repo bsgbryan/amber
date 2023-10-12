@@ -1,6 +1,15 @@
 export const degrees_to_radians = (input: number): number => input * (Math.PI / 180)
 
 export const vec3 = {
+  create(x: number, y: number, z: number, dst?: Float32Array) {
+    dst = dst || new Float32Array(3)
+
+    dst[0] = x
+    dst[1] = y
+    dst[2] = z
+
+    return dst
+  },
   identity(dst?: Float32Array): Float32Array {
     dst = dst || new Float32Array(3)
 

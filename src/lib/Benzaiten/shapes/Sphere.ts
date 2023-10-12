@@ -1,7 +1,11 @@
 import { vec3 } from "../../Sunya"
+
 import { Shape } from "./types"
 
-const Sphere = (raduis = .475): Shape =>
-  (point: Float32Array) => Math.abs(vec3.distance(new Float32Array([0, 0, 0]), point)) - raduis
+const zero = vec3.zero()
+
+const Sphere = (radius = .475): Shape =>
+  (x, y, z) =>
+    vec3.distance(zero, vec3.create(x, y, z)) - radius
 
 export default Sphere

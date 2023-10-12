@@ -1,1 +1,5 @@
-export type Shape = (point: Float32Array) => number
+export type Shape = (
+  x: number,
+  y: number,
+  z: number,
+) => number

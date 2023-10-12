@@ -2,10 +2,12 @@ import { Vector3 } from "../Sunya/types"
 
 import { Shape } from "./shapes/types"
 
+import { vec3 } from "../Sunya"
+
 import {
-  test_x,
-  test_y,
-  test_z,
+  surface_x_point,
+  surface_y_point,
+  surface_z_point,
 } from "./helpers"
 
 import { Sides } from "./types"
@@ -16,16 +18,18 @@ const x = 0,
 
 const half = .5
 
+const v3 = vec3.create
+
 export default class Benzaiten {
   static partition(
-    shape: Shape,
+    shape:      Shape,
     divisions:  number  = 2,
-    segments:   Vector3 = new Float32Array([2, 2, 2]),
-    space:      Vector3 = new Float32Array([1, 1, 1]),
-    origin:     Vector3 = new Float32Array([0, 0, 0]),
+    segments:   Vector3 = v3(2, 2, 2),
+    space:      Vector3 = v3(1, 1, 1),
+    origin:     Vector3 = v3(0, 0, 0),
     recursions: number = 1,
   ): Float32Array {
-    let output: Float32Array = new Float32Array()
+    let output: Array<number> = []
 
     const extent_x = space[x] / segments[x],
           extent_y = space[y] / segments[y],
@@ -51,11 +55,11 @@ export default class Benzaiten {
         front:  start_z + ((current_z + 1) * extent_z),
       }
 
-      const x_result = test_x(shape, sides, recursions, divisions),
-            y_result = test_y(shape, sides, recursions, divisions),
-            z_result = test_z(shape, sides, recursions, divisions)
+      const x_point = surface_x_point(shape, sides),
+            y_point = surface_y_point(shape, sides),
+            z_point = surface_z_point(shape, sides)
 
-      const needs_recursion = x_result === null || y_result === null || z_result === null
+      const needs_recursion = x_point || y_point || z_point
 
       if (needs_recursion && recursions + 1 <= divisions) {
         const origin_x = sides.left + (extent_x * half),
@@ -66,22 +70,20 @@ export default class Benzaiten {
           shape,
           divisions,
           undefined,
-          new Float32Array([extent_x, extent_y, extent_z]),
-          new Float32Array([origin_x, origin_y, origin_z]),
+          v3(extent_x, extent_y, extent_z),
+          v3(origin_x, origin_y, origin_z),
           recursions + 1,
         )
 
-        output = new Float32Array([...output, ...recursion_output])
+        output = [...output, ...recursion_output]
       }
-      else {
-        let temp: Array<number> = []
-  
-        if (x_result instanceof Float32Array) temp = [...temp, ...x_result]
-        if (y_result instanceof Float32Array) temp = [...temp, ...y_result]
-        if (z_result instanceof Float32Array) temp = [...temp, ...z_result]
-
-        output = new Float32Array([...output, ...temp])
-      }
+      else if (recursions === divisions)
+        output = [
+          ...output,  
+          ...(x_point || []),
+          ...(y_point || []),
+          ...(z_point || []),
+        ]
     }
 
     return new Float32Array(output)
