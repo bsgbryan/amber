@@ -77,7 +77,7 @@ export default class Benzaiten {
                 divisions,
                 divided_space,
                 divided_origin,
-                recursions + 1
+                recursions + 1,
               )
 
         output.debug   = [...output.debug,   ...recursion_output.debug  ]
