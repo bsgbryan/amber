@@ -3,7 +3,7 @@ import {
   degrees_to_radians,
   mat4,
   vec3,
-} from './math'
+} from '../Sunya'
 
 import { VPM } from './settings'
 

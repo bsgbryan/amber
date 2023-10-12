@@ -98,6 +98,13 @@ export const vec3 = {
     dst[2] = a[2] * Math.cos(rad) - a[0] * Math.sin(rad)
 
     return dst
+  },
+  distance(a: Float32Array, b: Float32Array): number {
+    const x = b[0] - a[0],
+          y = b[1] - a[1],
+          z = b[2] - a[2]
+
+    return Math.sqrt(x * x + y * y + z * z)
   }
 }
 

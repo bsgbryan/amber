@@ -6,7 +6,7 @@ import {
   degrees_to_radians,
   quat,
   vec3,
-} from "../../Xenon/math"
+} from "../../Sunya"
 
 import Finesse from "../../Finesse"
 
