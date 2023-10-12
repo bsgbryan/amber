@@ -55,12 +55,6 @@ export default class Benzaiten {
             y_result = test_y(shape, sides, recursions, divisions),
             z_result = test_z(shape, sides, recursions, divisions)
 
-      let temp: Array<number> = []
-
-      if (x_result instanceof Float32Array) temp = [...temp, ...x_result]
-      if (y_result instanceof Float32Array) temp = [...temp, ...y_result]
-      if (z_result instanceof Float32Array) temp = [...temp, ...z_result]
-
       const needs_recursion = x_result === null || y_result === null || z_result === null
 
       if (needs_recursion && recursions + 1 <= divisions) {
@@ -79,7 +73,15 @@ export default class Benzaiten {
 
         output = new Float32Array([...output, ...recursion_output])
       }
-      else output = new Float32Array([...output, ...temp])
+      else {
+        let temp: Array<number> = []
+  
+        if (x_result instanceof Float32Array) temp = [...temp, ...x_result]
+        if (y_result instanceof Float32Array) temp = [...temp, ...y_result]
+        if (z_result instanceof Float32Array) temp = [...temp, ...z_result]
+
+        output = new Float32Array([...output, ...temp])
+      }
     }
 
     return new Float32Array(output)
