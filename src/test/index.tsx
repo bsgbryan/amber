@@ -13,15 +13,15 @@ import Update_MainCamera_Position_and_LookDirection from "../lib/Athenaeum/syste
 
 import Benzaiten from "../lib/Benzaiten"
 
-import Sphere from "../lib/Benzaiten/shapes/Sphere"
+import Sphere       from "../lib/Benzaiten/shapes/Sphere"
 import ColoredPoint from "../lib/Athenaeum/materials/ColoredPoint"
-import Color from "../lib/Athenaeum/Color"
+import Color        from "../lib/Athenaeum/Color"
 
 const TestScene: Component = () => {
   createEffect(async () => {
     await Eunomia.init()
 
-    const results = Benzaiten.partition(Sphere(), 3)
+    const results = Benzaiten.partition(Sphere(), 5)
 
     // new ColoredPoint(Color.from_html_rgb(255, 240, 240), .050).apply_to(results.debug)
     new ColoredPoint(Color.from_html_rgb(255, 128, 191), .125).apply_to(results.x_cross)
