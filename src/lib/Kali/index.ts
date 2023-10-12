@@ -9,6 +9,14 @@ export default class Kali {
   static #last_tick = 0
   static #tick      = 0
 
+  /**
+   * The number of seconds between frame engine ticks
+   * 
+   * @remarks
+   * Both the unscaled and scaled values are returned
+   * 
+   * @returns The scaled and unscaled seconds fetween engine ticks as a {@link DeltaTime} instance
+   */
   static get delta_seconds(): DeltaTime {
     return {
       scaled:   this.#scaled_delta_seconds,
@@ -16,6 +24,9 @@ export default class Kali {
     }
   }
 
+  /**
+   * Updates the scaled and unscaled seconds between engine ticks
+   */
   static update(): void {
     this.#last_tick = this.#tick
     this.#tick      = performance.now()
