@@ -23,10 +23,10 @@ const crosses = (
           b === 0
 }
 
-const zero = vec3.zero()
-const v3   = vec3.create
+const zero = vec3.zero(),
+      v3   = vec3.create
 
-const surface = (
+const surface_point = (
   x: number,
   y: number,
   z: number,
@@ -44,10 +44,10 @@ const surface = (
     )
   )
 
-export const surface_x_point = (
+export const needs_x_recursion = (
   distance: Shape,
   sides:    Sides,
-): TestResult => {
+): boolean => {
   for (let i = 0; i < 4; i++) {
     const Y = sides[y[i % 2]],
           Z = sides[z[Math.floor(i / 2)]],
@@ -55,15 +55,14 @@ export const surface_x_point = (
           R = sides[x[1]],
           a = distance(L, Y, Z)
 
-    if (crosses(a, distance(R, Y, Z)))
-      return surface(L + Math.abs(a), Y, Z)
+    if (crosses(a, distance(R, Y, Z))) return true
   }
 }
 
-export const surface_y_point = (
+export const needs_y_recursion = (
   distance: Shape,
   sides:    Sides,
-): TestResult => {
+): boolean => {
   for (let i = 0; i < 4; i++) {
     const X = sides[x[i % 2]],
           Z = sides[z[Math.floor(i / 2)]],
@@ -71,15 +70,14 @@ export const surface_y_point = (
           B = sides[y[1]],
           a = distance(X, T, Z)
 
-    if (crosses(a, distance(X, B, Z)))
-      return surface(X, T - Math.abs(a), Z)
+    if (crosses(a, distance(X, B, Z))) return true
   }
 }
 
-export const surface_z_point = (
+export const needs_z_recursion = (
   distance: Shape,
   sides:    Sides,
-): TestResult => {
+): boolean => {
   for (let i = 0; i < 4; i++) {
     const X = sides[x[i % 2]],
           Y = sides[y[Math.floor(i / 2)]],
@@ -87,7 +85,48 @@ export const surface_z_point = (
           F = sides[z[1]],
           a = distance(X, Y, B)
 
-    if (crosses(a, distance(X, Y, F)))
-      return surface(X, Y, B + Math.abs(a))
+    if (crosses(a, distance(X, Y, F))) return true
   }
+}
+
+export const surface_x_point = (
+  distance: Shape,
+  sides:    Sides,
+): TestResult => {
+  const Y = sides[y[1]],
+        Z = sides[z[1]],
+        L = sides[x[0]],
+        R = sides[x[1]],
+        a = distance(L, Y, Z)
+
+  if (crosses(a, distance(R, Y, Z)))
+    return surface_point(L + Math.abs(a), Y, Z)
+}
+
+export const surface_y_point = (
+  distance: Shape,
+  sides:    Sides,
+): TestResult => {
+  const X = sides[x[1]],
+        Z = sides[z[1]],
+        T = sides[y[0]],
+        B = sides[y[1]],
+        a = distance(X, T, Z)
+
+  if (crosses(a, distance(X, B, Z)))
+    return surface_point(X, T - Math.abs(a), Z)
+}
+
+export const surface_z_point = (
+  distance: Shape,
+  sides:    Sides,
+): TestResult => {
+  const X = sides[x[1]],
+        Y = sides[y[1]],
+        B = sides[z[0]],
+        F = sides[z[1]],
+        a = distance(X, Y, B)
+
+  if (crosses(a, distance(X, Y, F)))
+    return surface_point(X, Y, B + Math.abs(a))
 }

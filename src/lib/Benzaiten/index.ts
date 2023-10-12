@@ -5,6 +5,9 @@ import { Shape } from "./shapes/types"
 import { vec3 } from "../Sunya"
 
 import {
+  needs_x_recursion,
+  needs_y_recursion,
+  needs_z_recursion,
   surface_x_point,
   surface_y_point,
   surface_z_point,
@@ -55,13 +58,11 @@ export default class Benzaiten {
         front:  start_z + ((current_z + 1) * extent_z),
       }
 
-      const x_point = surface_x_point(shape, sides),
-            y_point = surface_y_point(shape, sides),
-            z_point = surface_z_point(shape, sides)
+      const recurse_x = needs_x_recursion(shape, sides),
+            recurse_y = needs_y_recursion(shape, sides),
+            recurse_z = needs_z_recursion(shape, sides)
 
-      const needs_recursion = x_point || y_point || z_point
-
-      if (needs_recursion && recursions + 1 <= divisions) {
+      if ((recurse_x || recurse_y || recurse_z) && recursions + 1 <= divisions) {
         const origin_x = sides.left + (extent_x * half),
               origin_y = sides.top  - (extent_y * half),
               origin_z = sides.back + (extent_z * half)
@@ -77,12 +78,13 @@ export default class Benzaiten {
 
         output = [...output, ...recursion_output]
       }
-      else if (recursions === divisions)
+      
+      if (recursions === divisions)
         output = [
           ...output,  
-          ...(x_point || []),
-          ...(y_point || []),
-          ...(z_point || []),
+          ...(surface_x_point(shape, sides) || []),
+          ...(surface_y_point(shape, sides) || []),
+          ...(surface_z_point(shape, sides) || []),
         ]
     }
 

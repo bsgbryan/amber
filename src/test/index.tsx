@@ -21,9 +21,9 @@ const TestScene: Component = () => {
   createEffect(async () => {
     await Eunomia.init()
 
-    const results = Benzaiten.partition(Sphere(), 4)
+    const points = Benzaiten.partition(Sphere(), 4)
 
-    new ColoredPoint(Color.from_html_rgb(255, 128, 191), .125).apply_to(results)
+    new ColoredPoint(Color.from_html_rgb(255, 128, 191), .125).apply_to(points)
 
     const camera = Legion.add_entity()
 
