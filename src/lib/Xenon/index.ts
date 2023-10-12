@@ -21,7 +21,7 @@ import {
  * 3. Call either:
  *     * {@link Xenon.register_render_encoding | `Xenon.register_render_encoding`} for **non-instanced** rendering
  *     * {@link Xenon.register_instanced_render_encoding | `Xenon.register_instanced_render_encoding`} for **instanced** rendering
- * 4. Add a material with geometry to render. _`TODO: Add link to one of the materials in Athenaeum`_
+ * 4. Add a material with geometry to render. _For an example, see src/test/index.tsx line: 29_
  * 5. Call {@link Xenon.render | `Xenon.render`}
  */
 export default class Xenon {
