@@ -6,11 +6,6 @@ import {
 import Eunomia from "../lib/Eunomia"
 import Legion  from "../lib/Legion"
 
-import Color from "../lib/Athenaeum/Color"
-
-import ColoredPoint      from "../lib/Athenaeum/materials/ColoredPoint"
-import SimpleVertexColor from "../lib/Athenaeum/materials/SimpleVertexColor"
-
 import MainCamera from "../lib/Athenaeum/components/MainCamera"
 import Position   from "../lib/Athenaeum/components/Position"
 
@@ -18,27 +13,25 @@ import Update_MainCamera_Position_and_LookDirection from "../lib/Athenaeum/syste
 
 import Benzaiten from "../lib/Benzaiten"
 
-import { cube } from "./data"
+import Sphere from "../lib/Benzaiten/shapes/Sphere"
+import ColoredPoint from "../lib/Athenaeum/materials/ColoredPoint"
+import Color from "../lib/Athenaeum/Color"
 
 const TestScene: Component = () => {
   createEffect(async () => {
     await Eunomia.init()
 
-    const unit_cube_space  = new Float32Array([1, 1, 1])
-    const unit_cube_points = Benzaiten.partition(unit_cube_space)
-    new ColoredPoint(Color.from_html_rgb(255,  87, 51)).apply_to(unit_cube_points)
+    const results = Benzaiten.partition(Sphere(), 69)
 
-    const rectangle_space  = new Float32Array([2, 2, 4])
-    const rectangle_points = Benzaiten.partition(rectangle_space)
-    new ColoredPoint(Color.from_html_rgb(255, 128, 98), 25).apply_to(rectangle_points)
+    new ColoredPoint(Color.from_html_rgb(128, 255, 191), .125).apply_to(results.debug)
+    new ColoredPoint(Color.from_html_rgb(255, 128, 191), .500).apply_to(results.inside)
+    new ColoredPoint(Color.from_html_rgb(128, 191, 255), .250).apply_to(results.outside)
 
-    new SimpleVertexColor().apply_to(cube)
-    
     const camera = Legion.add_entity()
 
     Legion.add_system(new Update_MainCamera_Position_and_LookDirection())
 
-    Legion.add_component(camera, new Position(0, 2, -10))
+    Legion.add_component(camera, new Position(0, .15, -1.5))
     Legion.add_component(camera, new MainCamera())
   })
 
