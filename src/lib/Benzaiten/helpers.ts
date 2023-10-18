@@ -191,3 +191,14 @@ export const merge = (
     return vec3.divide_by_scalar(vec3.add(vectors[2], m), 2)
   }
 }
+
+export const index = (
+  position: number,
+  space:    number,
+  segment:  number,
+): number => {
+  const g = 1 / space,
+        d = g * segment
+
+  return (position * d) + g
+}

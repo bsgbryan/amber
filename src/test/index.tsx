@@ -21,7 +21,7 @@ const TestScene: Component = () => {
   createEffect(async () => {
     await Eunomia.init()
 
-    const points = Benzaiten.partition(Sphere(), 4)
+    const points = new Benzaiten(Sphere(), 4).extract_surface()
 
     new ColoredPoint(Color.from_html_rgb(255, 128, 191), .125).apply_to(points)
 

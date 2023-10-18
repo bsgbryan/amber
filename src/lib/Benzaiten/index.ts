@@ -12,7 +12,10 @@ import {
   surface_y_vertex,
   surface_z_vertex,
   merge,
+  index,
 } from "./helpers"
+
+import { OCCUPIED } from "./CONSTANTS"
 
 import { Sides } from "./types"
 
@@ -25,30 +28,54 @@ const half = .5
 const v3 = vec3.create
 
 export default class Benzaiten {
-  static partition(
-    shape:      Shape,
-    divisions:  number  = 2,
-    segments:   Vector3 = v3(2, 2, 2),
+  #shape:     Shape
+  #divisions: number
+  #segments:  Vector3
+
+  #grid: Int8Array
+
+  constructor(
+    shape:     Shape,
+    divisions: number  = 2,
+    segments:  Vector3 = v3(2, 2, 2),
+  ) {
+    this.#shape     = shape
+    this.#divisions = divisions
+    this.#segments  = segments
+
+    const x_factor = divisions * segments[0],
+          y_factor = divisions * segments[1],
+          z_factor = divisions * segments[2]
+
+    this.#grid = new Int8Array(
+      divisions * x_factor *
+      divisions * y_factor *
+      divisions * z_factor
+    )
+  }
+
+  extract_surface(
     space:      Vector3 = v3(1, 1, 1),
     origin:     Vector3 = v3(0, 0, 0),
-    recursions: number = 1,
+    recursions: number  = 1,
   ): Float32Array {
     let output: Array<number> = []
 
-    const extent_x = space[x] / segments[x],
-          extent_y = space[y] / segments[y],
-          extent_z = space[z] / segments[z]
+    const extent_x = space[x] / this.#segments[x],
+          extent_y = space[y] / this.#segments[y],
+          extent_z = space[z] / this.#segments[z]
 
     const start_x = origin[x] - (space[x] * half),
           start_y = origin[y] + (space[y] * half),
           start_z = origin[z] - (space[z] * half)
 
-    const iterations = segments[x] * segments[y] * segments[z]
+    const level      = this.#segments[x] * this.#segments[y],
+          iterations = level             * this.#segments[z]
 
     for (let i = 0; i < iterations; i++) {
-      const current_x =             i %  segments[x],
-            current_y = Math.floor((i /  segments[x]) % segments[y]),
-            current_z = Math.floor( i / (segments[x]  * segments[y]) % segments[z])
+      const current_x =             i % this.#segments[x],
+            current_y = Math.floor( i / level              % this.#segments[y]),
+            current_z = Math.floor((i / this.#segments[x]) % this.#segments[z])
 
       const sides: Sides = {
         left:   start_x + ( current_x      * extent_x),
@@ -59,21 +86,18 @@ export default class Benzaiten {
         front:  start_z + ((current_z + 1) * extent_z),
       }
 
-      const x_cross_edge = x_recursion_edge(shape, sides),
-            y_cross_edge = y_recursion_edge(shape, sides),
-            z_cross_edge = z_recursion_edge(shape, sides)
+      const x_cross_edge = x_recursion_edge(this.#shape, sides),
+            y_cross_edge = y_recursion_edge(this.#shape, sides),
+            z_cross_edge = z_recursion_edge(this.#shape, sides)
 
       const recurse = x_cross_edge > -1 || y_cross_edge > -1 || z_cross_edge > -1
 
-      if (recurse && recursions + 1 <= divisions) {
+      if (recurse && recursions + 1 <= this.#divisions) {
         const origin_x = sides.left + (extent_x * half),
               origin_y = sides.top  - (extent_y * half),
               origin_z = sides.back + (extent_z * half)
 
-        const recursion_output = Benzaiten.partition(
-          shape,
-          divisions,
-          undefined,
+        const recursion_output = this.extract_surface(
           v3(extent_x, extent_y, extent_z),
           v3(origin_x, origin_y, origin_z),
           recursions + 1,
@@ -82,15 +106,25 @@ export default class Benzaiten {
         output = [...output, ...recursion_output]
       }
       
-      if (recursions === divisions)
+      if (recursions === this.#divisions) {
         output = [
           ...output,
           ...merge(
-            x_cross_edge === 3 && surface_x_vertex(shape, sides),
-            y_cross_edge === 3 && surface_y_vertex(shape, sides),
-            z_cross_edge === 3 && surface_z_vertex(shape, sides),
+            x_cross_edge === 3 && surface_x_vertex(this.#shape, sides),
+            y_cross_edge === 3 && surface_y_vertex(this.#shape, sides),
+            z_cross_edge === 3 && surface_z_vertex(this.#shape, sides),
           ),
         ]
+
+        const x_index = index(sides.left, space[x], this.#segments[x]),
+              y_index = index(sides.top,  space[y], this.#segments[y]),
+              z_index = index(sides.back, space[z], this.#segments[z]),
+              width   = 1 / space[x],
+              depth   = 1 / space[z],
+              vertex  = x_index + (z_index * width) + (y_index * width * depth)
+
+        this.#grid[vertex] = OCCUPIED
+      }
     }
 
     return new Float32Array(output)

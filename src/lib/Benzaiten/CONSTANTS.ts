@@ -1,0 +1,1 @@
+export const OCCUPIED = 255
