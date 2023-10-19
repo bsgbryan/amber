@@ -36,7 +36,7 @@ As an example, Xenon _only_ renders indexed/instanced geometry. There are absolu
 
 Settling on a single rendering option also makes many other decisions much simpler. For example:
 
-Question: "How are complex meshes constructed?"
+Question: "How are complex meshes constructed?"<br>
 Answer: "As one or more instances of smaller, simpler, meshes"
 
 An example of such a complex mesh might be a tree; instead of having a single mesh forthe tree, it would be built from many meshes - for parts of the trunk, sections of branches, and leaves. A dozen or so relatively simple meshes, when combined, would produce a varied collection of trees; that's also extremely efficient from a rendering and memory perspective.
