@@ -13,6 +13,9 @@ import {
   surface_z_vertex,
   merge,
   index,
+  extract_neighbor_axes,
+  grid_index,
+  neighbors,
 } from "./helpers"
 
 import { OCCUPIED } from "./CONSTANTS"
@@ -60,7 +63,7 @@ export default class Benzaiten {
     recursions: number  = 1,
   ): Float32Array {
     let output: Array<number> = []
-
+    
     const extent_x = space[x] / this.#segments[x],
           extent_y = space[y] / this.#segments[y],
           extent_z = space[z] / this.#segments[z]
@@ -106,7 +109,7 @@ export default class Benzaiten {
         output = [...output, ...recursion_output]
       }
       
-      if (recursions === this.#divisions) {
+      if ((recursions === this.#divisions) && (x_cross_edge === 3 || y_cross_edge === 3 || z_cross_edge === 3)) {
         output = [
           ...output,
           ...merge(
@@ -116,14 +119,30 @@ export default class Benzaiten {
           ),
         ]
 
-        const x_index = index(sides.left, space[x], this.#segments[x]),
-              y_index = index(sides.top,  space[y], this.#segments[y]),
-              z_index = index(sides.back, space[z], this.#segments[z]),
-              width   = 1 / space[x],
-              depth   = 1 / space[z],
-              vertex  = x_index + (z_index * width) + (y_index * width * depth)
+        const x_index = index( sides.left, space[x], this.#segments[x]),
+              y_index = index(-sides.top,  space[y], this.#segments[y]),
+              z_index = index( sides.back, space[z], this.#segments[z]),
+              width  = 1 / extent_x,
+              depth  = 1 / extent_z,
+              vertex  = grid_index(x_index, y_index, z_index, width, depth)
 
         this.#grid[vertex] = OCCUPIED
+
+        const n = neighbors(x_index, y_index, z_index, width, 1 / extent_y, depth, this.#grid)
+
+        if (n.length > 2) {
+          for (let _ = 0; _ < n.length;) {
+            const {
+              x: x_offset,
+              y: y_offset,
+              z: z_offset,
+            } = extract_neighbor_axes(n[_++])
+  
+            const vertex = n[_++]
+  
+            // TODO: Build up triangle index list
+          }
+        }
       }
     }
 

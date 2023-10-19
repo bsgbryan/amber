@@ -4,6 +4,8 @@ import { vec3 } from "../Sunya"
 
 import { Shape } from "./shapes/types"
 
+import { OCCUPIED } from "./CONSTANTS"
+
 import { Sides } from "./types"
 
 const x = ['left', 'right' ],
@@ -201,4 +203,60 @@ export const index = (
         d = g * segment
 
   return (position * d) + g
+}
+
+export const grid_index = (
+  x:     number,
+  y:     number,
+  z:     number,
+  width: number,
+  depth: number,
+) => x + (z * width) + (y * width * depth)
+
+export const extract_neighbor_axes = (index: number) => ({
+  x:   Math.floor((index % 3))     - 1,
+  y: -(Math.floor((index / 9))     - 1),
+  z:   Math.floor((index / 3) % 3) - 1
+})
+
+export const neighbors = (
+  x:      number,
+  y:      number,
+  z:      number,
+  width:  number,
+  height: number,
+  depth:  number,
+  grid:   Int8Array,
+): Array<number> => {
+  const output = []
+
+  for (let n = 0; n < 27; n++) {
+    const {
+      x: x_offset,
+      y: y_offset,
+      z: z_offset,
+    } = extract_neighbor_axes(n)
+    
+    const x_index = x + x_offset,
+          y_index = y + y_offset,
+          z_index = z + z_offset
+
+    if (
+       x_index > -1 && x_index <  width  &&
+       y_index <  1 && y_index > -height &&
+       z_index > -1 && z_index <  depth  &&
+      (x_index !== x || y_index !== y || z_index !== z)
+    ) {
+      const index    = (x_offset + 1) + ((z_offset + 1) * 3) + ((y_offset + 1) * 9),
+            vertex   =  grid_index(x_index, y_index, z_index, width, depth),
+            occupied =  grid[vertex] === OCCUPIED
+
+      if (occupied) {
+        output.push(index)
+        output.push(vertex)
+      }
+    }
+  }
+
+  return output
 }
