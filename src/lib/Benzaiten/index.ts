@@ -30,12 +30,17 @@ const half = .5
 
 const v3 = vec3.create
 
+type Mesh = {
+  vertices: Float32Array
+  indexes:  Uint16Array
+}
+
 export default class Benzaiten {
   #shape:     Shape
   #divisions: number
   #segments:  Vector3
 
-  #grid: Int8Array
+  #grid: Uint16Array
 
   constructor(
     shape:     Shape,
@@ -50,7 +55,10 @@ export default class Benzaiten {
           y_factor = divisions * segments[1],
           z_factor = divisions * segments[2]
 
-    this.#grid = new Int8Array(
+    // NOTE: This initializes all entries in `this.#grid` to have a value of `0`.
+    // `0` is a valid vertex index value, so all vertex indexes are offset by +1
+    // when added, and decremented by `1` (to their actual value) when read out.
+    this.#grid = new Uint16Array(
       divisions * x_factor *
       divisions * y_factor *
       divisions * z_factor
@@ -61,8 +69,9 @@ export default class Benzaiten {
     space:      Vector3 = v3(1, 1, 1),
     origin:     Vector3 = v3(0, 0, 0),
     recursions: number  = 1,
-  ): Float32Array {
-    let output: Array<number> = []
+  ): Mesh {
+    let vertices: Float32Array = new Float32Array()
+    let indexes:  Uint16Array  = new Uint16Array()
     
     const extent_x = space[x] / this.#segments[x],
           extent_y = space[y] / this.#segments[y],
@@ -106,46 +115,49 @@ export default class Benzaiten {
           recursions + 1,
         )
 
-        output = [...output, ...recursion_output]
+        vertices = new Float32Array([...vertices, ...recursion_output.vertices])
       }
       
       if ((recursions === this.#divisions) && (x_cross_edge === 3 || y_cross_edge === 3 || z_cross_edge === 3)) {
-        output = [
-          ...output,
+        vertices = new Float32Array([
+          ...vertices,
           ...merge(
             x_cross_edge === 3 && surface_x_vertex(this.#shape, sides),
             y_cross_edge === 3 && surface_y_vertex(this.#shape, sides),
             z_cross_edge === 3 && surface_z_vertex(this.#shape, sides),
           ),
-        ]
+        ])
 
         const x_index = index( sides.left, space[x], this.#segments[x]),
               y_index = index(-sides.top,  space[y], this.#segments[y]),
               z_index = index( sides.back, space[z], this.#segments[z]),
-              width  = 1 / extent_x,
-              depth  = 1 / extent_z,
+              width   = 1 / extent_x,
+              depth   = 1 / extent_z,
               vertex  = grid_index(x_index, y_index, z_index, width, depth)
 
-        this.#grid[vertex] = OCCUPIED
+        // NOTE: `this.#grid` stores all its values at +1 offset from their correct value.
+        // It does this to compensate for the fact that, on creation, `this.#grid` initializes
+        // all its entries to have a value of `0` - which is a valid vertex index. So, instead
+        // of `0`, the first vertex that gets added to `this.#grid` is stored with a value of
+        // `1` (the value of `vertices.length / 3` after the first vertex is added) - to
+        // distinguish it from "empty" `this.#grid` entries.
+        this.#grid[vertex] = vertices.length / 3
 
         const n = neighbors(x_index, y_index, z_index, width, 1 / extent_y, depth, this.#grid)
 
-        if (n.length > 2) {
-          for (let _ = 0; _ < n.length;) {
+        if (n.length > 2)
+          for (let _ = n.length - 1; _ > -1; _ -= 2) {
             const {
               x: x_offset,
               y: y_offset,
               z: z_offset,
-            } = extract_neighbor_axes(n[_++])
-  
-            const vertex = n[_++]
+            } = extract_neighbor_axes(n[_ - 1])
   
             // TODO: Build up triangle index list
           }
-        }
       }
     }
 
-    return new Float32Array(output)
+    return {vertices, indexes}
   }
 }

@@ -4,8 +4,6 @@ import { vec3 } from "../Sunya"
 
 import { Shape } from "./shapes/types"
 
-import { OCCUPIED } from "./CONSTANTS"
-
 import { Sides } from "./types"
 
 const x = ['left', 'right' ],
@@ -226,7 +224,7 @@ export const neighbors = (
   width:  number,
   height: number,
   depth:  number,
-  grid:   Int8Array,
+  grid:   Uint16Array,
 ): Array<number> => {
   const output = []
 
@@ -247,13 +245,18 @@ export const neighbors = (
        z_index > -1 && z_index <  depth  &&
       (x_index !== x || y_index !== y || z_index !== z)
     ) {
-      const index    = (x_offset + 1) + ((z_offset + 1) * 3) + ((y_offset + 1) * 9),
-            vertex   =  grid_index(x_index, y_index, z_index, width, depth),
-            occupied =  grid[vertex] === OCCUPIED
+      const index    = grid_index(x_offset + 1, y_offset + 1, z_offset + 1, 3,     3    ),
+            vertex   = grid_index(x_index,      y_index,      z_index,      width, depth),
+            occupied = grid[vertex] > 0
 
       if (occupied) {
         output.push(index)
-        output.push(vertex)
+        // NOTE: `grid` stores all its values at +1 offset from their correct value.
+        // It does this to compensate for the fact that, on creation, `grid` initializes
+        // all its entries to have a value of `0` - which is a valid vertex index. So,
+        // instead of `0`, the first vertex that gets added to `grid` is stored with a
+        // value of `1` - to distinguish it from "empty" grid entries.
+        output.push(grid[vertex] - 1)
       }
     }
   }
