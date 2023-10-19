@@ -39,4 +39,4 @@ Settling on a single rendering option also makes many other decisions much simpl
 Question: "How are complex meshes constructed?"<br>
 Answer: "As one or more instances of smaller, simpler, meshes"
 
-An example of such a complex mesh might be a tree; instead of having a single mesh forthe tree, it would be built from many meshes - for parts of the trunk, sections of branches, and leaves. A dozen or so relatively simple meshes, when combined, would produce a varied collection of trees; that's also extremely efficient from a rendering and memory perspective.
+An example of such a complex mesh might be a tree; instead of having a single mesh for the tree, it would be built from many meshes - for parts of the trunk, sections of branches, and leaves. A dozen or so relatively simple meshes, when combined, would produce a varied collection of trees. This lessens the cognitive load imposed by working on tree since all one needs to think about is designing a single branch, leaf, or trunk section at a time. It is also extremely efficient from a rendering and memory perspective.
