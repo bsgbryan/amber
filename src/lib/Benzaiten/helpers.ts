@@ -60,7 +60,7 @@ export const x_recursion_edge = (
   // Iterating downward is also the most efficient way to do it
   // since only a single iteration of the loop will execute
   // whenever a vertex should be generated!
-    for (let i = 3; i > -1; i--) {
+  for (let i = 3; i > -1; i--) {
     const Y = sides[y[i % 2]],
           Z = sides[z[Math.floor(i / 2)]],
           L = sides[x[0]],

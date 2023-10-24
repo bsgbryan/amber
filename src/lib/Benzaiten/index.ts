@@ -5,17 +5,13 @@ import { Shape } from "@/Benzaiten/shapes/types"
 import { vec3 } from "@/Sunya"
 
 import {
-  x_recursion_edge,
-  y_recursion_edge,
-  z_recursion_edge,
-  surface_x_vertex,
-  surface_y_vertex,
-  surface_z_vertex,
-  merge,
   index,
   grid_index,
   neighbors,
   to_3D,
+  x_recursion_edge,
+  y_recursion_edge,
+  z_recursion_edge,
 } from "@/Benzaiten/helpers"
 
 import {
@@ -84,8 +80,12 @@ export default class Benzaiten {
           extent_y = space[y] / this.#segments[y],
           extent_z = space[z] / this.#segments[z]
 
+    const half_x = extent_x * half,
+          half_y = extent_y * half,
+          half_z = extent_z * half
+
     const start_x = origin[x] - (space[x] * half),
-          start_y = origin[y] + (space[y] * half),
+          start_y = origin[y] - (space[y] * half),
           start_z = origin[z] - (space[z] * half)
 
     const level      = this.#segments[x] * this.#segments[y],
@@ -98,29 +98,29 @@ export default class Benzaiten {
 
       const sides: Sides = {
         left:   start_x + ( current_x      * extent_x),
-        top:    start_y - ( current_y      * extent_y),
+        bottom: start_y + ( current_y      * extent_y),
         back:   start_z + ( current_z      * extent_z),
         right:  start_x + ((current_x + 1) * extent_x),
-        bottom: start_y - ((current_y + 1) * extent_y),
+        top:    start_y + ((current_y + 1) * extent_y),
         front:  start_z + ((current_z + 1) * extent_z),
       }
 
-      const x_cross_edge = x_recursion_edge(this.#shape, sides),
-            y_cross_edge = y_recursion_edge(this.#shape, sides),
-            z_cross_edge = z_recursion_edge(this.#shape, sides)
+      const x_edge_crossed = x_recursion_edge(this.#shape, sides),
+            y_edge_crossed = y_recursion_edge(this.#shape, sides),
+            z_edge_crossed = z_recursion_edge(this.#shape, sides)
 
-      const recurse = x_cross_edge > -1 || y_cross_edge > -1 || z_cross_edge > -1
+      const recurse = x_edge_crossed > -1 || y_edge_crossed > -1 || z_edge_crossed > -1
 
       if (recurse && recursions + 1 <= this.#divisions) {
-        const origin_x = sides.left + (extent_x * half),
-              origin_y = sides.top  - (extent_y * half),
-              origin_z = sides.back + (extent_z * half)
+        const origin_x = sides.left   + half_x,
+              origin_y = sides.bottom + half_y,
+              origin_z = sides.back   + half_z
 
         this.#voxels = new Float32Array([
           ...this.#voxels,
-          sides.left + (extent_x * .5),
-          sides.top  - (extent_y * .5),
-          sides.back + (extent_z * .5),
+          sides.left   + half_x,
+          sides.bottom + half_y,
+          sides.back   + half_z,
         ])
 
         this.extract_surface(
@@ -129,11 +129,10 @@ export default class Benzaiten {
           recursions + 1,
         )
       }
-      
 
-      const x_index = index( sides.left, space[x], this.#segments[x]),
-            y_index = index(-sides.top,  space[y], this.#segments[y]),
-            z_index = index( sides.back, space[z], this.#segments[z]),
+      const x_index = index(sides.left,   space[x], this.#segments[x]),
+            y_index = index(sides.bottom, space[y], this.#segments[y]),
+            z_index = index(sides.back,   space[z], this.#segments[z]),
             width   = 1 / extent_x,
             depth   = 1 / extent_z,
             vertex  = grid_index(x_index, y_index, z_index, width, depth)
@@ -141,7 +140,7 @@ export default class Benzaiten {
       if (recursions === this.#divisions) {
       }
       
-      if ((recursions === this.#divisions) && (x_cross_edge === 3 || y_cross_edge === 3 || z_cross_edge === 3)) {
+      if ((recursions === this.#divisions) && (x_edge_crossed === 3 || y_edge_crossed === 3 || z_edge_crossed === 3)) {
         this.#vertices = new Float32Array([
           ...this.#vertices,
           // ...merge(
@@ -149,9 +148,9 @@ export default class Benzaiten {
           //   y_cross_edge === 3 && surface_y_vertex(this.#shape, sides),
           //   z_cross_edge === 3 && surface_z_vertex(this.#shape, sides),
           // ),
-          sides.left + (extent_x * .5),
-          sides.top  - (extent_y * .5),
-          sides.back + (extent_z * .5),
+          sides.left   + half_x,
+          sides.bottom + half_y,
+          sides.back   + half_z,
         ])
 
         // NOTE: `this.#grid` stores all its values at +1 offset from their correct value.
@@ -167,10 +166,10 @@ export default class Benzaiten {
     }
 
     if (recursions === 1) {
-      const width = this.#segments[x] ** this.#divisions
+      const width  = this.#segments[x] ** this.#divisions
       const height = this.#segments[y] ** this.#divisions
-      const depth = this.#segments[z] ** this.#divisions
-      const temp = []
+      const depth  = this.#segments[z] ** this.#divisions
+      const temp   = []
 
       for (const c of this.#cache) {
         const i = to_3D(c, width, depth)
@@ -191,7 +190,7 @@ export default class Benzaiten {
         indices:  new Uint16Array(),
       })
 
-      new ColoredPoint(Color.from_html_rgb(255, 255, 255), .5).apply_to({
+      new ColoredPoint(Color.from_html_rgb(255, 255, 255), half).apply_to({
         vertices: this.#vertices,
         indices:  new Uint16Array(),
       })
