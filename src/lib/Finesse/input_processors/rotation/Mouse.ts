@@ -1,8 +1,8 @@
-import Kali from "../../../Kali"
+import Kali from "@/Kali"
 
-import { RotationAxes } from "../../types"
+import { RotationAxes } from "@/Finesse/types"
 
-import RotationInputProcessor from "./Base"
+import RotationInputProcessor from "@/Finesse/input_processors/rotation/Base"
 
 export default class Keyboard extends RotationInputProcessor {
   static #active = false

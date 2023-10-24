@@ -1,7 +1,7 @@
-import { Component } from "../../Legion"
+import { Component } from "@/Legion"
 
 export default class Position extends Component {
-  constructor(
+    constructor(
     public x: number,
     public y: number,
     public z: number,

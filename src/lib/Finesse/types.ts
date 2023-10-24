@@ -1,5 +1,6 @@
 export type MovementAxes = {
   x: number
+  y: number
   z: number
 }
 
@@ -30,13 +31,16 @@ type RotationSettings = CoreSettings & {
   Y: HasMultiplierAndHeadZoneAndLimit
 }
 
-type MovementSettings = CoreSettings &{
+type MovementSettings = CoreSettings & {
   Y: HasMultiplier
 }
 
 type GamePadSetting = {
   Rotation: RotationSettings
   Movement: MovementSettings
+  Augment: {
+    Y: HasMultiplier
+  }
 }
 
 type KeyboardSettings = {
@@ -44,10 +48,15 @@ type KeyboardSettings = {
   Movement: MovementSettings & {
     Bindings: {
       Backward: string
+      Down:     string
       Forward:  string
       Left:     string
       Right:    string
+      Up:       string
     }
+  }
+  Augment: {
+    Y: HasMultiplier
   }
 }
 

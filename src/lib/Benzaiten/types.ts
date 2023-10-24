@@ -20,3 +20,8 @@ type Side =
 export type Sides = {
   [SIDE in Side as string]: number
 }
+
+export type Mesh = {
+  vertices: Float32Array
+  indices:  Uint16Array
+}

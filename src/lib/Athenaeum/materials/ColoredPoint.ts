@@ -1,10 +1,12 @@
-import { InstancedVertexBufferLayout } from "../../Xenon/helpers"
-import   Xenon                         from "../../Xenon"
+import { Mesh } from "@/Benzaiten/types"
 
-import fragment from '../shaders/fragment/SingleColor.wgsl?raw'
-import vertex   from '../shaders/vertex/ColoredPoint.wgsl?raw'
+import { InstancedVertexBufferLayout } from "@/Xenon/helpers"
+import   Xenon                         from "@/Xenon"
 
-import Color from "../Color"
+import fragment from '@/Athenaeum/shaders/fragment/SingleColor.wgsl'
+import vertex   from '@/Athenaeum/shaders/vertex/ColoredPoint.wgsl'
+
+import Color from "@/Athenaeum/Color"
 
 import Material from "./Material"
 
@@ -51,13 +53,13 @@ export default class ColoredPoint extends Material {
     super.register_render_encoding(this.#buffer_slot_map, 6)
   }
 
-  override apply_to(vertices: Float32Array): void {
-    super.apply_to(vertices, this.#position_index)
+  override apply_to(mesh: Mesh): void {
+    super.apply_to(mesh, this.#position_index)
 
     this.#sizes = new Float32Array([
       ...this.#sizes,
       ...super.fill(
-        vertices.length / 3,
+        mesh.vertices.length / 3,
         new Float32Array([this.size * 25]),
       )
     ])
@@ -65,7 +67,7 @@ export default class ColoredPoint extends Material {
     this.#colors = new Float32Array([
       ...this.#colors,
       ...super.fill(
-        vertices.length / 3,
+        mesh.vertices.length / 3,
         this.color.as_f32_array,
       )
     ])
@@ -74,7 +76,7 @@ export default class ColoredPoint extends Material {
   }
 
   #refresh_context(): void {
-    Xenon.refresh_buffer(this.#sizes,  this.#size_index)
-    Xenon.refresh_buffer(this.#colors, this.#color_index)
+    Xenon.create_vertex_buffer(this.#sizes,  this.#size_index)
+    Xenon.create_vertex_buffer(this.#colors, this.#color_index)
   }
 }

@@ -1,9 +1,9 @@
-import Input from "../../settings"
+import Input from "@/Finesse/settings"
 
 import {
   RotationAxes,
   RotationMode,
-} from "../../types"
+} from "@/Finesse/types"
 
 /**
   This is required because, for some strange reason,

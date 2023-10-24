@@ -1,9 +1,12 @@
+import { Mesh } from "@/Benzaiten/types"
+
 import {
   RenderEncoding,
   ShaderBuffers,
   ShadersSources,
-} from "../../Xenon/types"
-import Xenon from "../../Xenon"
+} from "@/Xenon/types"
+
+import Xenon from "@/Xenon"
 
 let buffer_index = 0
 
@@ -13,6 +16,7 @@ export default class Material {
   protected pass:     RenderEncoding
   protected pipeline: GPURenderPipeline
   protected vertices: Float32Array = new Float32Array([])
+  protected indices:  Uint16Array  = new Uint16Array([])
 
   constructor(
     name:    string,
@@ -46,17 +50,20 @@ export default class Material {
   }
 
   protected apply_to(
-    vertices:     Float32Array,
+    mesh:         Mesh,
     buffer_index: number,
   ): void {
-    this.vertices = new Float32Array([...this.vertices, ...vertices])
+    this.vertices = new Float32Array([...this.vertices, ...mesh.vertices])
+    this.indices  = new Uint16Array ([...this.indices,  ...mesh.indices ])
 
     this.#refresh_context(buffer_index)
   }
 
   #refresh_context(buffer_index: number): void {
-    Xenon.refresh_buffer(this.vertices, buffer_index)
+    Xenon.create_vertex_buffer(this.vertices, buffer_index)
+    Xenon.create_index_buffer (this.indices,  buffer_index)
 
     this.pass.vertices = this.vertices.length
+    this.pass.indices  = this.indices.length
   }
 }

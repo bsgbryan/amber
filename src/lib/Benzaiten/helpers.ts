@@ -1,16 +1,17 @@
-import { Vector3 } from "../Sunya/types"
+import { Vector3 } from "@/Sunya/types"
 
-import { vec3 } from "../Sunya"
+import { vec3 } from "@/Sunya"
 
-import { Shape } from "./shapes/types"
+import { Shape } from "@/Benzaiten/shapes/types"
 
-import { Sides } from "./types"
+import { EMPTY } from "@/Benzaiten/CONSTANTS"
+import { Sides } from "@/Benzaiten/types"
 
 const x = ['left', 'right' ],
       y = ['top',  'bottom'],
       z = ['back', 'front' ]
 
-const crosses = (
+export const crosses = (
   a: number,
   b: number,
 ): boolean => {
@@ -29,12 +30,12 @@ const surface_vertex = (
   z: number,
 ): Vector3 =>
   vec3.multiply(
-    v3(.475, .475, .475),
+  v3(.475, .475, .475),
     vec3.add(
-      zero,
-      vec3.normalize(
-        vec3.subtract(
-          v3(x, y, z),
+    zero,
+    vec3.normalize(
+      vec3.subtract(
+        v3(x, y, z),
           zero,
         )
       )
@@ -59,16 +60,16 @@ export const x_recursion_edge = (
   // Iterating downward is also the most efficient way to do it
   // since only a single iteration of the loop will execute
   // whenever a vertex should be generated!
-  for (let i = 3; i > -1; i--) {
+    for (let i = 3; i > -1; i--) {
     const Y = sides[y[i % 2]],
           Z = sides[z[Math.floor(i / 2)]],
           L = sides[x[0]],
           R = sides[x[1]],
           a = distance(L, Y, Z)
 
-    if (crosses(a, distance(R, Y, Z))) return i
+        if (crosses(a, distance(R, Y, Z))) return i
   }
-
+  
   return -1
 }
 
@@ -172,7 +173,7 @@ export const merge = (
   y?: Vector3,
   z?: Vector3, 
 ): Vector3 => {
-  const vectors: Array<Vector3> = []
+    const vectors: Array<Vector3> = []
 
   if (x) vectors.push(x)
   if (y) vectors.push(y)
@@ -194,10 +195,10 @@ export const merge = (
 
 export const index = (
   position: number,
-  space:    number,
+  chunk:    number,
   segment:  number,
 ): number => {
-  const g = 1 / space,
+  const g = 1 / chunk,
         d = g * segment
 
   return (position * d) + g
@@ -211,10 +212,14 @@ export const grid_index = (
   depth: number,
 ) => x + (z * width) + (y * width * depth)
 
-export const extract_neighbor_axes = (index: number) => ({
-  x:   Math.floor((index % 3))     - 1,
-  y: -(Math.floor((index / 9))     - 1),
-  z:   Math.floor((index / 3) % 3) - 1
+export const to_3D = (
+  index:  number,
+  width:  number,
+  depth:  number, 
+) => ({
+  x: index % width,
+  y: Math.floor(index / (width  * depth)),
+  z: Math.floor(index /  width) % depth
 })
 
 export const neighbors = (
@@ -225,39 +230,123 @@ export const neighbors = (
   height: number,
   depth:  number,
   grid:   Uint16Array,
-): Array<number> => {
-  const output = []
+): Array<Array<number>> => {
+  const output: Array<Array<number>> = []
 
-  for (let n = 0; n < 27; n++) {
-    const {
-      x: x_offset,
-      y: y_offset,
-      z: z_offset,
-    } = extract_neighbor_axes(n)
-    
-    const x_index = x + x_offset,
-          y_index = y + y_offset,
-          z_index = z + z_offset
-
-    if (
-       x_index > -1 && x_index <  width  &&
-       y_index <  1 && y_index > -height &&
-       z_index > -1 && z_index <  depth  &&
-      (x_index !== x || y_index !== y || z_index !== z)
-    ) {
-      const index    = grid_index(x_offset + 1, y_offset + 1, z_offset + 1, 3,     3    ),
-            vertex   = grid_index(x_index,      y_index,      z_index,      width, depth),
-            occupied = grid[vertex] > 0
-
-      if (occupied) {
-        output.push(index)
-        // NOTE: `grid` stores all its values at +1 offset from their correct value.
-        // It does this to compensate for the fact that, on creation, `grid` initializes
-        // all its entries to have a value of `0` - which is a valid vertex index. So,
-        // instead of `0`, the first vertex that gets added to `grid` is stored with a
-        // value of `1` - to distinguish it from "empty" grid entries.
-        output.push(grid[vertex] - 1)
+  if (z > 0 && x > 0) {
+    // console.log(y)
+    if (y === 0) {
+      const t1 = []
+      const t2 = []
+  
+      const v1 = grid_index(x, y, z - 1, width, depth)
+  
+      if (grid[v1] !== EMPTY) t1.push(v1)
+  
+      const v2 = grid_index(x - 1, y, z - 1, width, depth)
+  
+      if (grid[v2] !== EMPTY) {
+        t1.push(v2)
+        t2.push(v2)
+  
+        if (t1.length === 2)
+          output.push(-y * 2 > height ? t1.reverse() : t1)
       }
+
+      const v3 = grid_index(x - 1, y, z, width, depth)
+
+      if (grid[v3] !== EMPTY) {
+        t2.push(v3)
+  
+        if (t2.length === 2)
+          output.push(-y * 2 > height ? t2.reverse() : t2)
+      }
+    }
+
+    if (y > 0) {
+      { // Z axis
+        const t1 = []
+        const t2 = []
+    
+        const v1 = grid_index(x, y, z - 1, width, depth)
+    
+        if (grid[v1] !== EMPTY) t1.push(v1)
+    
+        const v2 = grid_index(x, y - 1, z - 1, width, depth)
+    
+        if (grid[v2] !== EMPTY) {
+          t1.push(v2)
+          t2.push(v2)
+    
+          if (t1.length === 2)
+            output.push(x * 2 > width ? t1 : t1.reverse())
+        }
+  
+        const v3 = grid_index(x, y - 1, z, width, depth)
+  
+        if (grid[v3] !== EMPTY) {
+          t2.push(v3)
+  
+          if (t2.length === 2)
+            output.push(x * 2 > width ? t2 : t2.reverse())
+        }
+      }
+
+      { // X axis
+        const t3 = []
+        const t4 = []
+    
+        const v4 = grid_index(x - 1, y, z, width, depth)
+    
+        if (grid[v4] !== EMPTY) t3.push(v4)
+    
+        const v5 = grid_index(x - 1, y, z - 1, width, depth)
+    
+        if (grid[v5] !== EMPTY) {
+          t3.push(v5)
+          t4.push(v5)
+    
+          if (t3.length === 2)
+            output.push(t3)
+        }
+  
+        const v6 = grid_index(x, y, z - 1, width, depth)
+  
+        if (grid[v6] !== EMPTY) {
+          t4.push(v6)
+  
+          if (t4.length === 2)
+            output.push(t4)
+        }
+      }
+
+      // { // XY axis
+      //   const t3 = []
+      //   const t4 = []
+    
+      //   const v4 = grid_index(x - 1, y, z - 1, width, depth)
+    
+      //   if (grid[v4] !== EMPTY) t3.push(v4)
+    
+      //   const v5 = grid_index(x - 1, y - 1, z - 1, width, depth)
+    
+      //   if (grid[v5] !== EMPTY) {
+      //     t3.push(v5)
+      //     t4.push(v5)
+    
+      //     if (t3.length === 2)
+      //       output.push(z * 2 > depth ? t3 : t3.reverse())
+      //   }
+  
+      //   const v6 = grid_index(x, y - 1, z, width, depth)
+  
+      //   if (grid[v6] !== EMPTY) {
+      //     t4.push(v6)
+  
+      //     if (t4.length === 2)
+      //       output.push(z * 2 > depth ? t4 : t4.reverse())
+      //   }
+      // }
     }
   }
 

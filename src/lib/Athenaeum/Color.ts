@@ -1,4 +1,4 @@
-import { clamp } from "./helpers"
+import { clamp } from "@/Athenaeum/helpers"
 
 export default class Color {
   static Red   = new Color(1, 0, 0, 1)

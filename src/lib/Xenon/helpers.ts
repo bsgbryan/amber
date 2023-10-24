@@ -3,9 +3,9 @@ import {
   degrees_to_radians,
   mat4,
   vec3,
-} from '../Sunya'
+} from '@/Sunya'
 
-import { VPM } from './settings'
+import { VPM } from '@/Xenon/settings'
 
 /**
  * Builds and returns a {@link https://webgpu.rocks/reference/dictionary/gpuvertexbufferlayout/ | GPUVertexBufferLayout}

@@ -1,5 +1,6 @@
-import MainCamera from "../Athenaeum/components/MainCamera"
-import Yggdrasil  from "../Yggdrasil"
+import MainCamera from "@/Athenaeum/components/MainCamera"
+import Mabueth from "@/Mabeuth"
+import Yggdrasil  from "@/Yggdrasil"
 
 import {
   InstancedRenderEncoding,
@@ -7,7 +8,7 @@ import {
   ShaderBuffers,
   ShadersSources,
   ViewPort,
-} from "./types"
+} from "@/Xenon/types"
 
 /**
  * Manages all rendering
@@ -30,7 +31,8 @@ export default class Xenon {
   static #format?:  GPUTextureFormat        = undefined
   static #target?:  HTMLCanvasElement       = undefined
 
-  static #buffers:          Array<GPUBuffer> = []
+  static #vertex_buffers:   Array<GPUBuffer> = []
+  static #index_buffers:    Array<GPUBuffer> = []
   static #color_attachment: Array<GPURenderPassColorAttachment> = []
 
   static #depth_stencil?:   GPURenderPassDepthStencilAttachment = undefined
@@ -93,8 +95,6 @@ export default class Xenon {
   /**
    * Initializes Xenon
    * 
-   * @param render_target The id of the html \<canvas\> element to be used as the main render target
-   * 
    * @remarks
    * `init` performs the following tasks:
    * 1. Gets a reference to the html \<canvas\> element to use as the main render target
@@ -108,8 +108,8 @@ export default class Xenon {
    * @throws **No appropriate GPUAdapter found** if a GPU adapter cannot be found
    * @throws **Unable to get WebGPU context** if the browser does not support WebGPU
    */
-  static async init(render_target = 'main-render-target') {
-    this.#target = document.getElementById(render_target) as HTMLCanvasElement
+  static async init() {
+    this.#target = Mabueth.target
 
     const adapter = await navigator.gpu.requestAdapter()
     if (!adapter) throw new Error('No appropriate GPUAdapter found')
@@ -184,12 +184,12 @@ export default class Xenon {
    * @param usage {@link https://webgpu.rocks/reference/typedef/gpubufferusageflags/#idl-gpubufferusageflags | GPUBufferUsageFlags} detailing how the data should be stored/accessed
    * 
    * @remarks
-   * Xenon maintains an internal list of buffers created via {@link Xenon.refresh_buffer | `Xenon.refresh_buffer`}.
+   * Xenon maintains an internal list of buffers created via {@link Xenon.create_vertex_buffer | `Xenon.create_vertex_buffer`}.
    * For this internal list to function as intended, the `index` parameter _must_ be unique for each distinct buffer.
-   * If two materials call `Xenon.refresh_buffer` passing the same value for `index` they would clobber each other's data.
+   * If two materials call `Xenon.create_vertex_buffer` passing the same value for `index` they would clobber each other's data.
    * This is especially problematic if/when the _layout_ of the data is identical while the _semantics_ (or meaning) of the data is different.
    */
-  static refresh_buffer(
+  static create_vertex_buffer(
     items: Float32Array,
     index: number,
     offset = 0,
@@ -203,9 +203,30 @@ export default class Xenon {
     if (buffer) {
       this.#device.queue.writeBuffer(buffer, offset, items)
 
-      this.#buffers[index] = buffer
+      this.#vertex_buffers[index] = buffer
     }
-    else throw new Error("Couldn't create buffer")
+    else throw new Error("Couldn't create vertex buffer")
+  }
+
+  static create_index_buffer(
+    items: Uint16Array,
+    index: number,
+    usage  = GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
+  ): void {
+    const pad     = items.length % Uint16Array.BYTES_PER_ELEMENT,
+          content = items.length * Uint16Array.BYTES_PER_ELEMENT,
+          padding = pad          * Uint16Array.BYTES_PER_ELEMENT,
+          buffer  = this.#device.createBuffer({
+            size: content + padding,
+            usage,
+            mappedAtCreation: true,
+          })
+
+    new Uint16Array(buffer.getMappedRange()).set(items)
+
+    buffer.unmap()
+
+    this.#index_buffers[index] = buffer
   }
 
   /**
@@ -276,7 +297,7 @@ export default class Xenon {
    * 
    * @param instances The number is instances to pass to the vertex shader
    * @param pipeline The render pipeline to use
-   * @param buffers A mapping of shader locations to indexes in Xenon's internal buffer list
+   * @param buffers A mapping of shader locations to indices in Xenon's internal buffer list
    * 
    * @returns An `InstancedRenderEncoding` configured using the passed arguments
    * 
@@ -285,7 +306,7 @@ export default class Xenon {
    * 
    * The `buffers` parameter is of note as it needs to be precisely calibrated to avoid problems that may be extremely difficult to diagnose/fix.
    * 
-   * Xenon maintains an internal list of buffers created via {@link Xenon.refresh_buffer | `Xenon.refresh_buffer`}.
+   * Xenon maintains an internal list of buffers created via {@link Xenon.create_vertex_buffer | `Xenon.refresh_buffer`}.
    * For this internal list to function as intended, the `index` value passed to that method _must_ be unique for each distinct buffer.
    * If two materials call `Xenon.refresh_buffer` passing the same value for `index` they would clobber each other's data.
    * This is especially problematic if/when the _layout_ of the data is identical while the _semantics_ (or meaning) of the data is different.
@@ -304,6 +325,7 @@ export default class Xenon {
       instances,
       pipeline,
       vertices: 0,
+      indices: 0,
     }
 
     this.#render_encodings.push(pass)
@@ -315,7 +337,7 @@ export default class Xenon {
    * Creates, caches, and returns a `RenderEncoding`
    * 
    * @param pipeline The render pipeline to use
-   * @param buffers A mapping of shader locations to indexes in Xenon's internal buffer list
+   * @param buffers A mapping of shader locations to indices in Xenon's internal buffer list
    * 
    * @returns A `RenderEncoding` configured using the passed arguments
    * 
@@ -324,7 +346,7 @@ export default class Xenon {
    * 
    * The `buffers` parameter is of note as it needs to be precisely calibrated to avoid problems that may be extremely difficult to diagnose/fix.
    * 
-   * Xenon maintains an internal list of buffers created via {@link Xenon.refresh_buffer | `Xenon.refresh_buffer`}.
+   * Xenon maintains an internal list of buffers created via {@link Xenon.create_vertex_buffer | `Xenon.refresh_buffer`}.
    * For this internal list to function as intended, the `index` value passed to that method _must_ be unique for each distinct buffer.
    * If two materials call `Xenon.refresh_buffer` passing the same value for `index` they would clobber each other's data.
    * This is especially problematic if/when the _layout_ of the data is identical while the _semantics_ (or meaning) of the data is different.
@@ -340,7 +362,7 @@ export default class Xenon {
     const pass = {
       buffers,
       pipeline,
-      vertices: 0,
+      indices: 0,
     }
 
     this.#render_encodings.push(pass)
@@ -381,13 +403,18 @@ export default class Xenon {
   ): void {
     pass.setPipeline(data.pipeline)
 
-    for (const [v, b] of data.buffers.entries()) pass.setVertexBuffer(v, this.#buffers[b])
+    for (const [v, b] of data.buffers.entries()) {
+      pass.setVertexBuffer(v, this.#vertex_buffers[b])
+
+      if (this.#index_buffers[b])
+        pass.setIndexBuffer(this.#index_buffers[b], 'uint16')
+    }
     
     pass.setBindGroup(0, this.#main_camera.bind_group)
 
     if (Object.hasOwn(data, 'instances'))
       pass.draw((data as InstancedRenderEncoding).instances, data.vertices / 3)
-    else pass.draw(data.vertices / 3)
+    else pass.drawIndexed(data.indices)
   }
 
   static #register_color_attachment(

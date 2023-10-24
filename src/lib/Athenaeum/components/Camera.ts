@@ -1,7 +1,7 @@
-import { Component } from "../../Legion"
-import { vpm      } from "../../Xenon/helpers"
-import { ViewPort } from "../../Xenon/types"
-import   Xenon      from "../../Xenon"
+import { Component } from "@/Legion"
+import { vpm      } from "@/Xenon/helpers"
+import { ViewPort } from "@/Xenon/types"
+import   Xenon      from "@/Xenon"
 
 const size = 80
 

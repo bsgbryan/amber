@@ -1,9 +1,11 @@
-import { VertexBufferLayout } from "../../Xenon/helpers"
+import { Mesh } from "@/Benzaiten/types"
 
-import vertex   from '../shaders/vertex/PositionBasedGradient.wgsl?raw'
-import fragment from '../shaders/fragment/SingleColor.wgsl?raw'
+import { VertexBufferLayout } from "@/Xenon/helpers"
 
-import Material from "./Material"
+import vertex   from '@/Athenaeum/shaders/vertex/PositionBasedGradient.wgsl'
+import fragment from '@/Athenaeum/shaders/fragment/SingleColor.wgsl'
+
+import Material from "@/Athenaeum/materials/Material"
 
 export default class SimpleVertexColor extends Material {
   static #buffer_layouts = [] as Array<GPUVertexBufferLayout>
@@ -16,7 +18,7 @@ export default class SimpleVertexColor extends Material {
 
   #buffer_slot_map = new Map<number, number>()
 
-  #position: number
+  #buffer_index: number
 
   constructor() {
     super(
@@ -27,14 +29,14 @@ export default class SimpleVertexColor extends Material {
       }}
     )
     
-    this.#position = Material.next_buffer_index
+    this.#buffer_index = Material.next_buffer_index
 
-    this.#buffer_slot_map.set(0, this.#position)
+    this.#buffer_slot_map.set(0, this.#buffer_index)
 
     super.register_render_encoding(this.#buffer_slot_map)
   }
 
-  override apply_to(vertices: Float32Array): void {
-    super.apply_to(vertices, this.#position)
+  override apply_to(mesh: Mesh): void {
+    super.apply_to(mesh, this.#buffer_index)
   }
 }

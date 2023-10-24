@@ -1,8 +1,8 @@
-import Xenon from "../../Xenon"
-import Camera from "./Camera"
+import Xenon from "@/Xenon"
+import Camera from "@/Athenaeum/components/Camera"
 
 export default class MainCamera extends Camera {
-  constructor() {
+    constructor() {
     super()
 
     Xenon.main_camera = this

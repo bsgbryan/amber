@@ -1,1 +1,1 @@
-export const OCCUPIED = 127
+export const EMPTY = 0

@@ -1,19 +1,25 @@
 {
   "compilerOptions": {
-    "strict": true,
+    "strict": false,
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
+    "esModuleInterop": false,
     "types": [
-      "vite/client",
+      "bun-types",
       "@webgpu/types"
     ],
-    "noEmit": true,
+    "noEmit": false,
     "isolatedModules": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "outDir": "dist",
+    "lib": ["ESNext", "DOM"],
+    "baseUrl": "./src/lib",
+    "paths": {
+      "@/*": [
+        "*"
+      ]
+    }
   }
 }

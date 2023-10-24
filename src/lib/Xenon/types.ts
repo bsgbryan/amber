@@ -1,5 +1,6 @@
 export type RenderEncoding = {
-  vertices:  number
+  vertices?: number
+  indices:   number
   pipeline:  GPURenderPipeline
   buffers:   Map<number, number>
 }

@@ -1,12 +1,12 @@
-import Kali from "../../../Kali"
+import Kali from "@/Kali"
 
-import Input from "../../settings"
+import Input from "@/Finesse/settings"
 
-import { RotationAxes } from "../../types"
+import { RotationAxes } from "@/Finesse/types"
 
-import { InputAxes } from "../types"
+import { InputAxes } from "@/Finesse/input_processors/types"
 
-import RotationInputProcessor from "./Base"
+import RotationInputProcessor from "@/Finesse/input_processors/rotation/Base"
 
 export default class GamePad extends RotationInputProcessor {
   static get #input(): InputAxes {

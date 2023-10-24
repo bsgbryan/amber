@@ -1,6 +1,6 @@
-import { vec3 } from "../../Sunya"
+import { vec3 } from "@/Sunya"
 
-import { Shape } from "./types"
+import { Shape } from "@/Benzaiten/shapes/types"
 
 const zero = vec3.zero()
 

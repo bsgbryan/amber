@@ -1,40 +1,36 @@
 import {
   MovementAxes,
   RotationAxes,
-} from "./types"
+} from "@/Finesse/types"
 
-import MovementInputProcessor from "./input_processors/movement/Base"
-import RotationInputProcessor from "./input_processors/rotation/Base"
+import MovementInputProcessor from "@/Finesse/input_processors/movement/Base"
+import RotationInputProcessor from "@/Finesse/input_processors/rotation/Base"
 
-import GamePadMovementProcessor  from "./input_processors/movement/GamePad"
-import KeyboardMovementProcessor from "./input_processors/movement/Keyboard"
+import GamePadMovementProcessor   from "@/Finesse/input_processors/movement/GamePad"
+import KeyboardMovementProcessor  from "@/Finesse/input_processors/movement/Keyboard"
+import MouseWheelAugmentProcessor from "@/Finesse/input_processors/augment/MouseWheel"
 
-import GamePadRotationProcessor from "./input_processors/rotation/GamePad"
-import MouseRotationProcessor   from "./input_processors/rotation/Mouse"
+import GamePadRotationProcessor from "@/Finesse/input_processors/rotation/GamePad"
+import MouseRotationProcessor   from "@/Finesse/input_processors/rotation/Mouse"
+
+import { AugmentAxes } from "@/Finesse/input_processors/augment/types"
+import AugmentMovementProcessor from "@/Finesse/input_processors/augment/Movement"
 
 export default class Finesse {
-  static #moved:   MovementAxes = { x: 0, z: 0 }
-  static #rotated: RotationAxes = { x: 0, y: 0 }
+  static #moved:     MovementAxes = { x: 0, y: 0, z: 0 }
+  static #rotated:   RotationAxes = { x: 0, y: 0       }
+  static #augmented: AugmentAxes  = { x: 0, y: 0, z: 0 }
 
-  static init(target = 'main-render-target') {
-    const context = document.getElementById(target)
-
-    context.addEventListener('click', async () => {
-      if (!document.pointerLockElement) {
-        // @ts-ignore
-        await context.requestPointerLock({
-          unadjustedMovement: true,
-        })
-      }
-    })
-
+  static init() {
     KeyboardMovementProcessor.init()
     MouseRotationProcessor.init()
+    MouseWheelAugmentProcessor.init()
   }
 
   static update(): void {
-    this.#moved   = this.#movement_processor.value
-    this.#rotated = this.#rotation_processor.value
+    this.#moved     = this.#movement_processor.value
+    this.#rotated   = this.#rotation_processor.value
+    this.#augmented = this.#augment_processor.value
   }
 
   static get #movement_processor(): typeof MovementInputProcessor {
@@ -43,11 +39,19 @@ export default class Finesse {
       :
       KeyboardMovementProcessor
   }
+
   static get #rotation_processor(): typeof RotationInputProcessor {
     return GamePadRotationProcessor.is_active ?
       GamePadRotationProcessor
       :
       MouseRotationProcessor
+  }
+
+  static get #augment_processor(): typeof AugmentMovementProcessor {
+    return MouseWheelAugmentProcessor.is_active ?
+      MouseWheelAugmentProcessor
+      :
+      MouseWheelAugmentProcessor // TODO: Change this when I add another augment processor
   }
 
   static get movement(): MovementAxes {
@@ -56,5 +60,9 @@ export default class Finesse {
 
   static get rotation(): RotationAxes {
     return this.#rotated
+  }
+
+  static get augment(): RotationAxes {
+    return this.#augmented
   }
 }

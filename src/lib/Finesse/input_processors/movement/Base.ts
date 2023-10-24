@@ -1,22 +1,34 @@
-import Input from "../../settings"
+import Input from "@/Finesse/settings"
 
 import {
   MovementAxes,
   MovementMode,
-} from "../../types"
+} from "@/Finesse/types"
 
 export default class MovementInputProcessor {
-  static get is_active(): boolean      { return false          }
-  static get value():     MovementAxes { return { x: 0, z: 0 } }
+  static get is_active(): boolean      { return false                }
+  static get value():     MovementAxes { return { x: 0, y: 0, z: 0 } }
 
   protected static process_x_movement(
     mode:          MovementMode,
     value:         number,
     delta_seconds: number,
-    dead_zone = 0.
+    dead_zone = 0,
   ): number {
     return Math.abs(value) > dead_zone ?
       (value - dead_zone) * (1 + dead_zone) * delta_seconds * Input[mode].Movement.X.Multiplier
+       :
+       0
+  }
+
+  protected static process_y_movement(
+    mode:          MovementMode,
+    value:         number,
+    delta_seconds: number,
+    dead_zone = 0,
+  ): number {
+    return Math.abs(value) > dead_zone ?
+      (value - dead_zone) * (1 + dead_zone) * delta_seconds * Input[mode].Movement.Y.Multiplier
        :
        0
   }

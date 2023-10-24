@@ -1,6 +1,6 @@
-import Scale from "./Scale"
+import Scale from "@/Kali/Scale"
 
-import { DeltaTime } from "./types"
+import { DeltaTime } from "@/Kali/types"
 
 export default class Kali {
   static #scaled_delta_seconds   = 0

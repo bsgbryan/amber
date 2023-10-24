@@ -1,12 +1,12 @@
-import Kali from "../../../Kali"
+import Kali from "@/Kali"
 
-import Input from "../../settings"
+import Input from "@/Finesse/settings"
 
-import { MovementAxes } from "../../types"
+import { MovementAxes } from "@/Finesse/types"
 
-import MovementInputProcessor from "./Base"
+import MovementInputProcessor from "@/Finesse/input_processors/movement/Base"
 
-import { InputAxes } from "../types"
+import { InputAxes } from "@/Finesse/input_processors/types"
 
 export default class GamePad extends MovementInputProcessor {
   static get #input(): InputAxes {
@@ -34,6 +34,7 @@ export default class GamePad extends MovementInputProcessor {
         Kali.delta_seconds.unscaled,
         Input.GamePad.Movement.X.DeadZone,
       ),
+      y: 0,
       z: super.process_z_movement(
        'GamePad',
         this.#input.y,
