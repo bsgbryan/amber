@@ -409,7 +409,24 @@ export const mat4 = {
   },
 
   lookAt(eye: Float32Array, target: Float32Array, up: Float32Array, dst?: Float32Array): Float32Array {
-    return mat4.inverse(mat4.cameraAim(eye, target, up, dst), dst)
+    dst = dst || new Float32Array(16)
+
+    const zAxis = vec3.normalize(vec3.subtract(eye,   target)),
+          xAxis = vec3.normalize(vec3.cross   (up,    zAxis )),
+          yAxis = vec3.normalize(vec3.cross   (zAxis, xAxis ))
+
+    const x_eye = -(xAxis[0] * eye[0] + xAxis[1] * eye[1] + xAxis[2] * eye[2]),
+          y_eye = -(yAxis[0] * eye[0] + yAxis[1] * eye[1] + yAxis[2] * eye[2]),
+          z_eye = -(zAxis[0] * eye[0] + zAxis[1] * eye[1] + zAxis[2] * eye[2])
+
+    // The first three items here are negated so the X axis isn't inverted
+    // (I have no idea why this happens, but it's super confusing and disorienting)
+    dst[ 0] = -xAxis[0]; dst[ 1] = -yAxis[0]; dst[ 2] = -zAxis[0]; dst[ 3] = 0;
+    dst[ 4] =  xAxis[1]; dst[ 5] =  yAxis[1]; dst[ 6] =  zAxis[1]; dst[ 7] = 0;
+    dst[ 8] =  xAxis[2]; dst[ 9] =  yAxis[2]; dst[10] =  zAxis[2]; dst[11] = 0;
+    dst[12] =  x_eye;    dst[13] =  y_eye;    dst[14] =  z_eye;    dst[15] = 1;
+
+    return dst
   },
 
   translation([tx, ty, tz]: Float32Array, dst?: Float32Array): Float32Array {
