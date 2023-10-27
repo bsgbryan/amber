@@ -536,8 +536,8 @@ export const quat = {
   rotate(point: Float32Array, q: Float32Array, dst?: Float32Array): Float32Array {
     dst = dst || new Float32Array(3)
     
-    const r: Float32Array = new Float32Array([0, ...point])
-    const c: Float32Array = new Float32Array([q[0], -q[1], -q[2], -q[3]])
+    const r: Float32Array = new Float32Array([0,     point[0],  point[1], -point[2]])
+    const c: Float32Array = new Float32Array([q[0], -q[1],     -q[2],     -q[3]    ])
     const _: Float32Array = quat.multiply(quat.multiply(q, r), c)
 
     dst[0] = _[1]

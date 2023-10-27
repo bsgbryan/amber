@@ -87,14 +87,14 @@ export default class Keyboard extends MovementInputProcessor {
     let y_input = 0
     let z_input = 0
 
-    if (this.#active_keys.Backward) z_input += 1
-    else z_input -= 1
+    if (this.#active_keys.Backward) z_input -= 1
+    else z_input += 1
 
     if (this.#active_keys.Down) y_input -= 1
     else y_input += 1
 
-    if (this.#active_keys.Forward) z_input -= 1
-    else z_input += 1
+    if (this.#active_keys.Forward) z_input += 1
+    else z_input -= 1
 
     if (this.#active_keys.Left) x_input -= 1
     else x_input += 1
