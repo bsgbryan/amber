@@ -2,9 +2,9 @@ import { InputSettings } from "@/Finesse/types"
 
 const dead_zone  = .1
 const multiplier = {
-  augment:   0.0001,
-  movement:  0.500,
-  rotation: 85.000,
+  augment:   0.1,
+  movement:  0.5,
+  rotation: 85.0,
 }
 const limit = multiplier.rotation
 
@@ -85,6 +85,11 @@ const Settings: InputSettings = {
       Y: {
         Multiplier: 5,
         Limit:      limit,
+      }
+    },
+    Augment: {
+      Y: {
+        Multiplier: multiplier.augment,
       }
     }
   }

@@ -13,6 +13,6 @@ export default class AugmentMovementProcessor {
     mode:  MovementMode,
     value: number,
   ): number {
-    return -value * Input[mode].Augment.Y.Multiplier
+    return -(value * Math.abs(1 / value)) * Input[mode].Augment.Y.Multiplier
   }
 }

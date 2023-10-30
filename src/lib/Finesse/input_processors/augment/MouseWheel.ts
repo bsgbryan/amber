@@ -16,7 +16,7 @@ export default class MouseWheel extends AugmentMovementProcessor {
     Mabueth.on_mouse_wheel = e => {
       if (this.#active === false) this.#active = true
 
-      this.#augment = Math.min(3, Math.max(0, this.#augment + this.augment_y_input('Keyboard', e.y)))
+      this.#augment = Math.min(3, Math.max(0, this.#augment + this.augment_y_input('Mouse', e.y)))
     }
   }
 }

@@ -67,6 +67,9 @@ type MouseSettings = {
       Limit: number
     }
   }
+  Augment: {
+    Y: HasMultiplier
+  }
 }
 
 export type InputSettings = {
@@ -75,5 +78,5 @@ export type InputSettings = {
   Mouse:    MouseSettings
 }
 
-export type MovementMode = 'GamePad' | 'Keyboard'
-export type RotationMode = MovementMode | 'Mouse'
+export type MovementMode = 'GamePad' | 'Keyboard' | 'Mouse'
+export type RotationMode = MovementMode
