@@ -1,4 +1,5 @@
 import Kali from "@/Kali"
+import Mabueth from "@/Mabeuth"
 
 import Input from "@/Finesse/settings"
 
@@ -6,22 +7,15 @@ import { MovementAxes } from "@/Finesse/types"
 
 import MovementInputProcessor from "@/Finesse/input_processors/movement/Base"
 
-import { InputAxes } from "@/Finesse/input_processors/types"
-
 export default class GamePad extends MovementInputProcessor {
-  static get #input(): InputAxes {
-    const gp = navigator.getGamepads()[0]
-
-    return {
-      x: gp?.axes[0],
-      y: gp?.axes[1],
-    }
+  static get #input(): MovementAxes {
+    return Mabueth.controller.Move
   }
 
   static get is_active(): boolean {
     if (
       Math.abs(this.#input?.x) > Input.GamePad.Movement.ActiveThreshhold ||
-      Math.abs(this.#input?.y) > Input.GamePad.Movement.ActiveThreshhold
+      Math.abs(this.#input?.z) > Input.GamePad.Movement.ActiveThreshhold
     ) return true
     else return false
   }
@@ -37,7 +31,7 @@ export default class GamePad extends MovementInputProcessor {
       y: 0,
       z: super.process_z_movement(
        'GamePad',
-        this.#input.y,
+       -this.#input.z,
         Kali.delta_seconds.unscaled,
         Input.GamePad.Movement.Z.DeadZone,
       ),

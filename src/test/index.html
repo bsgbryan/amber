@@ -9,6 +9,12 @@
   <body style="margin: 0; padding: 0; overflow: hidden;">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <canvas id="main-render-target" style="height: 100%; width: 100%;"></canvas>
+    <script>
+      const canvas = document.getElementById('main-render-target')
+
+      canvas.height = window.innerHeight
+      canvas.width  = window.innerWidth
+    </script>
     <script src="./index.ts" type="module"></script>
   </body>
 </html>

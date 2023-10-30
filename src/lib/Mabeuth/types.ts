@@ -45,6 +45,11 @@ export interface MouseWheelEventDetails extends EventDetails {
   z: number
 }
 
+export interface MouseMoveEventDetails extends EventDetails {
+  x: number
+  y: number
+}
+
 export interface MouseClickEventDetails extends EventDetails {
   x:         number
   y:         number
@@ -53,3 +58,64 @@ export interface MouseClickEventDetails extends EventDetails {
 }
 
 export type EventHandler<T extends EventDetails> = (details: T) => void
+
+export type RenderDimensions = {
+  height: number
+  width:  number
+}
+
+/**
+ * START: html types
+ */
+
+type EventHandlerReturn   = Promise<undefined | void> | void
+type EventHandlerCallback = (event?: Event) => EventHandlerReturn
+
+export type HTMLCanvasElement = {
+  addEventListener:   (event: EventName, callback: EventHandlerCallback) => void
+  getContext:         (name: 'webgpu') => GPUCanvasContext
+  requestPointerLock: (options: {unadjustedMovement: boolean}) => EventHandlerReturn
+  height: number
+  width:  number
+}
+
+export type Document = {
+  addEventListener: (event: EventName, callback: EventHandlerCallback) => void
+  getElementById: (id: string) => HTMLCanvasElement
+  pointerLockElement?: HTMLCanvasElement
+}
+
+export type Window = {
+  innerHeight: number
+  innerWidth:  number
+}
+
+type Gamepad = {
+  axes: Array<number>
+}
+
+export type Navigator = {
+  getGamepads: () => Array<Gamepad>
+}
+
+export interface KeyboardEvent extends Event {
+  key: string
+}
+
+export interface MouseEvent extends Event {
+  x:         number
+  y:         number
+  buttons:   number
+  movementX: number
+  movementY: number
+}
+
+export interface WheelEvent extends Event {
+  deltaX: number
+  deltaY: number
+  deltaZ: number
+}
+
+/**
+ * END: html types
+ */

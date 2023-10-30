@@ -2,6 +2,8 @@ import MainCamera from "@/Athenaeum/components/MainCamera"
 import Mabueth from "@/Mabeuth"
 import Yggdrasil  from "@/Yggdrasil"
 
+import { RenderDimensions } from "@/Mabeuth/types"
+
 import {
   InstancedRenderEncoding,
   RenderEncoding,
@@ -26,10 +28,10 @@ import {
  * 5. Call {@link Xenon.render | `Xenon.render`}
  */
 export default class Xenon {
-  static #context?: GPUCanvasContext | null = undefined
-  static #device?:  GPUDevice               = undefined
-  static #format?:  GPUTextureFormat        = undefined
-  static #target?:  HTMLCanvasElement       = undefined
+  static #context?:    GPUCanvasContext | null = undefined
+  static #device?:     GPUDevice               = undefined
+  static #format?:     GPUTextureFormat        = undefined
+  static #dimensions?: RenderDimensions        = undefined
 
   static #vertex_buffers:   Array<GPUBuffer> = []
   static #index_buffers:    Array<GPUBuffer> = []
@@ -54,8 +56,8 @@ export default class Xenon {
    */
   static get viewport(): ViewPort {
     return {
-      height: this.#target.height,
-      width:  this.#target.width,
+      height: this.#dimensions.height,
+      width:  this.#dimensions.width,
     }
   }
 
@@ -109,13 +111,13 @@ export default class Xenon {
    * @throws **Unable to get WebGPU context** if the browser does not support WebGPU
    */
   static async init() {
-    this.#target = Mabueth.target
+    this.#dimensions = Mabueth.dimensions
 
     const adapter = await navigator.gpu.requestAdapter()
     if (!adapter) throw new Error('No appropriate GPUAdapter found')
 
     this.#device = await adapter.requestDevice()
-    this.#context = this.#target?.getContext('webgpu')
+    this.#context = Mabueth.context
 
     if (this.#context) {
       this.#format = navigator.gpu.getPreferredCanvasFormat()
@@ -129,7 +131,7 @@ export default class Xenon {
       this.#device.lost.then(details => console.error('WebGPU device was lost', { details }))
 
       this.#render_target = this.#device.createTexture({
-        size: [this.#target.width, this.#target.height, 1],
+        size: [this.#dimensions.width, this.#dimensions.height, 1],
         format: this.#format,
         usage: GPUTextureUsage.RENDER_ATTACHMENT,
       })
@@ -160,9 +162,9 @@ export default class Xenon {
    * Reinitializes rendering resources when the available rendering area size changes
    */
   static refresh_render_target_size_and_scale() {
-    if (this.#target) {
-      this.#target.height = Math.floor(window.innerHeight)
-      this.#target.width = Math.floor(window.innerWidth)
+    if (this.#dimensions) {
+      this.#dimensions.height = Mabueth.dimensions.height
+      this.#dimensions.width  = Mabueth.dimensions.width
 
       if (this.#render_target !== undefined)
         this.#render_target.destroy()
@@ -429,9 +431,9 @@ export default class Xenon {
   }
 
   static #define_depth_stencil() {
-    if (this.#target && this.#device) {
+    if (this.#dimensions && this.#device) {
       const spec: GPUTextureDescriptor = {
-        size: [this.#target.width, this.#target.height, 1],
+        size: [this.#dimensions.width, this.#dimensions.height, 1],
         format: 'depth24plus',
         usage: GPUTextureUsage.RENDER_ATTACHMENT
       }

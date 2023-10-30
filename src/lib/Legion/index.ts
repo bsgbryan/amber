@@ -2,12 +2,12 @@
  * Code originally taken from https://maxwellforbes.com/posts/typescript-ecs-implementation/
  */
 
-import Yggdrasil from "../Yggdrasil"
+import Yggdrasil from "@/Yggdrasil"
 
 import {
   ComponentClass,
   Entity,
-} from "./types"
+} from "@/Legion/types"
 
 export abstract class Component {
   #is_dirty = false

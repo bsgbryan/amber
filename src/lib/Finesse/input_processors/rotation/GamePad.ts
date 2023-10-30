@@ -1,21 +1,15 @@
 import Kali from "@/Kali"
+import Mabueth from "@/Mabeuth"
 
 import Input from "@/Finesse/settings"
 
 import { RotationAxes } from "@/Finesse/types"
 
-import { InputAxes } from "@/Finesse/input_processors/types"
-
 import RotationInputProcessor from "@/Finesse/input_processors/rotation/Base"
 
 export default class GamePad extends RotationInputProcessor {
-  static get #input(): InputAxes {
-    const gp = navigator.getGamepads()[0]
-
-    return {
-      x: gp?.axes[3],
-      y: gp?.axes[2],
-    }
+  static get #input(): RotationAxes {
+    return Mabueth.controller.Look
   }
 
   static get is_active(): boolean {

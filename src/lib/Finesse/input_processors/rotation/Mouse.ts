@@ -1,4 +1,5 @@
 import Kali from "@/Kali"
+import Mabueth from "@/Mabeuth"
 
 import { RotationAxes } from "@/Finesse/types"
 
@@ -14,15 +15,13 @@ export default class Keyboard extends RotationInputProcessor {
   }
 
   static init(): void {
-    document.addEventListener('mousemove', e => {
-      if (document.pointerLockElement) {
-        if (this.#active === false) this.#active = true
-
-        this.#rotation.y         = e.movementX
-        this.#rotation.x         = e.movementY
-        this.#rotation.processed = false
-      }
-    }, false)
+    Mabueth.on_mouse_move = e => {
+      if (this.#active === false) this.#active = true
+  
+      this.#rotation.y         = e.x
+      this.#rotation.x         = e.y
+      this.#rotation.processed = false
+    }
   }
 
   static get is_active(): boolean {

@@ -1,5 +1,4 @@
 import Kali from "@/Kali"
-
 import Mabueth from "@/Mabeuth"
 
 import Input from "@/Finesse/settings"
@@ -42,10 +41,6 @@ export default class Keyboard extends MovementInputProcessor {
           break
         case Input.Keyboard.Movement.Bindings.Up:
           if (this.#active_keys.Up === false) this.#active_keys.Up = true
-          break
-        case 'Escape':
-          // TODO: Remove this tight coupling to `document`
-          document.exitPointerLock()
           break
         default:
           console.log(e.key)

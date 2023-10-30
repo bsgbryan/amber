@@ -3,7 +3,7 @@
   "version": "0.5.0",
   "description": "A thoroughly-modern real-time simulation engine",
   "scripts": {
-    "amber": "bun ./src/bun/serve.ts"
+    "amber": "clear && bun ./src/bun/serve.ts"
   },
   "license": "MIT",
   "devDependencies": {

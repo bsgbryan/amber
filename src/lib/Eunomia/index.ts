@@ -10,21 +10,13 @@ export default class Eunomia {
 
     await Xenon.init()
 
-    new ResizeObserver(() => Xenon.refresh_render_target_size_and_scale()).
-      observe(document.querySelector('html'))
-
     Finesse.init()
 
-    Eunomia.#update()
-  }
-
-  static #update(): void {
-    requestAnimationFrame(() => {
+    Mabueth.on_tick = () => {
       Kali.update()
       Finesse.update()
       Legion.update()
       Xenon.render()
-      Eunomia.#update()
-    })
+    }
   }
 }
