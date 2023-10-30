@@ -15,7 +15,7 @@ await Eunomia.init()
 
 const mesh = new Benzaiten(Sphere(), 3).extract_surface()
 
-new SimpleVertexColor().apply_to(mesh)
+// new SimpleVertexColor().apply_to(mesh)
 
 const camera = Legion.add_entity()
 
