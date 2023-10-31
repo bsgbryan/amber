@@ -1,5 +1,5 @@
 import MainCamera from "@/Athenaeum/components/MainCamera"
-import Mabueth from "@/Mabeuth"
+import Mabueth    from "@/Mabeuth"
 import Yggdrasil  from "@/Yggdrasil"
 
 import { RenderDimensions } from "@/Mabeuth/types"

@@ -2,8 +2,6 @@ import { Vector3 } from "@/Sunya/types"
 
 import { Shape } from "@/Benzaiten/shapes/types"
 
-import { vec3 } from "@/Sunya"
-
 import {
   index,
   grid_index,
@@ -12,6 +10,13 @@ import {
   x_recursion_edge,
   y_recursion_edge,
   z_recursion_edge,
+  surface_x_vertex,
+  surface_y_vertex,
+  surface_z_vertex,
+  merge,
+  x_crossings,
+  y_crossings,
+  z_crossings,
 } from "@/Benzaiten/helpers"
 
 import {
@@ -20,14 +25,13 @@ import {
 } from "./types"
 import ColoredPoint from "@/Athenaeum/materials/ColoredPoint"
 import Color from "@/Athenaeum/Color"
+import { cube } from "@/Earendel/data"
 
 const x = 0,
       y = 1,
       z = 2
 
 const half = .5
-
-const v3 = vec3.create
 
 export default class Benzaiten {
   #shape:     Shape
@@ -41,39 +45,38 @@ export default class Benzaiten {
   #indices:  Uint16Array
   #voxels:   Float32Array
 
+  #crossed_edges: Float32Array
+
   constructor(
     shape:     Shape,
     divisions: number  = 2,
-    segments:  Vector3 = v3(2, 2, 2),
+    segments:  Vector3 = new Float32Array([2, 2, 2]),
   ) {
     this.#shape     = shape
     this.#divisions = divisions
     this.#segments  = segments
 
-    // NOTE: This initializes all entries in `this.#grid` to have a value of `0`.
-    // `0` is a valid vertex index value, so all vertex indexes are offset by +1
-    // when added, and decremented by `1` (to their actual value) when read out.
-    this.#grid = new Uint16Array(
+    const required = 
       this.#segments[x] ** this.#divisions *
       this.#segments[y] ** this.#divisions *
       this.#segments[z] ** this.#divisions
-    )
+
+    // NOTE: This initializes all entries in `this.#grid` to have a value of `0`.
+    // `0` is a valid vertex index value, so all vertex indexes are offset by +1
+    // when added, and decremented by `1` (to their actual value) when read out.
+    this.#grid          = new Uint16Array(required)
+    this.#voxels        = new Float32Array(this.#grid.length   * 3)
+    this.#crossed_edges = new Float32Array(this.#voxels.length * 3)
 
     this.#vertices = new Float32Array()
     this.#indices  = new Uint16Array()
-
-    this.#voxels = new Float32Array(
-      this.#segments[x] ** this.#divisions *
-      this.#segments[y] ** this.#divisions *
-      this.#segments[z] ** this.#divisions * 3
-    )
   }
 
   #grid_index_for(vertex: number): number { return this.#grid[vertex] - 1 }
 
   extract_surface(
-    space:      Vector3 = v3(1, 1, 1),
-    origin:     Vector3 = v3(0, 0, 0),
+    space:      Vector3 = new Float32Array([1, 1, 1]),
+    origin:     Vector3 = new Float32Array([0, 0, 0]),
     recursions: number  = 1,
   ): Mesh {    
     const extent_x = space[x] / this.#segments[x],
@@ -109,9 +112,7 @@ export default class Benzaiten {
             y_edge_crossed = y_recursion_edge(this.#shape, sides),
             z_edge_crossed = z_recursion_edge(this.#shape, sides)
 
-      const recurse = x_edge_crossed > -1 || y_edge_crossed > -1 || z_edge_crossed > -1
-
-      if (recurse && recursions + 1 <= this.#divisions) {
+      if ((x_edge_crossed > -1 || y_edge_crossed > -1 || z_edge_crossed > -1) && recursions + 1 <= this.#divisions) {
         const origin_x = sides.left   + half_x,
               origin_y = sides.bottom + half_y,
               origin_z = sides.back   + half_z
@@ -124,8 +125,8 @@ export default class Benzaiten {
         ])
 
         this.extract_surface(
-          v3(extent_x, extent_y, extent_z),
-          v3(origin_x, origin_y, origin_z),
+          new Float32Array([extent_x, extent_y, extent_z]),
+          new Float32Array([origin_x, origin_y, origin_z]),
           recursions + 1,
         )
       }
@@ -136,61 +137,82 @@ export default class Benzaiten {
             width   = 1 / extent_x,
             depth   = 1 / extent_z,
             vertex  = grid_index(x_index, y_index, z_index, width, depth)
-
-      if (recursions === this.#divisions) {
-      }
       
-      if ((recursions === this.#divisions) && (x_edge_crossed === 3 || y_edge_crossed === 3 || z_edge_crossed === 3)) {
-        this.#vertices = new Float32Array([
-          ...this.#vertices,
-          // ...merge(
-          //   x_cross_edge === 3 && surface_x_vertex(this.#shape, sides),
-          //   y_cross_edge === 3 && surface_y_vertex(this.#shape, sides),
-          //   z_cross_edge === 3 && surface_z_vertex(this.#shape, sides),
-          // ),
-          sides.left   + half_x,
-          sides.bottom + half_y,
-          sides.back   + half_z,
-        ])
+      if (recursions === this.#divisions) {
+        let edges_crossed = 0
 
-        // NOTE: `this.#grid` stores all its values at +1 offset from their correct value.
-        // It does this to compensate for the fact that, on creation, `this.#grid` initializes
-        // all its entries to have a value of `0` - which is a valid vertex index. So, instead
-        // of `0`, the first vertex that gets added to `this.#grid` is stored with a value of
-        // `1` (the value of `this.#vertices.length / 3` after the first vertex is added) - to
-        // distinguish it from "empty" `this.#grid` entries.
-        this.#grid[vertex] = this.#vertices.length / 3
+        if (x_edge_crossed > -1) edges_crossed++
+        if (y_edge_crossed > -1) edges_crossed++
+        if (z_edge_crossed > -1) edges_crossed++
 
-        this.#cache.push(vertex)
+        if (edges_crossed > 1) {
+          const x_crosses = x_crossings(this.#shape, sides, -space[x]),
+                y_crosses = y_crossings(this.#shape, sides, -space[y]),
+                z_crosses = z_crossings(this.#shape, sides, -space[z])
+
+          for (let i = 1; i <= 13; i += 3) {
+            if (x_crosses[i] !== -space[x] && y_crosses[i] !== -space[y] && z_crosses[i] !== -space[z])
+              this.#vertices = new Float32Array([
+                ...this.#vertices,
+                ...x_crosses.subarray(i, i + 3),
+                ...y_crosses.subarray(i, i + 3),
+                ...z_crosses.subarray(i, i + 3),
+              ])
+          }
+
+          // NOTE: `this.#grid` stores all its values at +1 offset from their correct value.
+          // It does this to compensate for the fact that, on creation, `this.#grid` initializes
+          // all its entries to have a value of `0` - which is a valid vertex index. So, instead
+          // of `0`, the first vertex that gets added to `this.#grid` is stored with a value of
+          // `1` (the value of `this.#vertices.length / 3` after the first vertex is added) - to
+          // distinguish it from "empty" `this.#grid` entries.
+          // this.#grid[vertex] = this.#vertices.length / 3
+  
+          // this.#cache.push(vertex)
+        }
       }
     }
 
     if (recursions === 1) {
-      const width  = this.#segments[x] ** this.#divisions
-      const height = this.#segments[y] ** this.#divisions
-      const depth  = this.#segments[z] ** this.#divisions
-      const temp   = []
+      // const width  = this.#segments[x] ** this.#divisions,
+      //       height = this.#segments[y] ** this.#divisions,
+      //       depth  = this.#segments[z] ** this.#divisions,
+      //       temp   = []
 
-      for (const c of this.#cache) {
-        const i = to_3D(c, width, depth)
-
-        const vertexes = neighbors(i.x, i.y, i.z, width, height, depth, this.#grid)
+      // for (const c of this.#cache) {
+      //   const i        = to_3D(c, width, depth),
+      //         vertexes = neighbors(i.x, i.y, i.z, width, height, depth, this.#grid)
       
-        for (const v of vertexes) {
-          temp.push(this.#grid_index_for(c))
-          temp.push(this.#grid_index_for(v[0]))
-          temp.push(this.#grid_index_for(v[1]))
-        }
-      }
+      //   for (const v of vertexes) {
+      //     temp.push(this.#grid_index_for(c))
+      //     temp.push(this.#grid_index_for(v[0]))
+      //     temp.push(this.#grid_index_for(v[1]))
+      //   }
+      // }
 
-      this.#indices = new Uint16Array([...this.#indices, ...temp])
+      // this.#indices = new Uint16Array([...this.#indices, ...temp])
 
-      new ColoredPoint(Color.from_html_rgb(0, 0, 0), .125).apply_to({
+      new ColoredPoint(Color.from_html_rgb(255, 192, 64), .5).apply_to({
+        vertices: new Float32Array([-1, 0, 0]),
+        indices:  new Uint16Array(),
+      })
+
+      new ColoredPoint(Color.from_html_rgb(255, 64, 192), .5).apply_to({
+        vertices: new Float32Array([0, -1, 0]),
+        indices:  new Uint16Array(),
+      })
+
+      new ColoredPoint(Color.from_html_rgb(64, 192, 255), .5).apply_to({
+        vertices: new Float32Array([0, 0, -1]),
+        indices:  new Uint16Array(),
+      })
+
+      new ColoredPoint(Color.from_html_rgb(255, 255, 64), .125).apply_to({
         vertices: this.#voxels,
         indices:  new Uint16Array(),
       })
 
-      new ColoredPoint(Color.from_html_rgb(255, 255, 255), half).apply_to({
+      new ColoredPoint(Color.from_html_rgb(255, 255, 255), .25).apply_to({
         vertices: this.#vertices,
         indices:  new Uint16Array(),
       })
@@ -199,8 +221,6 @@ export default class Benzaiten {
     return {
       vertices: this.#vertices,
       indices:  this.#indices,
-      // @ts-ignore
-      voxels: this.#voxels,
     }
   }
 }

@@ -3,13 +3,16 @@
   "version": "0.5.0",
   "description": "A thoroughly-modern real-time simulation engine",
   "scripts": {
-    "amber": "clear && bun ./src/bun/serve.ts"
+    "amber": "bun run compile && bun ./scratch/serve.ts",
+    "compile": "clear && bun ./bin/compile.js",
+    "test": "bun run compile && bun test"
   },
   "license": "MIT",
   "devDependencies": {
+    "@webgpu/types": "^0.1.35",
+    "assemblyscript": "^0.27.14",
     "bun-types": "^1.0.7",
-    "typescript": "^5.2.2",
-    "@webgpu/types": "^0.1.35"
+    "typescript": "^5.2.2"
   },
   "exports": {
     "./Athenaeum/*.js": "./src/lib/Athenaeum/*.js",
@@ -20,5 +23,6 @@
     "./Legion/*.js": "./src/lib/Legion/*.js",
     "./Xenon/*.js": "./src/lib/Xenon/*.js",
     "./Yggdrasil/*.js": "./src/lib/Athenaeum/*.js"
-  }
+  },
+  "type": "module"
 }

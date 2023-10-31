@@ -1,15 +1,21 @@
 import { Vector3 } from "@/Sunya/types"
 
-import { vec3 } from "@/Sunya"
-
 import { Shape } from "@/Benzaiten/shapes/types"
 
 import { EMPTY } from "@/Benzaiten/CONSTANTS"
 import { Sides } from "@/Benzaiten/types"
 
-const x = ['left', 'right' ],
-      y = ['top',  'bottom'],
-      z = ['back', 'front' ]
+import {
+  add,
+  divide_by_scalar,
+  multiply,
+  normalize,
+  subtract,
+} from "#/Sunya/Vector3D"
+
+const x = ['left',    'right' ],
+      y = ['bottom',  'top'   ],
+      z = ['back',    'front' ]
 
 export const crosses = (
   a: number,
@@ -21,53 +27,171 @@ export const crosses = (
           b === 0
 }
 
-const zero = vec3.zero(),
-      v3   = vec3.create
-
 const surface_vertex = (
   x: number,
   y: number,
   z: number,
 ): Vector3 =>
-  vec3.multiply(
-  v3(.475, .475, .475),
-    vec3.add(
-    zero,
-    vec3.normalize(
-      vec3.subtract(
-        v3(x, y, z),
-          zero,
+  multiply(
+    new Float32Array([.475, .475, .475]),
+    add(
+      new Float32Array([0, 0, 0]),
+      normalize(
+        subtract(
+          new Float32Array([x, y, z]),
+          new Float32Array([0, 0, 0]),
         )
       )
     )
   )
 
+export const x_crossings = (
+  distance: Shape,
+  sides:    Sides,
+  empty:    number,
+): Float32Array => {
+  const crossed = new Float32Array(13)
+
+  let count = 0
+
+  // console.log('\n\n')
+
+  for (let i = 3; i > -1; i--) {
+    const Y = sides[y[Math.abs(Math.floor((i - 1) / 2))]],
+          Z = sides[z[Math.floor(i / 2)]],
+          L = sides[x[0]],
+          R = sides[x[1]],
+          a = distance(L, Y, Z),
+          c = (i + 1) * 3
+
+
+    // console.log(`X === y:${y[Math.abs(Math.floor((i - 1) / 2))]}, z:${z[Math.floor(i / 2)]}`)
+
+    if (crosses(a, distance(R, Y, Z))) {
+      // const vertex = surface_vertex(L + Math.abs(a), Y, Z)
+      
+      count++
+
+      crossed[c - 2] = L// + Math.abs(a)
+      crossed[c - 1] = Y
+      crossed[c - 0] = Z
+
+      // console.log(`X === c: ${c / 3} y:${y[Math.abs(Math.floor((i - 1) / 2))]}, z:${z[Math.floor(i / 2)]}`)
+    }
+    else {  
+      crossed[c - 2] = empty
+      crossed[c - 1] = empty
+      crossed[c - 0] = empty
+    }
+  }
+  // console.log('\n\n')
+  
+  crossed[0] = count
+
+  return crossed
+}
+
+export const y_crossings = (
+  distance: Shape,
+  sides:    Sides,
+  empty:    number,
+): Float32Array => {
+  const crossed = new Float32Array(13)
+
+  let count = 0
+
+  // console.log('\n\n')
+
+  for (let i = 3; i > -1; i--) {
+    const X = sides[x[Math.abs(Math.floor((i - 1) / 2))]],
+          Z = sides[z[Math.floor(i / 2)]],
+          B = sides[y[0]],
+          T = sides[y[1]],
+          a = distance(X, B, Z),
+          c = (i + 1) * 3
+
+    // console.log(`Y === x:${x[Math.abs(Math.floor((i - 1) / 2))]}, z:${z[Math.floor(i / 2)]}`)
+
+    if (crosses(a, distance(X, T, Z))) {
+      // const vertex = surface_vertex(X, B - Math.abs(a), Z)
+
+      count++
+      
+      crossed[c - 2] = X
+      crossed[c - 1] = B// + Math.abs(a)
+      crossed[c - 0] = Z
+
+      // console.log(`Y === c: ${c / 3} x:${x[Math.abs(Math.floor((i - 1) / 2))]}, z:${z[Math.floor(i / 2)]}`)
+    }
+    else {  
+      crossed[c - 2] = empty
+      crossed[c - 1] = empty
+      crossed[c - 0] = empty
+    }
+  }
+  // console.log('\n\n')
+
+  crossed[0] = count
+
+  return crossed
+}
+
+export const z_crossings = (
+  distance: Shape,
+  sides:    Sides,
+  empty:    number,
+): Float32Array => {
+  const crossed = new Float32Array(13)
+
+  let count = 0
+
+  // console.log('\n\n')
+
+  for (let i = 3; i > -1; i--) {
+    const X = sides[x[Math.abs(Math.floor((i - 1) / 2))]],
+          Y = sides[y[Math.floor(i / 2)]],
+          B = sides[z[0]],
+          F = sides[z[1]],
+          a = distance(X, Y, B),
+          c = (i + 1) * 3
+
+    // console.log(`Z === x:${x[Math.abs(Math.floor((i - 1) / 2))]}, y:${y[Math.floor(i / 2)]}`)
+
+    if (crosses(a, distance(X, Y, F))) {
+      // const vertex = surface_vertex(X, Y, B + Math.abs(a))
+      
+      count++
+
+      crossed[c - 2] = X
+      crossed[c - 1] = Y
+      crossed[c - 0] = B// + Math.abs(a)
+
+      // console.log(`Z === c: ${c / 3} x:${x[Math.abs(Math.floor((i - 1) / 2))]}, y:${y[Math.floor(i / 2)]}`)
+    }
+    else {  
+      crossed[c - 2] = empty
+      crossed[c - 1] = empty
+      crossed[c - 0] = empty
+    }
+  }
+  // console.log('\n\n')
+
+  crossed[0] = count
+
+  return crossed
+}
+
 export const x_recursion_edge = (
   distance: Shape,
   sides:    Sides,
 ): number => {
-  // NOTE: The order of the iteration here matters:
-  // Iteration needs to happen downward to guarantee
-  // that 3 is returned if a vertex should be added
-  // by surface_x_vertex below.
-  // The number 3 is important because it corresponds to
-  // y['bottom'] and z['front'] on lines 13 & 14 above.
-  // These are the idices surface_x_vertex uses when 
-  // building a vertex; so, when returning 3, this function
-  // is saying "Yes, surface_x_vertex absolutely should create
-  // a vertex" - and guarantees that surface_x_vertex will have
-  // the correct data to generate the proper vertex.
-  // Iterating downward is also the most efficient way to do it
-  // since only a single iteration of the loop will execute
-  // whenever a vertex should be generated!
   for (let i = 3; i > -1; i--) {
-    const Y = sides[y[i % 2]],
+    const Y = sides[y[Math.abs(Math.floor((i - 1) / 2))]],
           Z = sides[z[Math.floor(i / 2)]],
           L = sides[x[0]],
-          R = sides[x[1]],
-          a = distance(L, Y, Z)
+          R = sides[x[1]]
 
-        if (crosses(a, distance(R, Y, Z))) return i
+    if (crosses(distance(L, Y, Z), distance(R, Y, Z))) return i
   }
   
   return -1
@@ -77,28 +201,13 @@ export const y_recursion_edge = (
   distance: Shape,
   sides:    Sides,
 ): number => {
-  // NOTE: The order of the iteration here matters:
-  // Iteration needs to happen downward to guarantee
-  // that 3 is returned if a vertex should be added
-  // by surface_y_vertex below.
-  // The number 3 is important because it corresponds to
-  // x['right'] and z['front'] on lines 12 & 14 above.
-  // These are the idices surface_y_vertex uses when 
-  // building a vertex; so, when returning 3, this function
-  // is saying "Yes, surface_y_vertex absolutely should create
-  // a vertex" - and guarantees that surface_y_vertex will have
-  // the correct data to generate the proper vertex.
-  // Iterating downward is also the most efficient way to do it
-  // since only a single iteration of the loop will execute
-  // whenever a vertex should be generated!
   for (let i = 3; i > -1; i--) {
-    const X = sides[x[i % 2]],
+    const X = sides[x[Math.abs(Math.floor((i - 1) / 2))]],
           Z = sides[z[Math.floor(i / 2)]],
-          T = sides[y[0]],
-          B = sides[y[1]],
-          a = distance(X, T, Z)
+          B = sides[y[0]],
+          T = sides[y[1]]
 
-    if (crosses(a, distance(X, B, Z))) return i
+    if (crosses(distance(X, B, Z), distance(X, T, Z))) return i
   }
 
   return -1
@@ -108,28 +217,13 @@ export const z_recursion_edge = (
   distance: Shape,
   sides:    Sides,
 ): number => {
-  // NOTE: The order of the iteration here matters:
-  // Iteration needs to happen downward to guarantee
-  // that 3 is returned if a vertex should be added
-  // by surface_z_vertex below.
-  // The number 3 is important because it corresponds to
-  // x['right'] and y['bottom'] on lines 12 & 13 above.
-  // These are the idices surface_z_vertex uses when 
-  // building a vertex; so, when returning 3, this function
-  // is saying "Yes, surface_z_vertex absolutely should create
-  // a vertex" - and guarantees that surface_z_vertex will have
-  // the correct data to generate the proper vertex.
-  // Iterating downward is also the most efficient way to do it
-  // since only a single iteration of the loop will execute
-  // whenever a vertex should be generated!
   for (let i = 3; i > -1; i--) {
-    const X = sides[x[i % 2]],
+    const X = sides[x[Math.abs(Math.floor((i - 1) / 2))]],
           Y = sides[y[Math.floor(i / 2)]],
           B = sides[z[0]],
-          F = sides[z[1]],
-          a = distance(X, Y, B)
+          F = sides[z[1]]
 
-    if (crosses(a, distance(X, Y, F))) return i
+    if (crosses(distance(X, Y, B), distance(X, Y, F))) return i
   }
 
   return -1
@@ -184,12 +278,12 @@ export const merge = (
   if (vectors.length === 1) return vectors[0]
 
   if (vectors.length === 2)
-    return vec3.divide_by_scalar(vec3.add(vectors[0], vectors[1]), 2)
+    return divide_by_scalar(add(vectors[0], vectors[1]), 2)
 
   if (vectors.length === 3) {
-    const m = vec3.divide_by_scalar(vec3.add(vectors[0], vectors[1]), 2)
+    const m = divide_by_scalar(add(vectors[0], vectors[1]), 2)
 
-    return vec3.divide_by_scalar(vec3.add(vectors[2], m), 2)
+    return divide_by_scalar(add(vectors[2], m), 2)
   }
 }
 

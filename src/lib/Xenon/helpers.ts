@@ -1,9 +1,15 @@
+
 import {
-  Vector,
-  degrees_to_radians,
-  mat4,
-  vec3,
-} from '@/Sunya'
+  look_at,
+  multiply,
+  perspective,
+} from '#/Sunya/Matrix4x4'
+
+import { add } from '#/Sunya/Vector3D'
+
+import { degrees_to_radians } from '#/Sunya/helpers'
+
+import { Vector } from '@/Sunya'
 
 import { VPM } from '@/Xenon/settings'
 
@@ -120,16 +126,16 @@ export const vpm = (
   location:    Float32Array,
   sphere:      Float32Array,
 ): Float32Array =>
-  mat4.multiply(
-    mat4.perspective(
+  multiply(
+    perspective(
       degrees_to_radians(VPM.FieldOfView),
       aspectRatio,
       VPM.NearPlane,
       VPM.FarPlane,
     ),
-    mat4.lookAt(
+    look_at(
       location,
-      vec3.add(sphere, location),
+      add(sphere, location),
       Vector.Up,
     ),
   )

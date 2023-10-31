@@ -15,11 +15,9 @@
     "strictNullChecks": false,
     "outDir": "dist",
     "lib": ["ESNext", "DOM"],
-    "baseUrl": "./src/lib",
     "paths": {
-      "@/*": [
-        "*"
-      ]
+      "@/*": ["./src/lib/*"],
+      "#/*": ["./compiled/*"]
     }
   }
 }

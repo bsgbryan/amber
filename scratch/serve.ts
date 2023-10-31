@@ -1,12 +1,14 @@
 Bun.serve({
   development: true,
+  
   async fetch(req) {
+    console.log(req.url)
     if (req.url === 'http://localhost:1138/')
-      return new Response(Bun.file(`${process.cwd()}/src/test/index.html`))
+      return new Response(Bun.file(`${process.cwd()}/scratch/index.html`))
 
     if (req.url.endsWith('index.ts')) {
       const trans   = new Bun.Transpiler(),
-            content = await Bun.file(`${process.cwd()}/src/test/index.ts`).text(),
+            content = await Bun.file(`${process.cwd()}/scratch/index.ts`).text(),
             output  = await trans.transform(content.replaceAll('@/', '/'), 'ts'),
             res     = new Response(output)
 
@@ -17,6 +19,15 @@ Bun.serve({
     }
     else if (req.url.endsWith('favicon.ico'))
       return new Response(Bun.file(`${process.cwd()}/public/amber.png`))
+    else if (req.url.includes('/build/')) {
+      return new Response(Bun.file(`${process.cwd()}${new URL(req.url).pathname}`))
+    }
+    else if (req.url.includes('/compiled/')) {
+      const path = new URL(req.url).pathname,
+            ext  = path.endsWith('.wasm') ? '' : '.js'
+ 
+      return new Response(Bun.file(`${process.cwd()}${path}${ext}`))
+    }
     else {
       const trans   = new Bun.Transpiler(),
             path    = new URL(req.url).pathname,
@@ -47,7 +58,8 @@ Bun.serve({
         else processed += `${t}\n`
       }
 
-      const output = await trans.transform(processed.replaceAll('@/', '/'), 'ts'),
+      const stripped = processed.replaceAll('@/', '/').replaceAll('#/', '/compiled/'),
+            output = await trans.transform(stripped, 'ts'),
             res    = new Response(output)
 
       res.headers.set('Content-Type', 'text/javascript')
