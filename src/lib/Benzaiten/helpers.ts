@@ -48,137 +48,67 @@ const surface_vertex = (
 export const x_crossings = (
   distance: Shape,
   sides:    Sides,
-  empty:    number,
 ): Float32Array => {
-  const crossed = new Float32Array(13)
-
-  let count = 0
-
-  // console.log('\n\n')
+  const output = []
 
   for (let i = 3; i > -1; i--) {
     const Y = sides[y[Math.abs(Math.floor((i - 1) / 2))]],
           Z = sides[z[Math.floor(i / 2)]],
           L = sides[x[0]],
-          R = sides[x[1]],
-          a = distance(L, Y, Z),
-          c = (i + 1) * 3
+          R = sides[x[1]]
 
-
-    // console.log(`X === y:${y[Math.abs(Math.floor((i - 1) / 2))]}, z:${z[Math.floor(i / 2)]}`)
-
-    if (crosses(a, distance(R, Y, Z))) {
-      // const vertex = surface_vertex(L + Math.abs(a), Y, Z)
-      
-      count++
-
-      crossed[c - 2] = L// + Math.abs(a)
-      crossed[c - 1] = Y
-      crossed[c - 0] = Z
-
-      // console.log(`X === c: ${c / 3} y:${y[Math.abs(Math.floor((i - 1) / 2))]}, z:${z[Math.floor(i / 2)]}`)
-    }
-    else {  
-      crossed[c - 2] = empty
-      crossed[c - 1] = empty
-      crossed[c - 0] = empty
+    if (crosses(distance(L, Y, Z), distance(R, Y, Z))) {
+      output.push(L < 0 ? L : R)
+      output.push(Y)
+      output.push(Z)
     }
   }
-  // console.log('\n\n')
-  
-  crossed[0] = count
 
-  return crossed
+  return new Float32Array(output)
 }
 
 export const y_crossings = (
   distance: Shape,
   sides:    Sides,
-  empty:    number,
 ): Float32Array => {
-  const crossed = new Float32Array(13)
-
-  let count = 0
-
-  // console.log('\n\n')
+  const output = []
 
   for (let i = 3; i > -1; i--) {
     const X = sides[x[Math.abs(Math.floor((i - 1) / 2))]],
           Z = sides[z[Math.floor(i / 2)]],
           B = sides[y[0]],
-          T = sides[y[1]],
-          a = distance(X, B, Z),
-          c = (i + 1) * 3
+          T = sides[y[1]]
 
-    // console.log(`Y === x:${x[Math.abs(Math.floor((i - 1) / 2))]}, z:${z[Math.floor(i / 2)]}`)
-
-    if (crosses(a, distance(X, T, Z))) {
-      // const vertex = surface_vertex(X, B - Math.abs(a), Z)
-
-      count++
-      
-      crossed[c - 2] = X
-      crossed[c - 1] = B// + Math.abs(a)
-      crossed[c - 0] = Z
-
-      // console.log(`Y === c: ${c / 3} x:${x[Math.abs(Math.floor((i - 1) / 2))]}, z:${z[Math.floor(i / 2)]}`)
-    }
-    else {  
-      crossed[c - 2] = empty
-      crossed[c - 1] = empty
-      crossed[c - 0] = empty
+    if (crosses(distance(X, B, Z), distance(X, T, Z))) {
+      output.push(X)
+      output.push(B < 0 ? B : T)
+      output.push(Z)
     }
   }
-  // console.log('\n\n')
 
-  crossed[0] = count
-
-  return crossed
+  return new Float32Array(output)
 }
 
 export const z_crossings = (
   distance: Shape,
   sides:    Sides,
-  empty:    number,
 ): Float32Array => {
-  const crossed = new Float32Array(13)
-
-  let count = 0
-
-  // console.log('\n\n')
+  const output = []
 
   for (let i = 3; i > -1; i--) {
     const X = sides[x[Math.abs(Math.floor((i - 1) / 2))]],
           Y = sides[y[Math.floor(i / 2)]],
           B = sides[z[0]],
-          F = sides[z[1]],
-          a = distance(X, Y, B),
-          c = (i + 1) * 3
+          F = sides[z[1]]
 
-    // console.log(`Z === x:${x[Math.abs(Math.floor((i - 1) / 2))]}, y:${y[Math.floor(i / 2)]}`)
-
-    if (crosses(a, distance(X, Y, F))) {
-      // const vertex = surface_vertex(X, Y, B + Math.abs(a))
-      
-      count++
-
-      crossed[c - 2] = X
-      crossed[c - 1] = Y
-      crossed[c - 0] = B// + Math.abs(a)
-
-      // console.log(`Z === c: ${c / 3} x:${x[Math.abs(Math.floor((i - 1) / 2))]}, y:${y[Math.floor(i / 2)]}`)
-    }
-    else {  
-      crossed[c - 2] = empty
-      crossed[c - 1] = empty
-      crossed[c - 0] = empty
+    if (crosses(distance(X, Y, B), distance(X, Y, F))) {
+      output.push(X)
+      output.push(Y)
+      output.push(B < 0 ? B : F)
     }
   }
-  // console.log('\n\n')
 
-  crossed[0] = count
-
-  return crossed
+  return new Float32Array(output)
 }
 
 export const x_recursion_edge = (
