@@ -162,7 +162,11 @@ export default class Benzaiten {
             this.#cache.push(vertex)
           }
           
-          if (y_crosses[10] !== EMPTY) {
+          if (y_crosses[10] !== EMPTY && (
+            y_crosses[10] !== x_crosses[10] ||
+            y_crosses[11] !== x_crosses[11] ||
+            y_crosses[12] !== x_crosses[12]
+          )) {
             temp.push(...y_crosses.subarray(10, 13))
 
             this.#grid[vertex + 1] = (this.#vertices.length + temp.length) / 3
@@ -170,7 +174,15 @@ export default class Benzaiten {
             this.#cache.push(vertex + 1)
           }
           
-          if (z_crosses[10] !== EMPTY) {
+          if (z_crosses[10] !== EMPTY && (
+            z_crosses[10] !== x_crosses[10] ||
+            z_crosses[11] !== x_crosses[11] ||
+            z_crosses[12] !== x_crosses[12]
+          ) && (
+            z_crosses[10] !== y_crosses[10] ||
+            z_crosses[11] !== y_crosses[11] ||
+            z_crosses[12] !== y_crosses[12]
+          )) {
             temp.push(...z_crosses.subarray(10, 13))
 
             this.#grid[vertex + 2] = (this.#vertices.length + temp.length) / 3
