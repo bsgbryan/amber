@@ -1,1 +1,1 @@
-export const EMPTY = 0
+export const EMPTY = Number.NEGATIVE_INFINITY
