@@ -1,17 +1,17 @@
-import { Vector3 } from "@/Sunya/types"
+// import { Vector3 } from "@/Sunya/types"
 
 import { Shape } from "@/Benzaiten/shapes/types"
 
 import { EMPTY } from "@/Benzaiten/CONSTANTS"
 import { Sides } from "@/Benzaiten/types"
 
-import {
-  add,
-  divide_by_scalar,
-  multiply,
-  normalize,
-  subtract,
-} from "#/Sunya/Vector3D"
+// import {
+//   add,
+//   divide_by_scalar,
+//   multiply,
+//   normalize,
+//   subtract,
+// } from "#/Sunya/Vector3D"
 
 const x = ['left',    'right' ],
       y = ['bottom',  'top'   ],
@@ -27,23 +27,23 @@ export const crosses = (
           b === 0
 }
 
-const surface_vertex = (
-  x: number,
-  y: number,
-  z: number,
-): Vector3 =>
-  multiply(
-    new Float32Array([.475, .475, .475]),
-    add(
-      new Float32Array([0, 0, 0]),
-      normalize(
-        subtract(
-          new Float32Array([x, y, z]),
-          new Float32Array([0, 0, 0]),
-        )
-      )
-    )
-  )
+// const surface_vertex = (
+//   x: number,
+//   y: number,
+//   z: number,
+// ): Vector3 =>
+//   multiply(
+//     new Float32Array([.475, .475, .475]),
+//     add(
+//       new Float32Array([0, 0, 0]),
+//       normalize(
+//         subtract(
+//           new Float32Array([x, y, z]),
+//           new Float32Array([0, 0, 0]),
+//         )
+//       )
+//     )
+//   )
 
 export const x_crossings = (
   distance: Shape,
