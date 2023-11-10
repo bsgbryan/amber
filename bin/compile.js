@@ -20,6 +20,7 @@ const compile = async file => {
     "--converge",
     "-b", "esm",
     "--stats",
+    "--enable", "simd",
   ])
   
   if (error) {
@@ -28,7 +29,7 @@ const compile = async file => {
   }
   else {
     console.log(`Compiled ${module.replaceAll('/', '::')}`)
-    console.log(stats.toString())
+    // console.log(stats?.toString())
   }
 }
 
