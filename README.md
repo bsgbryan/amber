@@ -5,7 +5,7 @@ Amber is a thoroughly-modern real-time simulation engine.
 What does that mean?
 
 1. Amber is easy to get along with:<br>
-  _Modern technologies and tools like [Bun](https://bun.sh/), [TypeScript](https://www.typescriptlang.org/), [WebAssembly](https://webassembly.org/), [SIMD](https://github.com/WebAssembly/simd), and [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) enable Amber to be simple to use & work with while also being incredibly efficient_
+  _Modern tools and technologies like [Bun](https://bun.sh/), [TypeScript](https://www.typescriptlang.org/), [AssemblyScript](https://www.assemblyscript.org/), [WebAssembly](https://webassembly.org/), [SIMD](https://github.com/WebAssembly/simd), and [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) enable Amber to be simple to use & work with while also being incredibly efficient_
 1. Amber is smol:<br>
   _A long-standing axiom in development is "Smaller things are easier to understand, change, and fix"; Amber follows this axiom by using lots of little pieces, each focused on doing a single thing, to construction nuanced behavior_
 1. Amber has strong opinions:<br>
