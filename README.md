@@ -30,4 +30,4 @@ What does that mean?
 * **Composability:** Amber's pieces should be organized such that using them together is unambiguous and intuitive.
 * **Efficiency:** Amber strives to make the best use of available resources; including our time as developers/designers.
 
-It's important to note that flexibility is _not_ one of Amber's goals. Amber is not intended to render 2D graphics, for example. It is also not designed or intended to load static 3D assets generated in external tools. I understand this will be frustrating and feels limiting. Amber is intended to generate and simulate things. It is also intended to be entirely self-contained.
+It's important to note that flexibility is _not_ one of Amber's goals. Amber is not intended to render 2D graphics, for example. It is also not designed or intended to load static 3D assets generated using external tools. I understand this will be frustrating and feels limiting. Amber is intended to generate and simulate things. It is also intended to be entirely self-contained.
