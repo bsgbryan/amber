@@ -74,9 +74,9 @@ export function identity(): Float32Array {
 
 export function multiply(a: Float32Array, b: Float32Array): Float32Array {
   const output = new Float32Array(3),
-  v0     = f32x4(a[0], a[1], a[2], 0),
-  v1     = f32x4(b[0], b[1], b[2], 0),
-  r      = f32x4.mul(v0, v1)
+        v0     = f32x4(a[0], a[1], a[2], 0),
+        v1     = f32x4(b[0], b[1], b[2], 0),
+        r      = f32x4.mul(v0, v1)
 
 output[0] = f32x4.extract_lane(r, 0)
 output[1] = f32x4.extract_lane(r, 1)
