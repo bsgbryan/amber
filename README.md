@@ -30,13 +30,4 @@ What does that mean?
 * **Composability:** Amber's pieces should be organized such that using them together is unambiguous and intuitive.
 * **Efficiency:** Amber strives to make the best use of available resources; including our time as developers/designers.
 
-It's important to note that flexibility is _not_ one of Amber's goals.
-
-As an example, Xenon _only_ renders indexed/instanced geometry. There are absolutely uses cases for Xenon rendering non-indexed/non-instanced geometry. Implementing support for all four rendering options (_non-indexed/non-instanced, indexed/non-instanced, indexed/instanced, and non-indexed/instanced_) would require significantly more time & effort. Only supporting two or three options would beg the question "Why not support ____?"
-
-Settling on a single rendering option also makes many other decisions much simpler. For example:
-
-Question: "How are complex meshes constructed?"<br>
-Answer: "As one or more instances of smaller, simpler, meshes"
-
-An example of such a complex mesh might be a tree; instead of having a single mesh for the tree, it would be built from many meshes - for parts of the trunk, sections of branches, and leaves. A dozen or so relatively simple meshes, when combined, would produce a varied collection of trees. This lessens the cognitive load imposed by working on tree design since all one needs to think about is designing a single branch, leaf, or trunk section at a time; how the pieces fit together is a separate problem. Displaying a single tree, or a vast forest, this way is also extremely efficient from a rendering and memory perspective.
+It's important to note that flexibility is _not_ one of Amber's goals. Amber is not intended to render 2D graphics, for example. It is also not designed or intended to load static 3D assets generated in external tools. I understand this will be frustrating and feels limiting. Amber is intended to generate and simulate things. It is also intended to be entirely self-contained.
