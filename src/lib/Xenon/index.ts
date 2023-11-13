@@ -416,7 +416,7 @@ export default class Xenon {
 
     if (Object.hasOwn(data, 'instances'))
       pass.draw((data as InstancedRenderEncoding).instances, data.vertices / 3)
-    else pass.drawIndexed(data.indices)
+    else pass.draw(data.vertices / 3)
   }
 
   static #register_color_attachment(

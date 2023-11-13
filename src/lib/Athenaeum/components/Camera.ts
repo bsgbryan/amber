@@ -30,12 +30,18 @@ export default class Camera extends Component {
     this.#viewport = that
   }
 
+  get position():   Float32Array { return this.#position   }
   get bind_group(): GPUBindGroup { return this.#bind_group }
   get buffer():     GPUBuffer    { return this.#buffer     }
 
-  constructor() {
+  constructor(
+    x: number,
+    y: number,
+    z: number,
+  ) {
     super()
 
+    this.#position = new Float32Array([x, y, z])
     this.#buffer   = Xenon.create_buffer(Camera.#buffer_description)
     this.#viewport = Xenon.viewport
     this.#bind_group = Xenon.create_bind_group([{

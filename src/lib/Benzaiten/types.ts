@@ -23,5 +23,5 @@ export type Sides = {
 
 export type Mesh = {
   vertices: Float32Array
-  indices:  Uint16Array
+  indices?: Uint16Array
 }

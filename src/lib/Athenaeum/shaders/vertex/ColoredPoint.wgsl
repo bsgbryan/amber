@@ -35,7 +35,7 @@ fn main(
   let pos = (quadPos[vertexIndex] - 0.5) * input.size * 2.0 / uniforms.resolution;
 
   out.Position = uniforms.mvpMatrix * input.position + vec4f(pos, 0, 0);
-  out.color    = input.color * vec4f(input.position.xyz + 0.5 * 0.5, 1);
+  out.color    = input.color;
 
   return out;
 }

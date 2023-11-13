@@ -54,16 +54,17 @@ export default class Material {
     buffer_index: number,
   ): void {
     this.vertices = new Float32Array([...this.vertices, ...mesh.vertices])
-    this.indices  = new Uint16Array ([...this.indices,  ...mesh.indices ])
+    // TODO: Create a IndexedMaterial if needed
+    // this.indices  = new Uint16Array ([...this.indices,  ...mesh.indices ])
 
     this.#refresh_context(buffer_index)
   }
 
   #refresh_context(buffer_index: number): void {
     Xenon.create_vertex_buffer(this.vertices, buffer_index)
-    Xenon.create_index_buffer (this.indices,  buffer_index)
+    // Xenon.create_index_buffer (this.indices,  buffer_index)
 
     this.pass.vertices = this.vertices.length
-    this.pass.indices  = this.indices.length
+    // this.pass.indices  = this.indices.length
   }
 }
