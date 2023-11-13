@@ -472,54 +472,54 @@ export const mat4 = {
 }
 
 export const quat = {
-  from_axis_angle(axis: Float32Array, rad: number, dst?: Float32Array): Float32Array {
-    dst = dst || new Float32Array(4)
+  // from_axis_angle(axis: Float32Array, rad: number, dst?: Float32Array): Float32Array {
+  //   dst = dst || new Float32Array(4)
 
-    rad *= .5
+  //   rad *= .5
 
-    const s = Math.sin(rad)
+  //   const s = Math.sin(rad)
 
-    dst[0] = s * axis[0]
-    dst[1] = s * axis[1]
-    dst[2] = s * axis[2]
-    dst[3] = Math.cos(rad)
+  //   dst[0] = s * axis[0]
+  //   dst[1] = s * axis[1]
+  //   dst[2] = s * axis[2]
+  //   dst[3] = Math.cos(rad)
 
-    return dst
-  },
-  multiply(a: Float32Array, b: Float32Array, dst?: Float32Array): Float32Array {
-    dst = dst || new Float32Array(4)
+  //   return dst
+  // },
+  // multiply(a: Float32Array, b: Float32Array, dst?: Float32Array): Float32Array {
+  //   dst = dst || new Float32Array(4)
 
-    const
-      ax = a[0],
-      ay = a[1],
-      az = a[2],
-      aw = a[3]
-    const
-      bx = b[0],
-      by = b[1],
-      bz = b[2],
-      bw = b[3]
+  //   const
+  //     ax = a[0],
+  //     ay = a[1],
+  //     az = a[2],
+  //     aw = a[3]
+  //   const
+  //     bx = b[0],
+  //     by = b[1],
+  //     bz = b[2],
+  //     bw = b[3]
 
-    dst[0] = ax * bw + aw * bx + ay * bz - az * by
-    dst[1] = ay * bw + aw * by + az * bx - ax * bz
-    dst[2] = az * bw + aw * bz + ax * by - ay * bx
-    dst[3] = aw * bw - ax * bx - ay * by - az * bz
+  //   dst[0] = ax * bw + aw * bx + ay * bz - az * by
+  //   dst[1] = ay * bw + aw * by + az * bx - ax * bz
+  //   dst[2] = az * bw + aw * bz + ax * by - ay * bx
+  //   dst[3] = aw * bw - ax * bx - ay * by - az * bz
 
-    return dst
-  },
-  rotate(point: Float32Array, q: Float32Array, dst?: Float32Array): Float32Array {
-    dst = dst || new Float32Array(3)
+  //   return dst
+  // },
+  // rotate(point: Float32Array, q: Float32Array, dst?: Float32Array): Float32Array {
+  //   dst = dst || new Float32Array(3)
     
-    const r: Float32Array = new Float32Array([0,     point[0],  point[1], -point[2]])
-    const c: Float32Array = new Float32Array([q[0], -q[1],     -q[2],     -q[3]    ])
-    const _: Float32Array = quat.multiply(quat.multiply(q, r), c)
+  //   const r: Float32Array = new Float32Array([0,     point[0],  point[1], -point[2]])
+  //   const c: Float32Array = new Float32Array([q[0], -q[1],     -q[2],     -q[3]    ])
+  //   const _: Float32Array = quat.multiply(quat.multiply(q, r), c)
 
-    dst[0] = _[1]
-    dst[1] = _[2]
-    dst[2] = _[3]
+  //   dst[0] = _[1]
+  //   dst[1] = _[2]
+  //   dst[2] = _[3]
 
-    return dst
-  }
+  //   return dst
+  // }
 }
 
 export const Vector = {
