@@ -30,4 +30,10 @@ What does that mean?
 * **Composability:** Amber's pieces should be organized such that using them together is unambiguous and intuitive.
 * **Efficiency:** Amber strives to make the best use of available resources; including our time as developers/designers.
 
-It's important to note that flexibility is _not_ one of Amber's goals. Amber is not intended to render 2D graphics, for example. It is also not designed or intended to load static 3D assets generated using external tools. I understand this will be frustrating and feels limiting. Amber is intended to generate and simulate things. It is also intended to be entirely self-contained.
+It's important to note that flexibility is _not_ one of Amber's goals. Amber is not intended to render 2D graphics, for example. It is also not designed or intended to load static 3D assets generated using external tools. I understand this will be frustrating and feels limiting. Amber is intended to generate and simulate things. It is also intended to be as self-contained as possible.
+
+# Note
+
+This is all new to me 😊
+
+I've been a hobbyist game developer for several years, but this is my first time attempting to create my own simulation/game engine. I'm going to make mistakes, bad calls, and change my mind about things - when I learn something I thought was a great idea won't, in fact, work. This already happened, actually; I originally thought Amber could do all instanced *and* indexed rendering. I found out the hard way that that isn't really feasible in the context of purely runtime-generated meshes 😅 I'm sure there will be more situations like that - so if you read design goal or decision and think to yourself "That will *not* work" I'll likely realize that shortly too 👍🏻
