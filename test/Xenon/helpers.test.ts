@@ -12,10 +12,8 @@ describe('Xenon::helpers', () => {
           position     = new Float32Array([0, 0, 0]),
           target       = new Float32Array([0, 0, 1]),
           fov          =   80,
-          near_plane   =     .1,
+          near_plane   =    0.1,
           far_plane    = 1000,
-          height       = 100,
-          width        = height * aspect_ratio,
           wasm         = view_projection_matrix(
             aspect_ratio,
             position,
@@ -23,8 +21,6 @@ describe('Xenon::helpers', () => {
             fov,
             near_plane,
             far_plane,
-            width,
-            height,
           )
 
     expect(wasm[0]).toEqual(0.6703613996505737)
