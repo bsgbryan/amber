@@ -250,8 +250,9 @@ export default class Xenon {
       label: `RenderPipeline(${name})`,
       layout: this.#default_render_pipeline_layout,
       primitive: {
-        cullMode: 'back',
-        topology: 'triangle-list',
+        cullMode:  'back',
+        frontFace: 'cw',
+        topology:  'triangle-list',
       },
       vertex: null,
     }

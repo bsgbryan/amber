@@ -104,11 +104,11 @@ export default class Benzaiten {
             temp.push(sides[1])
             temp.push(sides[2])
 
-            temp.push(sides[3])
+            temp.push(sides[0])
             temp.push(sides[4])
             temp.push(sides[2])
-            
-            temp.push(sides[0])
+
+            temp.push(sides[3])
             temp.push(sides[4])
             temp.push(sides[2])
 
@@ -117,11 +117,11 @@ export default class Benzaiten {
             temp.push(sides[2])
 
             temp.push(sides[3])
-            temp.push(sides[1])
+            temp.push(sides[4])
             temp.push(sides[2])
 
             temp.push(sides[3])
-            temp.push(sides[4])
+            temp.push(sides[1])
             temp.push(sides[2])
           }
 
