@@ -13,16 +13,13 @@ export default class Update_MainCamera_Position_and_LookDirection extends System
     if (entities.size === 0) throw new Error('Must have a main camera')
     if (entities.size >   1) throw new Error('Cannot have more than 1 main camera')
 
-    const e        = entities.values().next().value,
-          camera   = Legion.get_components(e).get(MainCamera),
-          movement = Finesse.movement,
-          rotation = Finesse.rotation,
-          augment  = Finesse.augment,
+    const e       = entities.values().next().value,
+          camera  = Legion.get_components(e).get(MainCamera),
           updated = execute(
             camera.position,
-            new Float32Array([movement.x, movement.y, movement.z]),
-            new Float32Array([rotation.x, rotation.y]),
-            augment.y,
+            Finesse.movement,
+            Finesse.rotation,
+            Finesse.augment[1],
           )
 
     camera.position = updated.subarray(0, 3)

@@ -16,14 +16,13 @@ let x_rotation = 0
 let y_rotation = 0
 
 export default class RotationInputProcessor {
-  static get is_active(): boolean       { return false          }
-  static get value():     RotationAxes  { return { x: 0, y: 0 } }
+  protected static current: RotationAxes = new Float32Array([x_rotation, y_rotation])
+
+  static get is_active(): boolean       { return false        }
+  static get value():     RotationAxes  { return this.current }
 
   protected static get rotation(): RotationAxes {
-    return {
-      x: x_rotation,
-      y: y_rotation,
-    }
+    return this.current
   }
 
   protected static process_x_rotation(
@@ -43,6 +42,9 @@ export default class RotationInputProcessor {
     updated = Math.max(-Input[mode].Rotation.Y.Limit, updated)
 
     x_rotation = updated
+
+    this.current[0] = x_rotation
+    this.current[1] = y_rotation
   }
 
   protected static process_y_rotation(

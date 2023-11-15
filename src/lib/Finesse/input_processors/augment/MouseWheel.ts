@@ -10,7 +10,7 @@ export default class MouseWheel extends AugmentMovementProcessor {
 
   static override get is_active() { return this.#active }
 
-  static override get value(): AugmentAxes { return { x: 0, y: this.#augment, z: 0 } }
+  static override get value(): AugmentAxes { return new Float32Array([0, this.#augment, 0]) }
 
   static init() {
     Mabueth.on_mouse_wheel = e => {

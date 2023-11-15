@@ -6,8 +6,10 @@ import {
 } from "@/Finesse/types"
 
 export default class MovementInputProcessor {
-  static get is_active(): boolean      { return false                }
-  static get value():     MovementAxes { return { x: 0, y: 0, z: 0 } }
+  protected static current: MovementAxes = new Float32Array([0, 0, 0])
+ 
+  static get is_active(): boolean      { return false        }
+  static get value():     MovementAxes { return this.current }
 
   protected static process_x_movement(
     mode:          MovementMode,

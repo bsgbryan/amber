@@ -14,27 +14,27 @@ export default class GamePad extends MovementInputProcessor {
 
   static get is_active(): boolean {
     if (
-      Math.abs(this.#input?.x) > Input.GamePad.Movement.ActiveThreshhold ||
-      Math.abs(this.#input?.z) > Input.GamePad.Movement.ActiveThreshhold
+      Math.abs(this.#input[0] || 0) > Input.GamePad.Movement.ActiveThreshhold ||
+      Math.abs(this.#input[2] || 0) > Input.GamePad.Movement.ActiveThreshhold
     ) return true
     else return false
   }
 
   static override get value(): MovementAxes {
-    return {
-      x: super.process_x_movement(
-       'GamePad',
-        this.#input.x,
-        Kali.delta_seconds.unscaled,
-        Input.GamePad.Movement.X.DeadZone,
-      ),
-      y: 0,
-      z: super.process_z_movement(
-       'GamePad',
-       -this.#input.z,
-        Kali.delta_seconds.unscaled,
-        Input.GamePad.Movement.Z.DeadZone,
-      ),
-    }
+    this.current[0] = super.process_x_movement(
+      'GamePad',
+      this.#input[0],
+      Kali.delta_seconds.unscaled,
+      Input.GamePad.Movement.X.DeadZone,
+    )
+
+    this.current[2] = super.process_z_movement(
+      'GamePad',
+      this.#input[2],
+      Kali.delta_seconds.unscaled,
+      Input.GamePad.Movement.Z.DeadZone,
+    )
+
+    return super.value
   }
 }

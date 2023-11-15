@@ -100,22 +100,24 @@ export default class Keyboard extends MovementInputProcessor {
     if (this.#active_keys.Up) y_input += 1
     else y_input -= 1
 
-    return {
-      x: this.process_x_movement(
-        'Keyboard',
+    this.current[0] = this.process_x_movement(
+      'Keyboard',
         x_input,
         Kali.delta_seconds.unscaled
-      ),
-      y: -this.process_y_movement(
-        'Keyboard',
+    )
+
+    this.current[1] = -this.process_y_movement(
+      'Keyboard',
         y_input,
         Kali.delta_seconds.unscaled
-      ),
-      z: this.process_z_movement(
-        'Keyboard',
+    )
+
+    this.current[2] = this.process_z_movement(
+      'Keyboard',
         z_input,
         Kali.delta_seconds.unscaled
-      ),
-    }
+    )
+
+    return super.value
   }
 }

@@ -1,5 +1,1 @@
-export type AugmentAxes = {
-  x: number
-  y: number
-  z: number
-}
+export type AugmentAxes = Float32Array

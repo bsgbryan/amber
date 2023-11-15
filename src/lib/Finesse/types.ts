@@ -1,13 +1,5 @@
-export type MovementAxes = {
-  x: number
-  y: number
-  z: number
-}
-
-export type RotationAxes = {
-  x: number
-  y: number
-}
+export type MovementAxes = Float32Array
+export type RotationAxes = Float32Array
 
 type HasMultiplier = {
   Multiplier: number
@@ -70,6 +62,7 @@ type MouseSettings = {
   Augment: {
     Y: HasMultiplier
   }
+  Movement?: MovementSettings
 }
 
 export type InputSettings = {

@@ -17,9 +17,9 @@ import { AugmentAxes } from "@/Finesse/input_processors/augment/types"
 import AugmentMovementProcessor from "@/Finesse/input_processors/augment/Movement"
 
 export default class Finesse {
-  static #moved:     MovementAxes = { x: 0, y: 0, z: 0 }
-  static #rotated:   RotationAxes = { x: 0, y: 0       }
-  static #augmented: AugmentAxes  = { x: 0, y: 0, z: 0 }
+  static #moved:     MovementAxes = new Float32Array([0, 0, 0])
+  static #rotated:   RotationAxes = new Float32Array([0, 0   ])
+  static #augmented: AugmentAxes  = new Float32Array([0, 0, 0])
 
   static init() {
     KeyboardMovementProcessor.init()
