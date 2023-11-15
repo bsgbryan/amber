@@ -16,7 +16,7 @@
     "outDir": "dist",
     "lib": ["ESNext", "DOM"],
     "paths": {
-      "@/*": ["./src/lib/*"],
+      "@/*": ["./src/*"],
       "#/*": ["./compiled/*"]
     }
   }

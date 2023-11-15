@@ -31,7 +31,7 @@ Bun.serve({
     else {
       const trans   = new Bun.Transpiler(),
             path    = new URL(req.url).pathname,
-            middle  = req.url.includes('/lib/') ? '/src' : '/src/lib',
+            middle  = '/src',
             p       = `${process.cwd()}${middle}${path}.ts`, 
             file    = Bun.file(p),
             content = Bun.file(`${process.cwd()}${middle}${await file.exists() ? `${path}.ts` : `${path}/index.ts`}`)
@@ -45,7 +45,7 @@ Bun.serve({
         if (t.includes('import') && t.includes('.wgsl')) {
           const tokens = t.split('@/').map(t => t.replaceAll("'", ''))
           const name   = t.split(/\s+/)[1]
-          const shader = await Bun.file(`${process.cwd()}/src/lib/${tokens[1]}`).text()
+          const shader = await Bun.file(`${process.cwd()}/src/${tokens[1]}`).text()
 
           imports[name] = `\`${shader}\``
         }
