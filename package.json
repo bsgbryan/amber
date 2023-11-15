@@ -14,15 +14,5 @@
     "bun-types": "^1.0.7",
     "typescript": "^5.2.2"
   },
-  "exports": {
-    "./Athenaeum/*.js": "./src/lib/Athenaeum/*.js",
-    "./Benzaiten/*.js": "./src/lib/Benzaiten/*.js",
-    "./Eunomia/*.js": "./src/lib/Eunomia/*.js",
-    "./Finesse/*.js": "./src/lib/Finesse/*.js",
-    "./Kali/*.js": "./src/lib/Kali/*.js",
-    "./Legion/*.js": "./src/lib/Legion/*.js",
-    "./Xenon/*.js": "./src/lib/Xenon/*.js",
-    "./Yggdrasil/*.js": "./src/lib/Athenaeum/*.js"
-  },
   "type": "module"
 }
