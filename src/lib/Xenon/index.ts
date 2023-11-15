@@ -1,15 +1,17 @@
+import { view_projection_matrix } from "#/Xenon/helpers"
+
 import MainCamera from "@/Athenaeum/components/MainCamera"
 import Mabueth    from "@/Mabeuth"
 import Yggdrasil  from "@/Yggdrasil"
 
-import { RenderDimensions } from "@/Mabeuth/types"
+import { VPM } from "@/Xenon/settings"
 
+import { RenderDimensions } from "@/Mabeuth/types"
 import {
   InstancedRenderEncoding,
   RenderEncoding,
   ShaderBuffers,
   ShadersSources,
-  ViewPort,
 } from "@/Xenon/types"
 
 /**
@@ -48,18 +50,6 @@ export default class Xenon {
   static #default_bind_group_layout_descriptor: GPUBindGroupLayoutDescriptor
 
   static #default_render_pipeline_layout: GPUPipelineLayout
-
-  /**
-   * The height and width of the render target, measured in pixels
-   * 
-   * @readonly
-   */
-  static get viewport(): ViewPort {
-    return {
-      height: this.#dimensions.height,
-      width:  this.#dimensions.width,
-    }
-  }
 
   /**
    * The main camera used to render the scene
@@ -170,9 +160,6 @@ export default class Xenon {
         this.#render_target.destroy()
       
       this.#define_depth_stencil()
-
-      if (this.#main_camera)
-        this.#main_camera.viewport = this.viewport
     }
     else throw new Error('No #target, cannot resize')
   }
@@ -380,9 +367,21 @@ export default class Xenon {
 
     this.#color_attachment[0].view = this.#context.getCurrentTexture().createView()
 
-    const c = this.#main_camera
+    const c   = this.#main_camera,
+          vpm = new Float32Array([
+            ...view_projection_matrix(
+              this.#dimensions.width / this.#dimensions.height,
+              this.#main_camera.position,
+              this.#main_camera.target,
+              VPM.FieldOfView,
+              VPM.NearPlane,
+              VPM.FarPlane,
+            ),
+            this.#dimensions.width,
+            this.#dimensions.height,
+          ])
 
-    this.#device.queue.writeBuffer(c.buffer, 0, c.view_projection_matrix)
+    this.#device.queue.writeBuffer(c.buffer, 0, vpm)
 
     const encoder = this.#device.createCommandEncoder()
     const pass    = encoder.beginRenderPass({
@@ -399,6 +398,7 @@ export default class Xenon {
     Yggdrasil.complete_phase('render')
   }
 
+  // TODO: See about refactoring so that all this is done prior to rendering
   static #encode(
     pass: GPURenderPassEncoder,
     data: RenderEncoding | InstancedRenderEncoding,

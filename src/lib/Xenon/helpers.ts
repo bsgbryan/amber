@@ -1,18 +1,3 @@
-
-import {
-  look_at,
-  multiply,
-  perspective,
-} from '#/Sunya/Matrix4x4'
-
-import { add } from '#/Sunya/Vector3D'
-
-import { degrees_to_radians } from '#/Sunya/helpers'
-
-import { Vector } from '@/Sunya'
-
-import { VPM } from '@/Xenon/settings'
-
 /**
  * Builds and returns a {@link https://webgpu.rocks/reference/dictionary/gpuvertexbufferlayout/ | GPUVertexBufferLayout}
  * 
@@ -119,23 +104,3 @@ export const VertexBufferLayout = (
     offset,
   }]
 })
-
-/** TODO: Add documentation here */
-export const vpm = (
-  aspectRatio: number,
-  location:    Float32Array,
-  sphere:      Float32Array,
-): Float32Array =>
-  multiply(
-    perspective(
-      degrees_to_radians(VPM.FieldOfView),
-      aspectRatio,
-      VPM.NearPlane,
-      VPM.FarPlane,
-    ),
-    look_at(
-      location,
-      add(sphere, location),
-      Vector.Up,
-    ),
-  )
