@@ -4,7 +4,7 @@
   "description": "A thoroughly-modern real-time simulation engine",
   "scripts": {
     "amber": "bun run compile && bun ./scratch/serve.ts",
-    "compile": "clear && bun ./bin/compile.js",
+    "compile": "clear && bun ./bin/compile.ts",
     "test": "bun run compile && bun test"
   },
   "license": "MIT",
