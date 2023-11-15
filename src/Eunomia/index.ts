@@ -14,7 +14,6 @@ export default class Eunomia {
 
     Mabueth.on_tick = () => {
       Kali.update()
-      Finesse.update()
       Legion.update()
       Xenon.render()
     }

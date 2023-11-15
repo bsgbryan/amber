@@ -13,24 +13,13 @@ import MouseWheelAugmentProcessor from "@/Finesse/input_processors/augment/Mouse
 import GamePadRotationProcessor from "@/Finesse/input_processors/rotation/GamePad"
 import MouseRotationProcessor   from "@/Finesse/input_processors/rotation/Mouse"
 
-import { AugmentAxes } from "@/Finesse/input_processors/augment/types"
 import AugmentMovementProcessor from "@/Finesse/input_processors/augment/Movement"
 
 export default class Finesse {
-  static #moved:     MovementAxes = new Float32Array([0, 0, 0])
-  static #rotated:   RotationAxes = new Float32Array([0, 0   ])
-  static #augmented: AugmentAxes  = new Float32Array([0, 0, 0])
-
   static init() {
     KeyboardMovementProcessor.init()
     MouseRotationProcessor.init()
     MouseWheelAugmentProcessor.init()
-  }
-
-  static update(): void {
-    this.#moved     = this.#movement_processor.value
-    this.#rotated   = this.#rotation_processor.value
-    this.#augmented = this.#augment_processor.value
   }
 
   static get #movement_processor(): typeof MovementInputProcessor {
@@ -55,14 +44,14 @@ export default class Finesse {
   }
 
   static get movement(): MovementAxes {
-    return this.#moved
+    return this.#movement_processor.value
   }
 
   static get rotation(): RotationAxes {
-    return this.#rotated
+    return this.#rotation_processor.value
   }
 
   static get augment(): RotationAxes {
-    return this.#augmented
+    return this.#augment_processor.value
   }
 }
