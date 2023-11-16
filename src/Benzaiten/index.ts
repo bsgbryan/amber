@@ -90,39 +90,1036 @@ export default class Benzaiten {
           const cube = [
                   /* Vertex 0 */ x_crosses[0] === -1 || y_crosses[0] === -1 || z_crosses[0] === -1,
                   /* Vertex 1 */ x_crosses[0] ===  1 || y_crosses[1] === -1 || z_crosses[1] === -1,
-                  /* Vertex 2 */ x_crosses[3] ===  1 || y_crosses[2] === -1 || z_crosses[2] ===  1,
+                  /* Vertex 2 */ x_crosses[3] ===  1 || y_crosses[2] === -1 || z_crosses[1] ===  1,
                   /* Vertex 3 */ x_crosses[3] === -1 || y_crosses[3] === -1 || z_crosses[0] ===  1,
                   /* Vertex 4 */ x_crosses[1] === -1 || y_crosses[0] ===  1 || z_crosses[3] === -1,
-                  /* Vertex 5 */ x_crosses[1] ===  1 || y_crosses[3] ===  1 || z_crosses[2] === -1,
+                  /* Vertex 5 */ x_crosses[1] ===  1 || y_crosses[1] ===  1 || z_crosses[2] === -1,
                   /* Vertex 6 */ x_crosses[2] ===  1 || y_crosses[2] ===  1 || z_crosses[2] ===  1,
                   /* Vertex 7 */ x_crosses[2] === -1 || y_crosses[3] ===  1 || z_crosses[3] ===  1,
                 ],
                 temp = []
+          
+          // BOTTOM
+          if (sides[1] < 0) {
+            // BOTTOM BACK RIGHT CORNER FACE
+            if (cube[0] && cube[2] && cube[3]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
 
-          if (cube[0] && cube[1] && cube[4] && cube[5]) {
-            temp.push(sides[0])
-            temp.push(sides[1])
-            temp.push(sides[2])
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // BOTTOM FRONT RIGHT CORNER FACE
+            else if (cube[0] && cube[1] && cube[3]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
 
-            temp.push(sides[0])
-            temp.push(sides[4])
-            temp.push(sides[2])
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // BOTTOM FRONT LEFT CORNER FACE
+            else if (cube[0] && cube[1] && cube[2]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
 
-            temp.push(sides[3])
-            temp.push(sides[4])
-            temp.push(sides[2])
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // BOTTOM BACK LEFT CORNER FACE
+            else if (cube[1] && cube[2] && cube[3]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+              
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
 
-            temp.push(sides[0])
-            temp.push(sides[1])
-            temp.push(sides[2])
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            }
 
-            temp.push(sides[3])
-            temp.push(sides[4])
-            temp.push(sides[2])
+            // BOTTOM FACE
+            if (cube[0] && cube[1] && cube[2] && cube[3]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
 
-            temp.push(sides[3])
-            temp.push(sides[1])
-            temp.push(sides[2])
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // BOTTOM-BACK FACE
+            else if (cube[2] && cube[3] && cube[4] && cube[5]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // BOTTOM-RIGHT-BACK FACE
+            else if (cube[3] && cube[4] && cube[6]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            } // BOTTOM-RIGHT-BACK FACE
+            else if (cube[0] && cube[5] && cube[2]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // BOTTOM-RIGHT FACE
+            else if (cube[0] && cube[3] && cube[5] && cube[6]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // BOTTOM-RIGHT-FRONT FACE
+            else if (cube[1] && cube[6] && cube[3]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // BOTTOM-RIGHT-FRONT FACE
+            else if (cube[0] && cube[5] && cube[7]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            } // BOTTOM-FRONT FACE
+            else if (cube[0] && cube[1] && cube[6] && cube[7]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            } // BOTTOM-LEFT-FRONT FACE
+            else if (cube[1] && cube[6] && cube[4]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // BOTTOM-LEFT-FRONT FACE
+            else if (cube[0] && cube[2] && cube[7]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            }  // BOTTOM-LEFT FACE
+            else if (cube[1] && cube[2] && cube[4] && cube[7]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // BOTTOM-LEFT-BACK FACE
+            else if (cube[2] && cube[7] && cube[5]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // BOTTOM-LEFT-BACK FACE
+            else if (cube[1] && cube[3] && cube[4]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            }
+          }
+          // TOP
+          else if (sides[1] > 0) {
+            // TOP BACK RIGHT CORNER FACE
+            if (cube[4] && cube[7] && cube[6]) {
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            } // TOP FRONT RIGHT CORNER FACE
+            else if (cube[4] && cube[7] && cube[5]) {
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // TOP FRONT LEFT CORNER FACE
+            else if (cube[4] && cube[6] && cube[5]) {
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // TOP BACK LEFT CORNER FACE
+            else if (cube[5] && cube[7] && cube[6]) {
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            }
+
+            // TOP FACE
+            if (cube[4] && cube[5] && cube[6] && cube[7]) {
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // TOP-BACK FACE
+            else if (cube[0] && cube[1] && cube[6] && cube[7]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+            } // TOP-RIGHT-BACK FACE
+            else if (cube[0] && cube[2] && cube[7]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // TOP-RIGHT-BACK FACE
+            else if (cube[1] && cube[4] && cube[6]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            } // TOP-RIGHT FACE
+            else if (cube[1] && cube[2] && cube[4] && cube[7]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // TOP-RIGHT-FRONT FACE
+            else if (cube[2] && cube[5] && cube[7]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            } // TOP-RIGHT-FRONT FACE
+            else if (cube[1] && cube[3] && cube[4]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // TOP-FRONT FACE
+            else if (cube[2] && cube[3] && cube[4] && cube[5]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // TOP-LEFT-FRONT FACE
+            else if (cube[0] && cube[2] && cube[5]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // TOP-LEFT-FRONT FACE
+            else if (cube[3] && cube[4] && cube[6]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // TOP-LEFT FACE
+            else if (cube[0] && cube[3] && cube[5] && cube[6]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+            } // TOP-LEFT-BACK FACE
+            else if (cube[0] && cube[7] && cube[5]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // TOP-LEFT-BACK FACE
+            else if (cube[1] && cube[3] && cube[6]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            }
+          }
+
+          // BACK
+          if (sides[2] < 0) {
+            // BACK BOTTOM RIGHT CORNER FACE
+            if (cube[0] && cube[4] && cube[5]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // BACK TOP RIGHT CORNER FACE
+            else if (cube[0] && cube[4] && cube[1]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+            } // BACK TOP LEFT CORNER FACE
+            else if (cube[0] && cube[5] && cube[1]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+            } // BACK BOTTOM LEFT CORNER FACE
+            else if (cube[1] && cube[4] && cube[5]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            }
+
+            // BACK FACE
+            if (cube[0] && cube[1] && cube[4] && cube[5]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+            }
+
+            // BACK-RIGHT FACE
+            if (sides[0] > 0) {
+              if (cube[0] && cube[2] && cube[4] && cube[6] && sides[2] < 0) {
+                temp.push(sides[0])
+                temp.push(sides[1])
+                temp.push(sides[2])
+  
+                temp.push(sides[0])
+                temp.push(sides[4])
+                temp.push(sides[2])
+  
+                temp.push(sides[3])
+                temp.push(sides[1])
+                temp.push(sides[5])
+  
+                temp.push(sides[3])
+                temp.push(sides[1])
+                temp.push(sides[5])
+  
+                temp.push(sides[0])
+                temp.push(sides[4])
+                temp.push(sides[2])
+  
+                temp.push(sides[3])
+                temp.push(sides[4])
+                temp.push(sides[5])
+              }
+            }
+            // BACK-LEFT FACE
+            else if (sides[2] < 0) {
+              if (cube[1] && cube[3] && cube[5] && cube[7] && sides[2] < 0) {
+                temp.push(sides[3])
+                temp.push(sides[1])
+                temp.push(sides[2])
+    
+                temp.push(sides[0])
+                temp.push(sides[1])
+                temp.push(sides[5])
+    
+                temp.push(sides[0])
+                temp.push(sides[4])
+                temp.push(sides[5])
+    
+                temp.push(sides[3])
+                temp.push(sides[1])
+                temp.push(sides[2])
+    
+                temp.push(sides[0])
+                temp.push(sides[4])
+                temp.push(sides[5])
+    
+                temp.push(sides[3])
+                temp.push(sides[4])
+                temp.push(sides[2])
+              }
+            }
+          }
+          // FRONT
+          else if (sides[2] > 0) {
+            // FRONT BOTTOM RIGHT CORNER FACE
+            if (cube[3] && cube[6] && cube[7]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            } // FRONT TOP RIGHT CORNER FACE
+            else if (cube[2] && cube[7] && cube[3]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+  
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // FRONT TOP LEFT CORNER FACE
+            else if (cube[2] && cube[6] && cube[3]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // FRONT BOTTOM LEFT CORNER FACE
+            else if (cube[2] && cube[6] && cube[7]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            }
+
+            // FRONT FACE
+            if (cube[2] && cube[3] && cube[6] && cube[7]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            }
+
+            // RIGHT-FRONT
+            if (sides[0] > 0) {
+              if (cube[1] && cube[3] && cube[5] && cube[7] && sides[2] >= 0) {
+                temp.push(sides[3])
+                temp.push(sides[1])
+                temp.push(sides[2])
+    
+                temp.push(sides[0])
+                temp.push(sides[4])
+                temp.push(sides[5])
+    
+                temp.push(sides[0])
+                temp.push(sides[1])
+                temp.push(sides[5])
+    
+                temp.push(sides[3])
+                temp.push(sides[1])
+                temp.push(sides[2])
+    
+                temp.push(sides[3])
+                temp.push(sides[4])
+                temp.push(sides[2])
+    
+                temp.push(sides[0])
+                temp.push(sides[4])
+                temp.push(sides[5])
+              }
+            }
+            // FRONT-LEFT
+            else if (sides[0] < 0) {
+              if (cube[0] && cube[2] && cube[4] && cube[6] && sides[2] >= 0) {
+                temp.push(sides[0])
+                temp.push(sides[1])
+                temp.push(sides[2])
+    
+                temp.push(sides[3])
+                temp.push(sides[1])
+                temp.push(sides[5])
+    
+                temp.push(sides[3])
+                temp.push(sides[4])
+                temp.push(sides[5])
+    
+                temp.push(sides[0])
+                temp.push(sides[1])
+                temp.push(sides[2])
+    
+                temp.push(sides[3])
+                temp.push(sides[4])
+                temp.push(sides[5])
+    
+                temp.push(sides[0])
+                temp.push(sides[4])
+                temp.push(sides[2])
+              }
+            }
+          }
+
+          // LEFT
+          if (sides[0] < 0) {
+            // LEFT BOTTOM RIGHT CORNER FACE
+            if (cube[0] && cube[7] && cube[4]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // LEFT TOP RIGHT CORNER FACE
+            else if (cube[0] && cube[3] && cube[4]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            } // LEFT TOP LEFT CORNER FACE
+            else if (cube[0] && cube[3] && cube[7]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            } // LEFT BOTTOM LEFT CORNER FACE
+            else if (cube[3] && cube[7] && cube[4]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            }
+
+            // LEFT FACE
+            if (cube[0] && cube[3] && cube[4] && cube[7]) {
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[0])
+              temp.push(sides[4])
+              temp.push(sides[2])
+            }
+          }
+          // RIGHT
+          else if (sides[0] > 0) {
+            // RIGHT BOTTOM RIGHT CORNER FACE
+            if (cube[2] && cube[5] && cube[6]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            } // RIGHT TOP RIGHT CORNER FACE
+            else if (cube[1] && cube[6] && cube[2]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // RIGHT TOP LEFT CORNER FACE
+            else if (cube[1] && cube[5] && cube[2]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            } // RIGHT BOTTOM LEFT CORNER FACE
+            else if (cube[1] && cube[5] && cube[6]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+            }
+
+            // RIGHT FACE
+            if (cube[1] && cube[2] && cube[5] && cube[6]) {
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[2])
+  
+              temp.push(sides[3])
+              temp.push(sides[4])
+              temp.push(sides[5])
+  
+              temp.push(sides[3])
+              temp.push(sides[1])
+              temp.push(sides[5])
+            }
           }
 
           if (temp.length > 0)
