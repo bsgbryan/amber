@@ -32,7 +32,7 @@ What does that mean?
 
 It's important to note that flexibility is _not_ one of Amber's goals. Amber is not intended to render 2D graphics, for example. It is also not designed or intended to load static 3D assets generated using external tools. I understand this will be frustrating and feels limiting. Amber is intended to generate and simulate things. It is also intended to be as self-contained as possible.
 
-# Note
+# A Personal Note
 
 This is all new to me 😊
 
