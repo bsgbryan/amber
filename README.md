@@ -13,16 +13,16 @@ What does that mean?
 
 # Amber's Parts
 
-* **[Athenaeum](./src/lib/Athenaeum):** A colleciton of super-useful things.
-* **[Benzaiten](./src/lib/Benzaiten):** Generates procedural meshes.
-* **[Eunomia](./src/lib/Eunomia):** Just a little thing that keeps the engine in good running order.
-* **[Finesse](./src/lib/Finesse):** Flexible, sensible, shockingly-adept input handling.
-* **[Kali](./src/lib/Kali):** A tiny tool that makes scaling time in the engine as easy as a single method call.
-* **[Legion](./src/lib/Legion):** An implementation of the [ECS](https://en.wikipedia.org/wiki/Entity_component_system) design pattern.
-* **[Sunya](./Sunya)** A library of helpful mathmatical functions for 3D data structures.
+* **[Athenaeum](./src/Athenaeum):** A colleciton of super-useful things.
+* **[Benzaiten](./src/Benzaiten):** Generates procedural meshes.
+* **[Eunomia](./src/Eunomia):** Just a little thing that keeps the engine in good running order.
+* **[Finesse](./src/Finesse):** Flexible, sensible, shockingly-adept input handling.
+* **[Kali](./src/Kali):** A tiny tool that makes scaling time in the engine as easy as a single method call.
+* **[Legion](./src/Legion):** An implementation of the [ECS](https://en.wikipedia.org/wiki/Entity_component_system) design pattern.
+* **[Sunya](./src/Sunya)** A library of helpful mathmatical functions for 3D data structures.
 * **Strata:** UI tooling. It's all of Amber's buttons, switches, dialogs, and stuff.
-* **[Xenon](./src/lib/Xenon):** A blisteringly-fast, elegant rendering engine.
-* **[Yggdrasil](./src/lib/Yggdrasil):** Manages all the FidelityTrees; ensuring the engine is always running at peak perfomance, while hitting the [frame rate](https://www.ign.com/articles/2014/11/05/understanding-frame-rate-and-its-importance) target you specify.
+* **[Xenon](./src/Xenon):** A blisteringly-fast, elegant rendering engine.
+* **[Yggdrasil](./src/Yggdrasil):** Manages all the FidelityTrees; ensuring the engine is always running at peak perfomance, while hitting the [frame rate](https://www.ign.com/articles/2014/11/05/understanding-frame-rate-and-its-importance) target you specify.
 
 # Goals
 
