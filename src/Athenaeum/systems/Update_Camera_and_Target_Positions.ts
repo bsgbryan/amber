@@ -1,4 +1,4 @@
-import { execute } from "#/Athenaeum/systems/Update_MainCamera_Position_and_LookDirection"
+import { execute } from "#/Athenaeum/systems/Update_Camera_and_Target_Positions"
 
 import { Entity } from "@/Legion/types"
 import Legion, { System } from "@/Legion"
@@ -6,7 +6,7 @@ import Legion, { System } from "@/Legion"
 import MainCamera from "@/Athenaeum/components/MainCamera"
 import Finesse    from "@/Finesse"
 
-export default class Update_MainCamera_Position_and_LookDirection extends System {
+export default class Update_Camera_and_Target_Positions extends System {
   components_required = new Set<Function>([MainCamera])
 
   update(entities: Set<Entity>): void {

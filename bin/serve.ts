@@ -18,7 +18,7 @@ Bun.serve({
       return res
     }
     else if (req.url.endsWith('favicon.ico'))
-      return new Response(Bun.file(`${process.cwd()}/public/amber.png`))
+      return new Response(Bun.file(`${process.cwd()}/scratch/amber.png`))
     else if (req.url.includes('/build/')) {
       return new Response(Bun.file(`${process.cwd()}${new URL(req.url).pathname}`))
     }
