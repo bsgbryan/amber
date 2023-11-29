@@ -4,8 +4,6 @@ import {
   test,
 } from "bun:test"
 
-import { mat4 } from '@/Sunya'
-
 import { degrees_to_radians } from '#/Sunya/helpers'
 
 import {
