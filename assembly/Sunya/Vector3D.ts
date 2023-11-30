@@ -1,6 +1,9 @@
 import { degrees_to_radians } from "./helpers"
 
-export function add(a: Float32Array, b: Float32Array): Float32Array {
+export function add(
+  a: Float32Array,
+  b: Float32Array,
+): Float32Array {
   const output = new Float32Array(3),
         v0     = f32x4(a[0], a[1], a[2], 0),
         v1     = f32x4(b[0], b[1], b[2], 0),
@@ -13,7 +16,10 @@ export function add(a: Float32Array, b: Float32Array): Float32Array {
   return output
 }
 
-export function cross(a: Float32Array, b: Float32Array): Float32Array {
+export function cross(
+  a: Float32Array,
+  b: Float32Array,
+): Float32Array {
   const output = new Float32Array(3),
         v0     = f32x4(a[1], a[2], a[0], 0),
         v1     = f32x4(b[2], b[0], b[1], 0),
@@ -30,7 +36,10 @@ export function cross(a: Float32Array, b: Float32Array): Float32Array {
   return output
 }
 
-export function divide_by_scalar(a: Float32Array, s: f32): Float32Array {
+export function divide_by_scalar(
+  a: Float32Array,
+  s: f32,
+): Float32Array {
   const output = new Float32Array(3),
         d      = 1 as f32 / s,
         v0     = f32x4(a[0], a[1], a[2], 0),
@@ -44,7 +53,10 @@ export function divide_by_scalar(a: Float32Array, s: f32): Float32Array {
   return output
 }
 
-export function distance(a: Float32Array, b: Float32Array): number {
+export function distance(
+  a: Float32Array,
+  b: Float32Array,
+): number {
   const v0 = f32x4(a[0], a[1], a[2], 0),
         v1 = f32x4(b[0], b[1], b[2], 0),
         r0 = f32x4.sub(v1, v0),
@@ -62,17 +74,10 @@ export function distance(a: Float32Array, b: Float32Array): number {
   return Math.sqrt(x + y + z)
 }
 
-export function identity(): Float32Array {
-  const output = new Float32Array(3)
-
-  output[0] = 1.0
-  output[1] = 1.0
-  output[2] = 1.0
-
-  return output
-}
-
-export function multiply(a: Float32Array, b: Float32Array): Float32Array {
+export function multiply(
+  a: Float32Array,
+  b: Float32Array,
+): Float32Array {
   const output = new Float32Array(3),
         v0     = f32x4(a[0], a[1], a[2], 0),
         v1     = f32x4(b[0], b[1], b[2], 0),
@@ -85,7 +90,9 @@ output[2] = f32x4.extract_lane(r, 2)
   return output
 }
 
-export function normalize(v: Float32Array): Float32Array {
+export function normalize(
+  v: Float32Array,
+): Float32Array {
   const output = new Float32Array(3),
         v0     = f32x4(v[0], v[1], v[2], 0),
         r0     = f32x4.mul(v0, v0),
@@ -110,7 +117,11 @@ export function normalize(v: Float32Array): Float32Array {
   return output
 }
 
-export function spherical(x: f32, y: f32, radius: f32): Float32Array {
+export function spherical(
+  x:      f32,
+  y:      f32,
+  radius: f32,
+): Float32Array {
   const output = new Float32Array(3),
         phi    = degrees_to_radians(90.0 - x),
         theta  = degrees_to_radians(y),
@@ -130,7 +141,10 @@ export function spherical(x: f32, y: f32, radius: f32): Float32Array {
   return output
 }
 
-export function subtract(a: Float32Array, b: Float32Array): Float32Array {
+export function subtract(
+  a: Float32Array,
+  b: Float32Array,
+): Float32Array {
   const output = new Float32Array(3),
         v0     = f32x4(a[0], a[1], a[2], 0),
         v1     = f32x4(b[0], b[1], b[2], 0),
