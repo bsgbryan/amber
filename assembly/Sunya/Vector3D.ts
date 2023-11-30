@@ -114,11 +114,18 @@ export function spherical(x: f32, y: f32, radius: f32): Float32Array {
   const output = new Float32Array(3),
         phi    = degrees_to_radians(90.0 - x),
         theta  = degrees_to_radians(y),
-        angle  = Math.sin(phi) * radius
+        angle  = Math.sin(phi) * radius as f32,
+        cosphi = Math.cos(phi)          as f32,
+        sinthe = Math.sin(theta)        as f32,
+        costhe = Math.cos(theta)        as f32
 
-  output[0] = angle * Math.sin(theta) as f32
-  output[1] = Math.cos(phi) as f32 * radius
-  output[2] = angle * Math.cos(theta) as f32
+  const v0 = f32x4(angle,  cosphi, angle,  0),
+        v1 = f32x4(sinthe, radius, costhe, 0),
+        r  = f32x4.mul(v0, v1)
+
+  output[0] = f32x4.extract_lane(r, 0)
+  output[1] = f32x4.extract_lane(r, 1)
+  output[2] = f32x4.extract_lane(r, 2)
 
   return output
 }
@@ -132,16 +139,6 @@ export function subtract(a: Float32Array, b: Float32Array): Float32Array {
   output[0] = f32x4.extract_lane(r, 0)
   output[1] = f32x4.extract_lane(r, 1)
   output[2] = f32x4.extract_lane(r, 2)
-
-  return output
-}
-
-export function zero(): Float32Array {
-  const output = new Float32Array(3)
-
-  output[0] = 0.0
-  output[1] = 0.0
-  output[2] = 0.0
 
   return output
 }
