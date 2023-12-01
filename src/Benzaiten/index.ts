@@ -1,5 +1,3 @@
-import { Vector3 } from "@/Sunya/types"
-
 import ColoredPoint from "@/Athenaeum/materials/ColoredPoint"
 import Color        from "@/Athenaeum/Color"
 
@@ -11,7 +9,10 @@ import {
   z_crossings,
 } from "@/Benzaiten/helpers"
 
-import { Mesh } from "@/Benzaiten/types"
+import {
+  Mesh,
+  Vector3,
+} from "@/Benzaiten/types"
 
 const x = 0,
       y = 1,

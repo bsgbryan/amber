@@ -1,4 +1,4 @@
-import { Vector3 } from "../Sunya/types"
+export type Vector3 = Float32Array
 
 export type TestResult = Vector3 | null | undefined
 
