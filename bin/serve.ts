@@ -9,7 +9,7 @@ Bun.serve({
     if (req.url.endsWith('index.ts')) {
       const trans   = new Bun.Transpiler(),
             content = await Bun.file(`${process.cwd()}/scratch/index.ts`).text(),
-            output  = await trans.transform(content.replaceAll('@/', '/'), 'ts'),
+            output  = await trans.transform(content.replaceAll('@/', '/').replaceAll('#/', '/compiled/'), 'ts'),
             res     = new Response(output)
 
       res.headers.set('Content-Type', 'text/javascript')

@@ -1,13 +1,11 @@
-import ColoredPoint from "@/Athenaeum/materials/ColoredPoint"
-import Color        from "@/Athenaeum/Color"
-
-import { Shape } from "@/Benzaiten/shapes/types"
-
 import {
   x_crossings,
   y_crossings,
   z_crossings,
-} from "@/Benzaiten/helpers"
+} from "#/Benzaiten/helpers"
+
+import ColoredPoint from "@/Athenaeum/materials/ColoredPoint"
+import Color        from "@/Athenaeum/Color"
 
 import {
   Mesh,
@@ -21,23 +19,24 @@ const x = 0,
 const half = .5
 
 export default class Benzaiten {
-  #shape:     Shape
+  #shape:     number
   #divisions: number
   #segments:  Vector3
-  #vertices: Float32Array
+  #vertices:  Float32Array
 
   constructor(
-    shape:     Shape,
+    shape:     () => number,
     divisions: number  = 2,
     segments:  Vector3 = new Float32Array([2, 2, 2]),
   ) {
-    this.#shape     = shape
+    this.#shape     = shape()
     this.#divisions = divisions
     this.#segments  = segments
     this.#vertices  = new Float32Array()
   }
 
   extract_surface(
+    params:     Float32Array,
     space:      Vector3 = new Float32Array([1, 1, 1]),
     origin:     Vector3 = new Float32Array([0, 0, 0]),
     recursions: number  = 1,
@@ -62,26 +61,27 @@ export default class Benzaiten {
             current_y = Math.floor((i / level)              % this.#segments[y]),
             current_z = Math.floor((i / this.#segments[x])  % this.#segments[z])
 
-      const sides = [
+      const sides = new Float32Array([
         /* left:   */ start_x + ( current_x      * extent_x),
         /* bottom: */ start_y + ( current_y      * extent_y),
         /* back:   */ start_z + ( current_z      * extent_z),
         /* right:  */ start_x + ((current_x + 1) * extent_x),
         /* top:    */ start_y + ((current_y + 1) * extent_y),
         /* front:  */ start_z + ((current_z + 1) * extent_z),
-      ]
+      ])
 
-      const x_crosses = x_crossings(this.#shape, sides),
-            y_crosses = y_crossings(this.#shape, sides),
-            z_crosses = z_crossings(this.#shape, sides)
+      const x_crosses = x_crossings(this.#shape, params, sides),
+            y_crosses = y_crossings(this.#shape, params, sides),
+            z_crosses = z_crossings(this.#shape, params, sides)
 
-      if (x_crosses[4] > 0 || y_crosses[4] > 0 || z_crosses[4] > 0) {
+      if (x_crosses[4] || y_crosses[4] || z_crosses[4]) {
         if (recursions + 1 <= this.#divisions) {
           const origin_x = sides[0] + half_x,
                 origin_y = sides[1] + half_y,
                 origin_z = sides[2] + half_z
   
           this.extract_surface(
+            params,
             new Float32Array([extent_x, extent_y, extent_z]),
             new Float32Array([origin_x, origin_y, origin_z]),
             recursions + 1,

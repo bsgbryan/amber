@@ -41,7 +41,7 @@ describe('Sunya::Vector3D', () => {
           two  = new Float32Array([3, 2, 1]),
           wasm = distance(one, two)
     
-    expect(wasm).toEqual(2.8284271247461903)
+    expect(wasm).toBeCloseTo(2.8284271247461903, Number.EPSILON)
   })
 
   test("divide_by_scalar", () => {

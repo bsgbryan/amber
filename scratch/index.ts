@@ -1,3 +1,5 @@
+import { Sphere } from "#/Benzaiten/shapes"
+
 import Eunomia from "@/Eunomia"
 import Legion  from "@/Legion"
 
@@ -7,12 +9,11 @@ import Update_Camera_and_Target_Positions from "@/Athenaeum/systems/Update_Camer
 
 import Benzaiten from "@/Benzaiten"
 
-import Sphere            from "@/Benzaiten/shapes/Sphere"
 import SimpleVertexColor from "@/Athenaeum/materials/SimpleVertexColor"
 
 await Eunomia.init()
 
-const mesh = new Benzaiten(Sphere(), 3).extract_surface()
+const mesh = new Benzaiten(Sphere, 3).extract_surface(new Float32Array([/* radius */ .475]))
 
 new SimpleVertexColor().apply_to(mesh)
 

@@ -56,7 +56,7 @@ export function divide_by_scalar(
 export function distance(
   a: Float32Array,
   b: Float32Array,
-): number {
+): f32 {
   const v0 = f32x4(a[0], a[1], a[2], 0),
         v1 = f32x4(b[0], b[1], b[2], 0),
         r0 = f32x4.sub(v1, v0),
@@ -71,7 +71,7 @@ export function distance(
         y  = f32x4.extract_lane(r1, 1),
         z  = f32x4.extract_lane(r1, 2)
 
-  return Math.sqrt(x + y + z)
+  return Math.sqrt(x + y + z) as f32
 }
 
 export function multiply(
