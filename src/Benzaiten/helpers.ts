@@ -1,16 +1,5 @@
-// import { Vector3 } from "@/Sunya/types"
-
 import { Shape } from "@/Benzaiten/shapes/types"
-
 import { EMPTY } from "@/Benzaiten/CONSTANTS"
-
-// import {
-//   add,
-//   divide_by_scalar,
-//   multiply,
-//   normalize,
-//   subtract,
-// } from "#/Sunya/Vector3D"
 
 export const crosses = (
   a: number,
@@ -21,24 +10,6 @@ export const crosses = (
           a === 0         ||
           b === 0
 }
-
-// const surface_vertex = (
-//   x: number,
-//   y: number,
-//   z: number,
-// ): Vector3 =>
-//   multiply(
-//     new Float32Array([.475, .475, .475]),
-//     add(
-//       new Float32Array([0, 0, 0]),
-//       normalize(
-//         subtract(
-//           new Float32Array([x, y, z]),
-//           new Float32Array([0, 0, 0]),
-//         )
-//       )
-//     )
-//   )
 
 export const x_crossings = (
   distance: Shape,
