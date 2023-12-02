@@ -26,7 +26,7 @@ export function x_crossings(
 
   for (let i = 0; i < 4; i++) {
     const Y = sides[i === 0 || i === 3 ? 1 : 4],
-          Z = sides[i   < 2            ? 2 : 5]
+          Z = sides[i  <  2            ? 2 : 5]
 
     if (crosses(surface(L, Y, Z, params), surface(R, Y, Z, params))) {
       count++
@@ -54,7 +54,7 @@ export function y_crossings(
 
   for (let i = 0; i < 4; i++) {
     const X = sides[i === 0 || i === 3 ? 0 : 3],
-          Z = sides[i   < 2            ? 2 : 5]
+          Z = sides[i  <  2            ? 2 : 5]
 
     if (crosses(distance(X, B, Z, params), distance(X, T, Z, params))) {
       count++
@@ -82,7 +82,7 @@ export function z_crossings(
 
   for (let i = 0; i < 4; i++) {
     const X = sides[i === 0 || i === 3 ? 0 : 3],
-          Y = sides[i   < 2            ? 1 : 4]
+          Y = sides[i  <  2            ? 1 : 4]
 
     if (crosses(distance(X, Y, B, params), distance(X, Y, F, params))) {
       count++
