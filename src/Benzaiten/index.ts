@@ -24,6 +24,8 @@ export default class Benzaiten {
   #segments:  Vector3
   #vertices:  Float32Array
 
+  #current = 0
+
   constructor(
     shape:     () => number,
     divisions: number  = 2,
@@ -32,7 +34,13 @@ export default class Benzaiten {
     this.#shape     = shape()
     this.#divisions = divisions
     this.#segments  = segments
-    this.#vertices  = new Float32Array()
+
+    const dimensions = segments[0] * segments[1] * segments[2],
+          voxels     = dimensions  * divisions
+
+    this.#vertices = new Float32Array(
+      voxels * dimensions * dimensions * divisions
+    )
   }
 
   extract_surface(
@@ -1123,8 +1131,8 @@ export default class Benzaiten {
             }
           }
 
-          if (temp.length > 0)
-            this.#vertices = new Float32Array([...this.#vertices, ...temp])
+          for (let t = 0; t < temp.length; t++)
+            this.#vertices[this.#current++] = temp[t]
         }
       } 
     }
@@ -1142,13 +1150,20 @@ export default class Benzaiten {
         vertices: new Float32Array([0, 0, -1])
       })
 
+      const vertices = this.#vertices.subarray(0, this.#current)
+
       new ColoredPoint(Color.from_html_rgb(192, 64, 255), .25).apply_to({
-        vertices: this.#vertices,
+        vertices,
       })
+
+      const extra   = this.#vertices.length - this.#current,
+            ratio   = extra / this.#vertices.length,
+            percent = (ratio * 100).toFixed(1)
+
+      console.log(`${percent}% (${extra}) extra vertices`)
+  
+      return { vertices }
     }
 
-    return {
-      vertices: this.#vertices,
-    }
   }
 }

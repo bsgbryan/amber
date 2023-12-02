@@ -13,7 +13,11 @@ import SimpleVertexColor from "@/Athenaeum/materials/SimpleVertexColor"
 
 await Eunomia.init()
 
-const mesh = new Benzaiten(Sphere, 3).extract_surface(new Float32Array([/* radius */ .475]))
+const start = performance.now(),
+      mesh  = new Benzaiten(Sphere, 3).extract_surface(new Float32Array([/* radius */ .475])),
+      bench = (performance.now() - start).toFixed(1)
+
+console.log(`Mesh took ${bench} milliseconds to generate`)
 
 new SimpleVertexColor().apply_to(mesh)
 
