@@ -8,7 +8,7 @@ import {
   x_crossings,
   y_crossings,
   z_crossings,
-} from '#/Benzaiten/helpers'
+} from '#/Benzaiten/crossings'
 
 import { Sphere } from '#/Benzaiten/shapes'
 

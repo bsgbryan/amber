@@ -2,7 +2,7 @@ import {
   x_crossings,
   y_crossings,
   z_crossings,
-} from "#/Benzaiten/helpers"
+} from "#/Benzaiten/crossings"
 
 import ColoredPoint from "@/Athenaeum/materials/ColoredPoint"
 import Color        from "@/Athenaeum/Color"

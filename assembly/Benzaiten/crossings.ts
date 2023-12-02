@@ -26,14 +26,13 @@ export function x_crossings(
 
   for (let i = 0; i < 4; i++) {
     const Y = sides[i === 0 || i === 3 ? 1 : 4],
-          Z = sides[i  <  2            ? 2 : 5]
+          Z = sides[i  <  2            ? 2 : 5],
+          s = surface(L, Y, Z, params),
+          e = surface(R, Y, Z, params),
+          c = crosses(s, e)
 
-    if (crosses(surface(L, Y, Z, params), surface(R, Y, Z, params))) {
-      count++
-
-      output[i] = L < 0 ? -1 : 1
-    }
-    else output[i] = EMPTY
+    if (c) output[i] = L < 0 ? -1 : 1, count++
+    else   output[i] = EMPTY
   }
 
   output[4] = count
@@ -46,22 +45,21 @@ export function y_crossings(
   params: Float32Array,
   sides:  Float32Array,
 ): Float32Array {
-  const B        = sides[1],
-        T        = sides[4],
-        distance =  __SHAPES__[shape]
+  const B       = sides[1],
+        T       = sides[4],
+        surface =  __SHAPES__[shape]
 
   let count = 0.0 as f32
 
   for (let i = 0; i < 4; i++) {
     const X = sides[i === 0 || i === 3 ? 0 : 3],
-          Z = sides[i  <  2            ? 2 : 5]
+          Z = sides[i  <  2            ? 2 : 5],
+          s = surface(X, B, Z, params),
+          e = surface(X, T, Z, params),
+          c = crosses(s, e)
 
-    if (crosses(distance(X, B, Z, params), distance(X, T, Z, params))) {
-      count++
-
-      output[i] = B < 0 ? -1 : 1
-    }
-    else output[i] = EMPTY
+    if (c) output[i] = B < 0 ? -1 : 1, count++
+    else   output[i] = EMPTY
   }
 
   output[4] = count
@@ -74,22 +72,21 @@ export function z_crossings(
   params: Float32Array,
   sides:  Float32Array,
 ): Float32Array {
-  const B        = sides[2],
-        F        = sides[5],
-        distance =  __SHAPES__[shape]
+  const B       = sides[2],
+        F       = sides[5],
+        surface =  __SHAPES__[shape]
 
   let count = 0.0 as f32
 
   for (let i = 0; i < 4; i++) {
     const X = sides[i === 0 || i === 3 ? 0 : 3],
-          Y = sides[i  <  2            ? 1 : 4]
+          Y = sides[i  <  2            ? 1 : 4],
+          s = surface(X, Y, B, params),
+          e = surface(X, Y, F, params),
+          c = crosses(s, e)
 
-    if (crosses(distance(X, Y, B, params), distance(X, Y, F, params))) {
-      count++
-
-      output[i] = B < 0 ? -1 : 1
-    }
-    else output[i] = EMPTY
+    if (c) output[i] = B < 0 ? -1 : 1, count++
+    else   output[i] = EMPTY
   }
 
   output[4] = count
