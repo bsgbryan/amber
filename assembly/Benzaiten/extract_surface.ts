@@ -22,7 +22,7 @@ export function execute(
 ): Float32Array {
   const _space      = f32x4(space   [x], space   [y], space   [z], 1),
         _segments   = f32x4(segments[x], segments[y], segments[z], 1),
-        _origin     = f32x4(origin[x], origin[y], origin[z], 0),
+        _origin     = f32x4(origin  [x], origin  [y], origin  [z], 0),
         _half_space = f32x4.mul(_space,   half),
         start       = f32x4.sub(_origin, _half_space),
         extent      = f32x4.div(_space,  _segments),
