@@ -8,8 +8,7 @@ const x: u8 = 0,
       y: u8 = 1,
       z: u8 = 2
 
-const half  = f32x4(.5, .5, .5, 0),
-      sides = new Float32Array(6)
+const half  = f32x4(.5, .5, .5, 0)
 
 export function execute(
   shape:      u32,
@@ -40,7 +39,8 @@ export function execute(
           _next           = f32x4.add(_current, f32x4.splat(1)),
           _next_extent    = f32x4.mul(_next, extent),
           _begin          = f32x4.add(start, _current_extent),
-          _end            = f32x4.add(start, _next_extent)
+          _end            = f32x4.add(start, _next_extent),
+          sides           = new Float32Array(6)
 
     sides[0] = /* left:   */ f32x4.extract_lane(_begin, x)
     sides[1] = /* bottom: */ f32x4.extract_lane(_begin, y)
