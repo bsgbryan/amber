@@ -1,6 +1,6 @@
 import { __SHAPES__ } from "./shapes"
 
-const EMPTY  = 0.0 as f32
+const EMPTY = 0.0 as f32
 
 function crosses(
   a: f32,
