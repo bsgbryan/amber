@@ -41,7 +41,7 @@ export function execute(
           _next_extent    = f32x4.mul(_next, extent),
           _begin          = f32x4.add(start, _current_extent),
           _end            = f32x4.add(start, _next_extent)
-    
+
     sides[0] = /* left:   */ f32x4.extract_lane(_begin, x)
     sides[1] = /* bottom: */ f32x4.extract_lane(_begin, y)
     sides[2] = /* back:   */ f32x4.extract_lane(_begin, z)
@@ -94,7 +94,7 @@ export function execute(
         last = vertices.length - 1
         
         // BOTTOM
-        if (sides[1] <= 0) {
+        if (sides[1] < 0) {
           // BOTTOM BACK RIGHT CORNER FACE
           if (cube[0] && cube[2] && cube[3]) {
             vertices[vertices[last]++ as u32] = sides[0]
@@ -437,7 +437,7 @@ export function execute(
           }
 
           // TOP FACE
-          else if (cube[4] && cube[5] && cube[6] && cube[7]) {
+          if (cube[4] && cube[5] && cube[6] && cube[7]) {
             vertices[vertices[last]++ as u32] = sides[0]
             vertices[vertices[last]++ as u32] = sides[4]
             vertices[vertices[last]++ as u32] = sides[2]
@@ -669,7 +669,7 @@ export function execute(
         }
 
         // BACK
-        if (sides[2] <= 0) {
+        if (sides[2] < 0) {
           // BACK BOTTOM RIGHT CORNER FACE
           if (cube[0] && cube[4] && cube[5]) {
             vertices[vertices[last]++ as u32] = sides[0]
@@ -950,7 +950,7 @@ export function execute(
         }
 
         // LEFT
-        if (sides[0] <= 0) {
+        if (sides[0] < 0) {
           // LEFT BOTTOM RIGHT CORNER FACE
           if (cube[0] && cube[7] && cube[4]) {
             vertices[vertices[last]++ as u32] = sides[0]

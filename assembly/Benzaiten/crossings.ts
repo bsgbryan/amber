@@ -1,7 +1,6 @@
 import { __SHAPES__ } from "./shapes"
 
-const EMPTY  = 0.0 as f32,
-      output = new Float32Array(5)
+const EMPTY  = 0.0 as f32
 
 function crosses(
   a: f32,
@@ -20,7 +19,8 @@ export function x_crossings(
 ): Float32Array {
   const L       = sides[0],
         R       = sides[3],
-        surface = __SHAPES__[shape]
+        surface = __SHAPES__[shape],
+        output  = new Float32Array(5)
 
   let count = 0.0 as f32
 
@@ -47,7 +47,8 @@ export function y_crossings(
 ): Float32Array {
   const B       = sides[1],
         T       = sides[4],
-        surface =  __SHAPES__[shape]
+        surface =  __SHAPES__[shape],
+        output  = new Float32Array(5)
 
   let count = 0.0 as f32
 
@@ -74,7 +75,8 @@ export function z_crossings(
 ): Float32Array {
   const B       = sides[2],
         F       = sides[5],
-        surface =  __SHAPES__[shape]
+        surface =  __SHAPES__[shape],
+        output  = new Float32Array(5)
 
   let count = 0.0 as f32
 

@@ -56,4 +56,4 @@ const extra   = vertices.length - surface.length,
       ratio   = extra / vertices.length,
       percent = (ratio * 100).toFixed(1)
 
-console.log(`${percent}% (${extra}) extra vertices`)
+console.log(`${percent}% (${extra}) extra vertices; ${Intl.NumberFormat('en-US').format(surface.length)} used`)
