@@ -8,7 +8,8 @@ const x: u8 = 0,
       y: u8 = 1,
       z: u8 = 2
 
-const half  = f32x4(.5, .5, .5, 0)
+const half = f32x4(.5, .5, .5, 0),
+      one  = f32x4.splat(1)
 
 export function execute(
   shape:      u32,
@@ -20,26 +21,33 @@ export function execute(
   origin:     Float32Array,
   recursions: u8,
 ): Float32Array {
-  const _space      = f32x4(space   [x], space   [y], space   [z], 1),
-        _segments   = f32x4(segments[x], segments[y], segments[z], 1),
-        _origin     = f32x4(origin  [x], origin  [y], origin  [z], 0),
-        _half_space = f32x4.mul(_space,   half),
-        start       = f32x4.sub(_origin, _half_space),
-        extent      = f32x4.div(_space,  _segments),
-        level       = segments[x] * segments[z],
-        iterations  = level       * segments[y]
+  const _space       = f32x4(space   [x], space   [y], space   [z], 1),
+        _segments    = f32x4(segments[x], segments[y], segments[z], 1),
+        _origin      = f32x4(origin  [x], origin  [y], origin  [z], 0),
+        _half_space  = f32x4.mul(_space,   half),
+        start        = f32x4.sub(_origin, _half_space),
+        extent       = f32x4.div(_space,  _segments),
+        _half_extent = f32x4.mul(extent,   half),
+        level        = segments[x] * segments[z],
+        iterations   = level       * segments[y]
+
+  const recursed_space = new Float32Array(3),
+        sides          = new Float32Array(6)
+
+  recursed_space[x] = f32x4.extract_lane(extent, x)
+  recursed_space[y] = f32x4.extract_lane(extent, y)
+  recursed_space[z] = f32x4.extract_lane(extent, z)
 
   for (let i: u16 = 0; i < iterations; i++) {
     const current_x       =  i                 % segments[x],
           current_y       = (i / level)        % segments[y],
           current_z       = (i / segments[x])  % segments[z],
           _current        = f32x4(current_x, current_y, current_z, 0),
-          _current_extent = f32x4.mul(_current, extent),
-          _next           = f32x4.add(_current, f32x4.splat(1)),
-          _next_extent    = f32x4.mul(_next, extent),
-          _begin          = f32x4.add(start, _current_extent),
-          _end            = f32x4.add(start, _next_extent),
-          sides           = new Float32Array(6)
+          _current_extent = f32x4.mul(_current,  extent),
+          _next           = f32x4.add(_current,  one),
+          _next_extent    = f32x4.mul(_next,     extent),
+          _begin          = f32x4.add(start,    _current_extent),
+          _end            = f32x4.add(start,    _next_extent)
 
     sides[0] = /* left:   */ f32x4.extract_lane(_begin, x)
     sides[1] = /* bottom: */ f32x4.extract_lane(_begin, y)
@@ -53,16 +61,10 @@ export function execute(
           z_crosses = z_crossings(shape, params, sides)
 
     if (x_crosses[4] || y_crosses[4] || z_crosses[4]) {
-      if (recursions + 1 <= divisions) {
+      if (recursions < divisions) {
         const _sides          = f32x4(sides[x], sides[y], sides[z], 0),
-              _half_extent    = f32x4.mul(extent, half),
               half_origin     = f32x4.add(_sides, _half_extent),
-              recursed_space  = new Float32Array(3),
               recursed_origin = new Float32Array(3)
-
-        recursed_space[x] = f32x4.extract_lane(extent, x)
-        recursed_space[y] = f32x4.extract_lane(extent, y)
-        recursed_space[z] = f32x4.extract_lane(extent, z)
 
         recursed_origin[x] = f32x4.extract_lane(half_origin, x)
         recursed_origin[y] = f32x4.extract_lane(half_origin, y)
