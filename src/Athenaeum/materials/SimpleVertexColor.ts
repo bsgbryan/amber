@@ -17,6 +17,8 @@ export default class SimpleVertexColor extends Material {
 
   #buffer_slot_map = new Map<number, number>()
 
+  #position_index: number
+
   constructor() {
     super(
       'SimpleVertexColor',
@@ -25,11 +27,15 @@ export default class SimpleVertexColor extends Material {
         layouts: SimpleVertexColor.#buffer_layouts,
       }}
     )
-    
+
+    this.#position_index = Material.next_buffer_index
+
+    this.#buffer_slot_map.set(0, this.#position_index)
+
     super.register_render_encoding(this.#buffer_slot_map)
   }
 
   apply_to(mesh: Mesh) {
-    super.apply_to(mesh, Material.next_buffer_index)
+    super.apply_to(mesh, this.#position_index)
   }
 }
