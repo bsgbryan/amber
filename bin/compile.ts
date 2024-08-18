@@ -10,7 +10,7 @@ import asc from "assemblyscript/asc"
 
 const root = `${process.cwd()}/assembly`
 
-const compile = async file => {
+const compile = async (file: string) => {
   const module = file.substring(root.length + 1, file.length - 3)
 
   const { error, stderr, stats } = await asc.main([
@@ -32,9 +32,9 @@ const compile = async file => {
   }
 }
 
-const list = async path => (await readdir(path)).map(n => join(path, n))
+const list = async (path: string) => (await readdir(path)).map(n => join(path, n))
 
-const recurse = async path => {
+const recurse = async (path: string) => {
   for (const e of await list(path)) {
     const s = await stat(e)
 
