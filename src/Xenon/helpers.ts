@@ -4,7 +4,7 @@
  * @param location This needs to match the `@location` directive in your shader for this data.
  * @param stride The number of bytes required to store a single item in the buffer.
  *               For example, a `vec3` has a stride of 12: it is made up of 3 32 bit floats (_32 bits === 4 bytes_) - `4 * 3 = 12`.
- * @param format A string defining the formar of the data in the buffer. For example: `'float32x4'` for a `Color(r,g,b,a)`.
+ * @param format A string defining the format of the data in the buffer. For example: `'float32x4'` for a `Color(r,g,b,a)`.
  * @param offset How many bytes from the beginning of the buffer does the actual data start?
  *               Defaults to `0` - meaning the data starts at the beginning of the buffer.
  * 
