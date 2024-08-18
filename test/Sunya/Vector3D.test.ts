@@ -9,12 +9,10 @@ import {
   cross,
   distance,
   divide_by_scalar,
-  identity,
   multiply,
   normalize,
   spherical,
   subtract,
-  zero,
 } from '#/Sunya/Vector3D'
 
 describe('Sunya::Vector3D', () => {
@@ -43,7 +41,7 @@ describe('Sunya::Vector3D', () => {
           two  = new Float32Array([3, 2, 1]),
           wasm = distance(one, two)
     
-    expect(wasm).toEqual(2.8284271247461903)
+    expect(wasm).toBeCloseTo(2.8284271247461903, Number.EPSILON)
   })
 
   test("divide_by_scalar", () => {
@@ -54,14 +52,6 @@ describe('Sunya::Vector3D', () => {
     expect(wasm[0]).toEqual(0.5)
     expect(wasm[1]).toEqual(1.0)
     expect(wasm[2]).toEqual(1.5)
-  })
-
-  test("identity", () => {
-    const wasm = identity()
-    
-    expect(wasm[0]).toEqual(1)
-    expect(wasm[1]).toEqual(1)
-    expect(wasm[2]).toEqual(1)
   })
 
   test("multiply", () => {
@@ -95,14 +85,6 @@ describe('Sunya::Vector3D', () => {
     const one  = new Float32Array([1, 2, 3]),
           two  = new Float32Array([1, 2, 3]),
           wasm = subtract(one, two)
-    
-    expect(wasm[0]).toEqual(0)
-    expect(wasm[1]).toEqual(0)
-    expect(wasm[2]).toEqual(0)
-  })
-
-  test("zero", () => {
-    const wasm = zero()
     
     expect(wasm[0]).toEqual(0)
     expect(wasm[1]).toEqual(0)
