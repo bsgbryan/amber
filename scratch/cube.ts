@@ -24,14 +24,6 @@ new ColoredPoint(Color.from_html_rgb(64, 192, 255), .5).apply_to({
   vertices: new Float32Array([0, 0, -1])
 })
 
-// new ColoredPoint(Color.from_html_rgb(255, 255, 255), .5).apply_to({
-// 	vertices: new Float32Array([
-// 		-1.5,  1, 0,
-// 		 1,  1, 0,
-// 		-1, -1, 0,
-// 	])
-// })
-
 new SimpleVertexColor().apply_to({
 	vertices: new Float32Array([
 		// FRONT
