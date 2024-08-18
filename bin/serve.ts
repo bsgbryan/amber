@@ -41,10 +41,7 @@ Bun.serve({
     if (req.url === 'http://localhost:1138/')
       return new Response(Bun.file(`${process.cwd()}/scratch/index.html`))
 
-    if (req.url.endsWith('index.ts')) {
-      return await transpile(`${process.cwd()}/scratch/index.ts`)
-    }
-    else if (req.url.endsWith('.ts')) {
+    if (req.url.endsWith('.ts')) {
       return await transpile(`${process.cwd()}${new URL(req.url).pathname}`)
     }
     else if (req.url.endsWith('favicon.ico'))
