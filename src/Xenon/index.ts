@@ -16,9 +16,9 @@ import {
 
 /**
  * Manages all rendering
- * 
+ *
  * It requires an html \<canvas\> element and a browser with WebGPU support
- * 
+ *
  * @remarks
  * To use Xenon:
  * 1. Call {@link Xenon.init | `Xenon.init`}
@@ -53,10 +53,10 @@ export default class Xenon {
 
   /**
    * The main camera used to render the scene
-   * 
+   *
    * @remarks
    * This object's view projection matrix is what's used when rendering
-   * 
+   *
    * @readonly
    */
   static set main_camera(that: MainCamera) {
@@ -86,7 +86,7 @@ export default class Xenon {
 
   /**
    * Initializes Xenon
-   * 
+   *
    * @remarks
    * `init` performs the following tasks:
    * 1. Gets a reference to the html \<canvas\> element to use as the main render target
@@ -96,7 +96,7 @@ export default class Xenon {
    * 4. Configures the WebPU context obtained from the previous step for rendering
    * 5. Registers a listener to log an error to the console if the GPU device is lost
    * 6. Configures the default bind group
-   * 
+   *
    * @throws **No appropriate GPUAdapter found** if a GPU adapter cannot be found
    * @throws **Unable to get WebGPU context** if the browser does not support WebGPU
    */
@@ -158,7 +158,7 @@ export default class Xenon {
 
       if (this.#render_target !== undefined)
         this.#render_target.destroy()
-      
+
       this.#define_depth_stencil()
     }
     else throw new Error('No #target, cannot resize')
@@ -166,12 +166,12 @@ export default class Xenon {
 
   /**
    * Creates, writes, and caches a {@link https://webgpu.rocks/reference/interface/gpubuffer/#idl-gpubuffer | GPUBuffer} using the passed arguments
-   * 
+   *
    * @param items The items to be written to the buffer
    * @param index The index to Xenon's internal buffer cache; _This should be globally unique across materials and buffer layouts in a material_
    * @param offset How far into the buffer the actual data starts; _defaults to `0` meaning the data starts at the beginning of the buffer_
    * @param usage {@link https://webgpu.rocks/reference/typedef/gpubufferusageflags/#idl-gpubufferusageflags | GPUBufferUsageFlags} detailing how the data should be stored/accessed
-   * 
+   *
    * @remarks
    * Xenon maintains an internal list of buffers created via {@link Xenon.create_vertex_buffer | `Xenon.create_vertex_buffer`}.
    * For this internal list to function as intended, the `index` parameter _must_ be unique for each distinct buffer.
@@ -220,13 +220,13 @@ export default class Xenon {
 
   /**
    * Create and return a {@link https://webgpu.rocks/reference/interface/gpurenderpipeline/#idl-gpurenderpipeline | GPURenderPipeline}
-   * 
+   *
    * @param name The string used to identify this render pipeline
    * @param shaders vertex and/or fragment shader source code
    * @param buffers vertex buffer layouts used by the vertex shader
-   * 
+   *
    * @returns A {@link https://webgpu.rocks/reference/interface/gpurenderpipeline/#idl-gpurenderpipeline | GPURenderPipeline} configured using the passed arguments
-   * 
+   *
    * @remarks
    * Xenon's render pipelines have a few non-configurable defaults:
    * 1. The depth stencil is always enabled, and is set to the `depth24plus` format with depth compare set to `less`
@@ -284,25 +284,25 @@ export default class Xenon {
 
   /**
    * Creates, caches, and returns an `InstancedRenderEncoding`
-   * 
+   *
    * @param instances The number is instances to pass to the vertex shader
    * @param pipeline The render pipeline to use
    * @param buffers A mapping of shader locations to indices in Xenon's internal buffer list
-   * 
+   *
    * @returns An `InstancedRenderEncoding` configured using the passed arguments
-   * 
+   *
    * @remarks
    * These objects are iterated over during {@link Xenon.render | `Xenon.render`} to produce output.
-   * 
+   *
    * The `buffers` parameter is of note as it needs to be precisely calibrated to avoid problems that may be extremely difficult to diagnose/fix.
-   * 
+   *
    * Xenon maintains an internal list of buffers created via {@link Xenon.create_vertex_buffer | `Xenon.refresh_buffer`}.
    * For this internal list to function as intended, the `index` value passed to that method _must_ be unique for each distinct buffer.
    * If two materials call `Xenon.refresh_buffer` passing the same value for `index` they would clobber each other's data.
    * This is especially problematic if/when the _layout_ of the data is identical while the _semantics_ (or meaning) of the data is different.
-   * 
+   *
    * **NOTE** _Only_ vertex buffer layouts creating using **`InstancedVertexBufferLayout`** will work with these encodings
-   * 
+   *
    * **NOTE** The returned encoging object will not has nay vertices specified. Vertices are added using `Xenon.refresh_buffer`
    */
   static register_instanced_render_encoding(
@@ -325,24 +325,24 @@ export default class Xenon {
 
   /**
    * Creates, caches, and returns a `RenderEncoding`
-   * 
+   *
    * @param pipeline The render pipeline to use
    * @param buffers A mapping of shader locations to indices in Xenon's internal buffer list
-   * 
+   *
    * @returns A `RenderEncoding` configured using the passed arguments
-   * 
+   *
    * @remarks
    * These objects are iterated over during {@link Xenon.render | `Xenon.render`} to produce output.
-   * 
+   *
    * The `buffers` parameter is of note as it needs to be precisely calibrated to avoid problems that may be extremely difficult to diagnose/fix.
-   * 
+   *
    * Xenon maintains an internal list of buffers created via {@link Xenon.create_vertex_buffer | `Xenon.refresh_buffer`}.
    * For this internal list to function as intended, the `index` value passed to that method _must_ be unique for each distinct buffer.
    * If two materials call `Xenon.refresh_buffer` passing the same value for `index` they would clobber each other's data.
    * This is especially problematic if/when the _layout_ of the data is identical while the _semantics_ (or meaning) of the data is different.
-   * 
+   *
    * **NOTE** _Only_ vertex buffer layouts creating using **`VertexBufferLayout`** will work with these encodings
-   * 
+   *
    * **NOTE** The returned encoging object will not has nay vertices specified. Vertices are added using `Xenon.refresh_buffer`
    */
   static register_render_encoding(
@@ -412,7 +412,7 @@ export default class Xenon {
       if (this.#index_buffers[b])
         pass.setIndexBuffer(this.#index_buffers[b], 'uint16')
     }
-    
+
     pass.setBindGroup(0, this.#main_camera.bind_group)
 
     if (Object.hasOwn(data, 'instances'))

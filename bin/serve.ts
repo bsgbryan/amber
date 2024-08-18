@@ -35,7 +35,7 @@ const transpile = async (path: string) => {
 
 Bun.serve({
   development: true,
-  
+
   async fetch(req) {
     console.log(req.url)
     if (req.url === 'http://localhost:1138/')
@@ -55,7 +55,7 @@ Bun.serve({
     else if (req.url.includes('/compiled/')) {
       const path = new URL(req.url).pathname,
             ext  = path.endsWith('.wasm') ? '' : '.js'
- 
+
       return new Response(Bun.file(`${process.cwd()}${path}${ext}`))
     }
     else {

@@ -22,7 +22,7 @@ const compile = async file => {
     "--stats",
     "--enable", "simd",
   ])
-  
+
   if (error) {
     console.log(`Compilation failed: ${error.message}`)
     console.log(stderr.toString())
