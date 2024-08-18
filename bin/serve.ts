@@ -45,7 +45,7 @@ Bun.serve({
       return await transpile(`${process.cwd()}${new URL(req.url).pathname}`)
     }
     else if (req.url.endsWith('favicon.ico'))
-      return new Response(Bun.file(`${process.cwd()}/scratch/amber.png`))
+      return new Response(Bun.file(`${process.cwd()}/scratch/bird.jpg`))
     else if (req.url.includes('/build/')) {
       return new Response(Bun.file(`${process.cwd()}${new URL(req.url).pathname}`))
     }
@@ -68,4 +68,4 @@ Bun.serve({
   port: 1138,
 })
 
-console.info(`Amber is listening at http://localhost:1138`)
+console.info(`Roc is listening on http://localhost:1138`)

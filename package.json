@@ -3,7 +3,7 @@
   "version": "0.5.0",
   "description": "A thoroughly-modern real-time simulation engine",
   "scripts": {
-    "amber": "bun run compile && bun run scratch",
+    "roc": "bun run compile && bun run scratch",
     "compile": "clear && bun ./bin/compile.ts",
     "scratch": "bun ./bin/serve.ts",
     "test": "bun run compile && bun test"

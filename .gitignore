@@ -2,3 +2,5 @@ node_modules
 build
 compiled
 bun.lockb
+
+.DS_Store
