@@ -29,7 +29,6 @@ const compile = async file => {
   }
   else {
     console.log(`Compiled ${module.replaceAll('/', '::')}`)
-    // console.log(stats?.toString())
   }
 }
 
