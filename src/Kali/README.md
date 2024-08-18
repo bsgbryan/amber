@@ -1,6 +1,6 @@
 # [Kali](https://www.britannica.com/topic/Kali) says "Hi!"
 
-Kali scales time. All you need to do is call [`Scale.transition_to(scale, span)`](https://github.com/bsgbryan/amber/blob/main/src/lib/Kali/Scale.ts#L23) where:
+Kali scales time. All you need to do is call [`Scale.transition_to(scale, span)`](https://github.com/bsgbryan/roc/blob/main/src/lib/Kali/Scale.ts#L23) where:
 
 * `scale` is your desired time scale factor<br>
   _A number between `0` and `1`, inclusive_
